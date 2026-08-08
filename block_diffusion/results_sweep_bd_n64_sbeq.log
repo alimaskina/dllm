@@ -1,0 +1,219 @@
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+Loading model Efficient-Large-Model/Fast_dLLM_v2_7B on cuda:0...
+Sweep bd_sizes=[16, 32, 64] n=64 small_block==bd_size
+[bd=16 1/64] blocks=18 correct=True
+[bd=16 2/64] blocks=14 correct=True
+[bd=16 3/64] blocks=21 correct=True
+[bd=16 4/64] blocks=13 correct=True
+[bd=16 5/64] blocks=26 correct=False
+[bd=16 6/64] blocks=21 correct=True
+[bd=16 7/64] blocks=15 correct=True
+[bd=16 8/64] blocks=30 correct=False
+[bd=16 9/64] blocks=38 correct=False
+[bd=16 10/64] blocks=20 correct=True
+[bd=16 11/64] blocks=21 correct=True
+[bd=16 12/64] blocks=22 correct=True
+[bd=16 13/64] blocks=21 correct=False
+[bd=16 14/64] blocks=30 correct=False
+[bd=16 15/64] blocks=25 correct=True
+[bd=16 16/64] blocks=25 correct=True
+[bd=16 17/64] blocks=14 correct=True
+[bd=16 18/64] blocks=27 correct=True
+[bd=16 19/64] blocks=23 correct=True
+[bd=16 20/64] blocks=30 correct=False
+[bd=16 21/64] blocks=33 correct=False
+[bd=16 22/64] blocks=14 correct=False
+[bd=16 23/64] blocks=14 correct=True
+[bd=16 24/64] blocks=15 correct=False
+[bd=16 25/64] blocks=13 correct=True
+[bd=16 26/64] blocks=20 correct=True
+[bd=16 27/64] blocks=19 correct=True
+[bd=16 28/64] blocks=19 correct=True
+[bd=16 29/64] blocks=17 correct=True
+[bd=16 30/64] blocks=17 correct=True
+[bd=16 31/64] blocks=32 correct=True
+[bd=16 32/64] blocks=17 correct=True
+[bd=16 33/64] blocks=17 correct=True
+[bd=16 34/64] blocks=19 correct=True
+[bd=16 35/64] blocks=15 correct=True
+[bd=16 36/64] blocks=16 correct=True
+[bd=16 37/64] blocks=22 correct=True
+[bd=16 38/64] blocks=25 correct=False
+[bd=16 39/64] blocks=15 correct=True
+[bd=16 40/64] blocks=33 correct=True
+[bd=16 41/64] blocks=15 correct=True
+[bd=16 42/64] blocks=21 correct=True
+[bd=16 43/64] blocks=15 correct=True
+[bd=16 44/64] blocks=24 correct=False
+[bd=16 45/64] blocks=20 correct=True
+[bd=16 46/64] blocks=22 correct=True
+[bd=16 47/64] blocks=19 correct=True
+[bd=16 48/64] blocks=24 correct=True
+[bd=16 49/64] blocks=13 correct=True
+[bd=16 50/64] blocks=15 correct=True
+[bd=16 51/64] blocks=21 correct=True
+[bd=16 52/64] blocks=21 correct=True
+[bd=16 53/64] blocks=15 correct=True
+[bd=16 54/64] blocks=20 correct=True
+[bd=16 55/64] blocks=14 correct=True
+[bd=16 56/64] blocks=13 correct=True
+[bd=16 57/64] blocks=12 correct=True
+[bd=16 58/64] blocks=21 correct=True
+[bd=16 59/64] blocks=17 correct=False
+[bd=16 60/64] blocks=12 correct=True
+[bd=16 61/64] blocks=17 correct=True
+[bd=16 62/64] blocks=15 correct=True
+[bd=16 63/64] blocks=24 correct=False
+[bd=16 64/64] blocks=24 correct=True
+bd=16: acc=79.7% elapsed=2412s → checkpoints/sweep_bd_n64_sbeq/n64_bd16_sbeq
+[bd=32 1/64] blocks=9 correct=True
+[bd=32 2/64] blocks=8 correct=True
+[bd=32 3/64] blocks=12 correct=False
+[bd=32 4/64] blocks=8 correct=True
+[bd=32 5/64] blocks=16 correct=False
+[bd=32 6/64] blocks=10 correct=True
+[bd=32 7/64] blocks=8 correct=True
+[bd=32 8/64] blocks=15 correct=False
+[bd=32 9/64] blocks=17 correct=True
+[bd=32 10/64] blocks=11 correct=True
+[bd=32 11/64] blocks=11 correct=True
+[bd=32 12/64] blocks=10 correct=True
+[bd=32 13/64] blocks=11 correct=False
+[bd=32 14/64] blocks=13 correct=True
+[bd=32 15/64] blocks=13 correct=True
+[bd=32 16/64] blocks=11 correct=False
+[bd=32 17/64] blocks=14 correct=False
+[bd=32 18/64] blocks=17 correct=True
+[bd=32 19/64] blocks=10 correct=True
+[bd=32 20/64] blocks=17 correct=False
+[bd=32 21/64] blocks=17 correct=False
+[bd=32 22/64] blocks=7 correct=False
+[bd=32 23/64] blocks=8 correct=True
+[bd=32 24/64] blocks=8 correct=False
+[bd=32 25/64] blocks=8 correct=True
+[bd=32 26/64] blocks=10 correct=True
+[bd=32 27/64] blocks=12 correct=True
+[bd=32 28/64] blocks=10 correct=True
+[bd=32 29/64] blocks=9 correct=True
+[bd=32 30/64] blocks=7 correct=True
+[bd=32 31/64] blocks=10 correct=True
+[bd=32 32/64] blocks=9 correct=True
+[bd=32 33/64] blocks=9 correct=True
+[bd=32 34/64] blocks=9 correct=False
+[bd=32 35/64] blocks=8 correct=True
+[bd=32 36/64] blocks=9 correct=True
+[bd=32 37/64] blocks=11 correct=True
+[bd=32 38/64] blocks=13 correct=False
+[bd=32 39/64] blocks=10 correct=True
+[bd=32 40/64] blocks=20 correct=True
+[bd=32 41/64] blocks=6 correct=True
+[bd=32 42/64] blocks=11 correct=True
+[bd=32 43/64] blocks=8 correct=True
+[bd=32 44/64] blocks=11 correct=False
+[bd=32 45/64] blocks=10 correct=True
+[bd=32 46/64] blocks=11 correct=True
+[bd=32 47/64] blocks=12 correct=False
+[bd=32 48/64] blocks=13 correct=True
+[bd=32 49/64] blocks=7 correct=True
+[bd=32 50/64] blocks=8 correct=True
+[bd=32 51/64] blocks=11 correct=True
+[bd=32 52/64] blocks=11 correct=True
+[bd=32 53/64] blocks=8 correct=True
+[bd=32 54/64] blocks=11 correct=True
+[bd=32 55/64] blocks=9 correct=True
+[bd=32 56/64] blocks=7 correct=True
+[bd=32 57/64] blocks=7 correct=True
+[bd=32 58/64] blocks=11 correct=True
+[bd=32 59/64] blocks=9 correct=False
+[bd=32 60/64] blocks=6 correct=True
+[bd=32 61/64] blocks=9 correct=True
+[bd=32 62/64] blocks=8 correct=True
+[bd=32 63/64] blocks=15 correct=False
+[bd=32 64/64] blocks=13 correct=True
+bd=32: acc=75.0% elapsed=2362s → checkpoints/sweep_bd_n64_sbeq/n64_bd32_sbeq
+[bd=64 1/64] blocks=5 correct=True
+[bd=64 2/64] blocks=5 correct=False
+[bd=64 3/64] blocks=7 correct=False
+[bd=64 4/64] blocks=4 correct=True
+[bd=64 5/64] blocks=7 correct=False
+[bd=64 6/64] blocks=6 correct=True
+[bd=64 7/64] blocks=6 correct=False
+[bd=64 8/64] blocks=8 correct=False
+[bd=64 9/64] blocks=9 correct=False
+[bd=64 10/64] blocks=6 correct=True
+[bd=64 11/64] blocks=6 correct=True
+[bd=64 12/64] blocks=5 correct=True
+[bd=64 13/64] blocks=6 correct=False
+[bd=64 14/64] blocks=7 correct=True
+[bd=64 15/64] blocks=7 correct=True
+[bd=64 16/64] blocks=7 correct=False
+[bd=64 17/64] blocks=4 correct=True
+[bd=64 18/64] blocks=9 correct=True
+[bd=64 19/64] blocks=5 correct=True
+[bd=64 20/64] blocks=9 correct=True
+[bd=64 21/64] blocks=9 correct=True
+[bd=64 22/64] blocks=3 correct=False
+[bd=64 23/64] blocks=4 correct=True
+[bd=64 24/64] blocks=4 correct=False
+[bd=64 25/64] blocks=5 correct=True
+[bd=64 26/64] blocks=6 correct=True
+[bd=64 27/64] blocks=7 correct=True
+[bd=64 28/64] blocks=6 correct=True
+[bd=64 29/64] blocks=4 correct=True
+[bd=64 30/64] blocks=5 correct=True
+[bd=64 31/64] blocks=5 correct=True
+[bd=64 32/64] blocks=6 correct=True
+[bd=64 33/64] blocks=5 correct=True
+[bd=64 34/64] blocks=5 correct=True
+[bd=64 35/64] blocks=4 correct=True
+[bd=64 36/64] blocks=5 correct=True
+[bd=64 37/64] blocks=6 correct=True
+[bd=64 38/64] blocks=7 correct=False
+[bd=64 39/64] blocks=5 correct=True
+[bd=64 40/64] blocks=9 correct=True
+[bd=64 41/64] blocks=4 correct=True
+[bd=64 42/64] blocks=8 correct=False
+[bd=64 43/64] blocks=5 correct=True
+[bd=64 44/64] blocks=32 correct=False
+[bd=64 45/64] blocks=6 correct=True
+[bd=64 46/64] blocks=7 correct=False
+[bd=64 47/64] blocks=6 correct=True
+[bd=64 48/64] blocks=6 correct=True
+[bd=64 49/64] blocks=4 correct=True
+[bd=64 50/64] blocks=4 correct=True
+[bd=64 51/64] blocks=6 correct=True
+[bd=64 52/64] blocks=6 correct=True
+[bd=64 53/64] blocks=5 correct=True
+[bd=64 54/64] blocks=5 correct=True
+[bd=64 55/64] blocks=5 correct=True
+[bd=64 56/64] blocks=4 correct=True
+[bd=64 57/64] blocks=4 correct=True
+[bd=64 58/64] blocks=6 correct=True
+[bd=64 59/64] blocks=4 correct=False
+[bd=64 60/64] blocks=3 correct=True
+[bd=64 61/64] blocks=5 correct=True
+[bd=64 62/64] blocks=5 correct=True
+[bd=64 63/64] blocks=5 correct=False
+[bd=64 64/64] blocks=7 correct=True
+bd=64: acc=75.0% elapsed=1016s → checkpoints/sweep_bd_n64_sbeq/n64_bd64_sbeq
+Sweep done → checkpoints/sweep_bd_n64_sbeq/sweep_summary.json
+
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]
+Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.11s/it]
+Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.29s/it]
+Loading checkpoint shards:  75%|███████▌  | 3/4 [00:03<00:01,  1.15s/it]
+Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.29it/s]
+Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.08it/s]
+
+  0%|          | 0/64 [00:00<?, ?it/s]
+ 75%|███████▌  | 48/64 [00:00<00:00, 479.81it/s]
+100%|██████████| 64/64 [00:00<00:00, 577.36it/s]
+

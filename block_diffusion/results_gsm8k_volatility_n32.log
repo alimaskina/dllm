@@ -1,0 +1,190 @@
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+Loading model Efficient-Large-Model/Fast_dLLM_v2_7B on cuda:0...
+Loaded 32 GSM8K samples (num_fewshot=0)
+[1/32] blocks=9 correct=True pred=18 gold=18
+[2/32] blocks=7 correct=True pred=3 gold=3
+[3/32] blocks=9 correct=False pred=80000 gold=70000
+[4/32] blocks=8 correct=True pred=540 gold=540
+[5/32] blocks=14 correct=False pred=140 gold=20
+[6/32] blocks=10 correct=False pred=52 gold=64
+[7/32] blocks=8 correct=True pred=260 gold=260
+[8/32] blocks=15 correct=False pred=120 gold=160
+[9/32] blocks=20 correct=False pred=175 gold=45
+[10/32] blocks=9 correct=True pred=460 gold=460
+[11/32] blocks=11 correct=True pred=366 gold=366
+[12/32] blocks=10 correct=True pred=694 gold=694
+[13/32] blocks=11 correct=False pred=12 gold=13
+[14/32] blocks=13 correct=True pred=18 gold=18
+[15/32] blocks=14 correct=True pred=60 gold=60
+[16/32] blocks=13 correct=True pred=125 gold=125
+[17/32] blocks=7 correct=True pred=230 gold=230
+[18/32] blocks=17 correct=True pred=57500 gold=57500
+[19/32] blocks=12 correct=True pred=7 gold=7
+[20/32] blocks=17 correct=False pred=4 gold=6
+[21/32] blocks=15 correct=False pred=14.67 gold=15
+[22/32] blocks=7 correct=False pred=2 gold=14
+[23/32] blocks=8 correct=True pred=7 gold=7
+[24/32] blocks=8 correct=False pred=00 gold=8
+[25/32] blocks=8 correct=True pred=26 gold=26
+[26/32] blocks=10 correct=True pred=2 gold=2
+[27/32] blocks=12 correct=True pred=243 gold=243
+[28/32] blocks=10 correct=True pred=16 gold=16
+[29/32] blocks=9 correct=True pred=25 gold=25
+[30/32] blocks=10 correct=True pred=104 gold=104
+[31/32] blocks=10 correct=True pred=109 gold=109
+[32/32] blocks=9 correct=True pred=80 gold=80
+Done in 411.9s → checkpoints/gsm8k_volatility_n32/traces.jsonl
+
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]
+Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.12s/it]
+Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.07s/it]
+Loading checkpoint shards:  75%|███████▌  | 3/4 [00:03<00:01,  1.03s/it]
+Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.38it/s]
+Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.18it/s]
+/home/alimaskina/dllm/block_diffusion/run_volatility.py:65: DeprecationWarning: get_task_dict is deprecated. Use TaskManager.load() instead.
+  task_dict = tasks.get_task_dict(["gsm8k"])
+
+  0%|          | 0/32 [00:00<?, ?it/s]
+100%|██████████| 32/32 [00:00<00:00, 467.81it/s]
+
+Loading model Efficient-Large-Model/Fast_dLLM_v2_7B on cuda:0...
+Loaded 32 GSM8K samples (num_fewshot=0)
+[1/32] blocks=9 correct=True pred=18 gold=18
+[2/32] blocks=7 correct=True pred=3 gold=3
+[3/32] blocks=9 correct=False pred=80000 gold=70000
+[4/32] blocks=8 correct=True pred=540 gold=540
+[5/32] blocks=14 correct=False pred=140 gold=20
+[6/32] blocks=10 correct=False pred=52 gold=64
+[7/32] blocks=8 correct=True pred=260 gold=260
+[8/32] blocks=15 correct=False pred=120 gold=160
+[9/32] blocks=20 correct=False pred=175 gold=45
+[10/32] blocks=9 correct=True pred=460 gold=460
+[11/32] blocks=11 correct=True pred=366 gold=366
+[12/32] blocks=10 correct=True pred=694 gold=694
+[13/32] blocks=11 correct=False pred=12 gold=13
+[14/32] blocks=13 correct=True pred=18 gold=18
+[15/32] blocks=14 correct=True pred=60 gold=60
+[16/32] blocks=13 correct=True pred=125 gold=125
+[17/32] blocks=7 correct=True pred=230 gold=230
+[18/32] blocks=17 correct=True pred=57500 gold=57500
+[19/32] blocks=12 correct=True pred=7 gold=7
+[20/32] blocks=17 correct=False pred=4 gold=6
+[21/32] blocks=15 correct=False pred=14.67 gold=15
+[22/32] blocks=7 correct=False pred=2 gold=14
+[23/32] blocks=8 correct=True pred=7 gold=7
+[24/32] blocks=8 correct=False pred=00 gold=8
+[25/32] blocks=8 correct=True pred=26 gold=26
+[26/32] blocks=10 correct=True pred=2 gold=2
+[27/32] blocks=12 correct=True pred=243 gold=243
+[28/32] blocks=10 correct=True pred=16 gold=16
+[29/32] blocks=9 correct=True pred=25 gold=25
+[30/32] blocks=10 correct=True pred=104 gold=104
+[31/32] blocks=10 correct=True pred=109 gold=109
+[32/32] blocks=9 correct=True pred=80 gold=80
+Done in 411.9s → checkpoints/gsm8k_volatility_n32/traces.jsonl
+
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]
+Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.12s/it]
+Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.07s/it]
+Loading checkpoint shards:  75%|███████▌  | 3/4 [00:03<00:01,  1.03s/it]
+Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.38it/s]
+Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.18it/s]
+/home/alimaskina/dllm/block_diffusion/run_volatility.py:65: DeprecationWarning: get_task_dict is deprecated. Use TaskManager.load() instead.
+  task_dict = tasks.get_task_dict(["gsm8k"])
+
+  0%|          | 0/32 [00:00<?, ?it/s]
+100%|██████████| 32/32 [00:00<00:00, 467.81it/s]
+
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+checkpoints/gsm8k_volatility_n32/volatility_summary.json
+checkpoints/gsm8k_volatility_n32/volatility_report.md
+# Block diffusion token volatility (GSM8K)
+
+Model: `Efficient-Large-Model/Fast_dLLM_v2_7B` | n=32 | accuracy=68.8% | threshold=1.0 | bd_size=32
+
+## Volatility by generation block
+
+| block | samples | frac changed vs 1st pass | frac committed ≠ 1st | mean flips/pos | mean inner steps |
+|------:|--------:|-------------------------:|---------------------:|---------------:|-----------------:|
+| 0 | 32 | 0.180 | 0.163 | 0.613 | 19.3 |
+| 1 | 32 | 0.289 | 0.242 | 1.010 | 32.0 |
+| 2 | 32 | 0.273 | 0.246 | 1.038 | 32.0 |
+| 3 | 32 | 0.157 | 0.131 | 0.573 | 32.0 |
+| 4 | 32 | 0.153 | 0.127 | 0.556 | 32.0 |
+| 5 | 32 | 0.120 | 0.103 | 0.430 | 32.0 |
+| 6 | 32 | 0.121 | 0.097 | 0.408 | 32.0 |
+| 7 | 29 | 0.170 | 0.154 | 0.632 | 32.0 |
+| 8 | 24 | 0.141 | 0.125 | 0.544 | 32.0 |
+| 9 | 19 | 0.183 | 0.168 | 0.711 | 32.0 |
+| 10 | 13 | 0.166 | 0.139 | 0.573 | 32.0 |
+| 11 | 11 | 0.173 | 0.150 | 0.584 | 32.0 |
+| 12 | 9 | 0.154 | 0.129 | 0.559 | 32.0 |
+| 13 | 7 | 0.244 | 0.221 | 0.899 | 32.0 |
+| 14 | 5 | 0.129 | 0.123 | 0.548 | 32.0 |
+| 15 | 3 | 0.161 | 0.140 | 0.634 | 32.0 |
+| 16 | 3 | 0.376 | 0.366 | 1.505 | 32.0 |
+| 17 | 1 | 0.032 | 0.032 | 0.194 | 32.0 |
+| 18 | 1 | 0.032 | 0.000 | 0.032 | 32.0 |
+| 19 | 1 | 0.645 | 0.645 | 2.742 | 32.0 |
+
+## Volatility by position inside block
+
+| pos_in_block | observations | frac changed vs 1st pass |
+|-------------:|-------------:|-------------------------:|
+| 1 | 40 | 0.175 |
+| 2 | 301 | 0.053 |
+| 3 | 309 | 0.104 |
+| 4 | 320 | 0.181 |
+| 5 | 323 | 0.198 |
+| 6 | 325 | 0.252 |
+| 7 | 326 | 0.279 |
+| 8 | 51 | 0.216 |
+| 9 | 304 | 0.059 |
+| 10 | 319 | 0.094 |
+| 11 | 330 | 0.173 |
+| 12 | 331 | 0.175 |
+| 13 | 335 | 0.236 |
+| 14 | 337 | 0.291 |
+| 15 | 335 | 0.355 |
+| 16 | 60 | 0.200 |
+| 17 | 305 | 0.085 |
+| 18 | 332 | 0.130 |
+| 19 | 334 | 0.141 |
+| 20 | 338 | 0.201 |
+| 21 | 336 | 0.265 |
+| 22 | 340 | 0.321 |
+| 23 | 341 | 0.372 |
+| 24 | 48 | 0.312 |
+| 25 | 313 | 0.086 |
+| 26 | 339 | 0.127 |
+| 27 | 339 | 0.180 |
+| 28 | 343 | 0.224 |
+| 29 | 344 | 0.267 |
+| 30 | 343 | 0.321 |
+| 31 | 344 | 0.407 |
+
+
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+
+Done → checkpoints/gsm8k_volatility_n32/

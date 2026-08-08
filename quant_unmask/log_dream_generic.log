@@ -1,0 +1,226 @@
+A new version of the following files was downloaded from https://huggingface.co/Dream-org/Dream-v0-Base-7B:
+- configuration_dream.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+A new version of the following files was downloaded from https://huggingface.co/Dream-org/Dream-v0-Base-7B:
+- generation_utils.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+A new version of the following files was downloaded from https://huggingface.co/Dream-org/Dream-v0-Base-7B:
+- modeling_dream.py
+- generation_utils.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+
+Downloading shards:   0%|          | 0/4 [00:00<?, ?it/s]
+Downloading shards:  25%|██▌       | 1/4 [00:16<00:48, 16.13s/it]
+Downloading shards:  50%|█████     | 2/4 [00:34<00:34, 17.27s/it]
+Downloading shards:  75%|███████▌  | 3/4 [00:48<00:15, 15.96s/it]
+Downloading shards: 100%|██████████| 4/4 [00:56<00:00, 12.80s/it]
+Downloading shards: 100%|██████████| 4/4 [00:56<00:00, 14.14s/it]
+
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]
+Loading checkpoint shards:  25%|██▌       | 1/4 [00:07<00:22,  7.64s/it]
+Loading checkpoint shards:  50%|█████     | 2/4 [00:14<00:14,  7.46s/it]
+Loading checkpoint shards:  75%|███████▌  | 3/4 [00:21<00:07,  7.17s/it]
+Loading checkpoint shards: 100%|██████████| 4/4 [00:22<00:00,  4.55s/it]
+Loading checkpoint shards: 100%|██████████| 4/4 [00:22<00:00,  5.59s/it]
+
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]
+Loading checkpoint shards:  25%|██▌       | 1/4 [00:06<00:19,  6.49s/it]
+Loading checkpoint shards:  50%|█████     | 2/4 [00:14<00:14,  7.16s/it]
+Loading checkpoint shards:  75%|███████▌  | 3/4 [00:23<00:08,  8.17s/it]
+Loading checkpoint shards: 100%|██████████| 4/4 [00:24<00:00,  5.17s/it]
+Loading checkpoint shards: 100%|██████████| 4/4 [00:24<00:00,  6.01s/it]
+
+Device : cuda
+FP     : Dream-org/Dream-v0-Base-7B [fp16]
+Q      : Dream-org/Dream-v0-Base-7B [int4]
+Samples: 500 × 3 = 1500 states
+Loading FP model...
+Loading Q model...
+Loading tokenizer...
+Mask token ID : 151666  (<|mask|>)
+Prompt set    : 'generic'  (15 unique prompts)
+
+Running forward passes...
+    5/500  (8.0s)
+   10/500  (16.3s)
+   15/500  (25.1s)
+   20/500  (33.1s)
+   25/500  (42.4s)
+   30/500  (51.1s)
+   35/500  (60.1s)
+   40/500  (69.8s)
+   45/500  (77.7s)
+   50/500  (86.2s)
+   55/500  (95.5s)
+   60/500  (104.6s)
+   65/500  (113.6s)
+   70/500  (122.7s)
+   75/500  (133.4s)
+   80/500  (142.1s)
+   85/500  (150.9s)
+   90/500  (159.7s)
+   95/500  (168.0s)
+  100/500  (176.4s)
+  105/500  (184.7s)
+  110/500  (192.7s)
+  115/500  (200.8s)
+  120/500  (210.6s)
+  125/500  (217.8s)
+  130/500  (225.9s)
+  135/500  (234.7s)
+  140/500  (243.0s)
+  145/500  (251.7s)
+  150/500  (259.8s)
+  155/500  (268.3s)
+  160/500  (276.4s)
+  165/500  (287.2s)
+  170/500  (295.4s)
+  175/500  (304.0s)
+  180/500  (312.2s)
+  185/500  (319.6s)
+  190/500  (327.4s)
+  195/500  (335.4s)
+  200/500  (343.1s)
+  205/500  (350.9s)
+  210/500  (360.0s)
+  215/500  (367.7s)
+  220/500  (376.1s)
+  225/500  (384.0s)
+  230/500  (392.3s)
+  235/500  (400.5s)
+  240/500  (408.3s)
+  245/500  (416.7s)
+  250/500  (424.8s)
+  255/500  (434.9s)
+  260/500  (442.8s)
+  265/500  (450.9s)
+  270/500  (458.6s)
+  275/500  (467.2s)
+  280/500  (476.1s)
+  285/500  (484.9s)
+  290/500  (493.7s)
+  295/500  (502.9s)
+  300/500  (511.2s)
+  305/500  (519.8s)
+  310/500  (528.4s)
+  315/500  (536.2s)
+  320/500  (544.3s)
+  325/500  (552.4s)
+  330/500  (559.8s)
+  335/500  (570.7s)
+  340/500  (578.4s)
+  345/500  (585.6s)
+  350/500  (593.7s)
+  355/500  (601.9s)
+  360/500  (609.9s)
+  365/500  (617.8s)
+  370/500  (626.8s)
+  375/500  (636.7s)
+  380/500  (645.0s)
+  385/500  (653.4s)
+  390/500  (661.7s)
+  395/500  (670.7s)
+  400/500  (678.6s)
+  405/500  (686.5s)
+  410/500  (694.4s)
+  415/500  (702.7s)
+  420/500  (713.3s)
+  425/500  (722.3s)
+  430/500  (730.9s)
+  435/500  (738.7s)
+  440/500  (747.4s)
+  445/500  (755.1s)
+  450/500  (763.3s)
+  455/500  (771.2s)
+  460/500  (781.0s)
+  465/500  (788.7s)
+  470/500  (796.5s)
+  475/500  (803.5s)
+  480/500  (809.1s)
+  485/500  (815.0s)
+  490/500  (820.9s)
+  495/500  (826.9s)
+  500/500  (832.2s)
+
+Done in 832.2s
+
+=================================================================
+EXPERIMENT 1 — FIXED-STATE FIDELITY
+FP: Dream-org/Dream-v0-Base-7B [fp16]  vs  Q: Dream-org/Dream-v0-Base-7B [int4]
+Hypothesis: token_top1_agree >> confidence_topk1_overlap
+=================================================================
+
+  ── early ──
+    token top-1 agree           [WHAT]             +0.9620 ± 0.0442
+    token top-3 agree           [WHAT]             +0.8341 ± 0.0394
+    token top-5 agree           [WHAT]             +0.8346 ± 0.0331
+    token top-10 agree          [WHAT]             +0.8357 ± 0.0287
+    KL(FP||Q) per position      [WHAT]             +0.0699 ± 0.0760
+    conf spearman               [WHERE/conf]       +0.9411 ± 0.0388
+    conf topk-1 overlap         [WHERE/conf]       +0.5820 ± 0.4932
+    conf topk-10step overlap    [WHERE/conf]       +0.7731 ± 0.1095
+    conf topk-llada overlap     [WHERE/conf]       +0.5820 ± 0.4932
+    margin spearman             [WHERE/margin]     +0.9375 ± 0.0402
+    margin topk-1 overlap       [WHERE/margin]     +0.5740 ± 0.4945
+    margin topk-10step overlap  [WHERE/margin]     +0.7685 ± 0.1059
+    neg-entropy spearman        [WHERE/entropy]    +0.9428 ± 0.0388
+    neg-entropy topk-1 overlap  [WHERE/entropy]    +0.5740 ± 0.4945
+    neg-entropy topk-10step     [WHERE/entropy]    +0.7775 ± 0.1038
+    what − where gap            [SIGNAL]           +0.3800 ± 0.5008
+
+  ── mid ──
+    token top-1 agree           [WHAT]             +0.8794 ± 0.0390
+    token top-3 agree           [WHAT]             +0.8030 ± 0.0359
+    token top-5 agree           [WHAT]             +0.8055 ± 0.0268
+    token top-10 agree          [WHAT]             +0.8163 ± 0.0241
+    KL(FP||Q) per position      [WHAT]             +0.2325 ± 0.1182
+    conf spearman               [WHERE/conf]       +0.9672 ± 0.0182
+    conf topk-1 overlap         [WHERE/conf]       +0.6280 ± 0.4833
+    conf topk-10step overlap    [WHERE/conf]       +0.7760 ± 0.1502
+    conf topk-llada overlap     [WHERE/conf]       +0.6280 ± 0.4833
+    margin spearman             [WHERE/margin]     +0.9638 ± 0.0184
+    margin topk-1 overlap       [WHERE/margin]     +0.6300 ± 0.4828
+    margin topk-10step overlap  [WHERE/margin]     +0.7797 ± 0.1443
+    neg-entropy spearman        [WHERE/entropy]    +0.9687 ± 0.0178
+    neg-entropy topk-1 overlap  [WHERE/entropy]    +0.6380 ± 0.4806
+    neg-entropy topk-10step     [WHERE/entropy]    +0.7671 ± 0.1469
+    what − where gap            [SIGNAL]           +0.2514 ± 0.4872
+
+  ── late ──
+    token top-1 agree           [WHAT]             +0.7580 ± 0.0973
+    token top-3 agree           [WHAT]             +0.7091 ± 0.0719
+    token top-5 agree           [WHAT]             +0.7227 ± 0.0667
+    token top-10 agree          [WHAT]             +0.7467 ± 0.0553
+    KL(FP||Q) per position      [WHAT]             +0.6284 ± 0.4375
+    conf spearman               [WHERE/conf]       +0.8844 ± 0.0914
+    conf topk-1 overlap         [WHERE/conf]       +0.7480 ± 0.4342
+    conf topk-10step overlap    [WHERE/conf]       +0.7940 ± 0.2618
+    conf topk-llada overlap     [WHERE/conf]       +0.7480 ± 0.4342
+    margin spearman             [WHERE/margin]     +0.8683 ± 0.0955
+    margin topk-1 overlap       [WHERE/margin]     +0.7420 ± 0.4375
+    margin topk-10step overlap  [WHERE/margin]     +0.7930 ± 0.2695
+    neg-entropy spearman        [WHERE/entropy]    +0.8910 ± 0.0919
+    neg-entropy topk-1 overlap  [WHERE/entropy]    +0.7380 ± 0.4397
+    neg-entropy topk-10step     [WHERE/entropy]    +0.7840 ± 0.2727
+    what − where gap            [SIGNAL]           +0.0100 ± 0.4489
+
+  ── ALL ──
+    token top-1 agree           [WHAT]             +0.8665 ± 0.1065
+    token top-3 agree           [WHAT]             +0.7821 ± 0.0741
+    token top-5 agree           [WHAT]             +0.7876 ± 0.0659
+    token top-10 agree          [WHAT]             +0.7996 ± 0.0543
+    KL(FP||Q) per position      [WHAT]             +0.3103 ± 0.3541
+    conf spearman               [WHERE/conf]       +0.9309 ± 0.0678
+    conf topk-1 overlap         [WHERE/conf]       +0.6527 ± 0.4761
+    conf topk-10step overlap    [WHERE/conf]       +0.7810 ± 0.1856
+    conf topk-llada overlap     [WHERE/conf]       +0.6527 ± 0.4761
+    margin spearman             [WHERE/margin]     +0.9232 ± 0.0729
+    margin topk-1 overlap       [WHERE/margin]     +0.6487 ± 0.4774
+    margin topk-10step overlap  [WHERE/margin]     +0.7804 ± 0.1871
+    neg-entropy spearman        [WHERE/entropy]    +0.9341 ± 0.0668
+    neg-entropy topk-1 overlap  [WHERE/entropy]    +0.6500 ± 0.4770
+    neg-entropy topk-10step     [WHERE/entropy]    +0.7762 ± 0.1887
+    what − where gap            [SIGNAL]           +0.2138 ± 0.5034
+
+Results saved → results_dream_generic_int4_n500.json
+

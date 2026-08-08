@@ -1,0 +1,14 @@
+{
+  "model_path": "Efficient-Large-Model/Fast_dLLM_v2_7B",
+  "task": "gsm8k",
+  "num_fewshot": 0,
+  "apply_chat_template": true,
+  "max_new_tokens": 2048,
+  "bd_size": 64,
+  "small_block_size": 64,
+  "small_block_equals_block": true,
+  "threshold": 1.0,
+  "seed": 1234,
+  "n_samples": 64,
+  "elapsed_sec": 1015.9810643196106
+}

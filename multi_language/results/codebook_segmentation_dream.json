@@ -1,0 +1,31 @@
+{
+  "dlm": "dream",
+  "ar": "qwen",
+  "method": "Random codebook tokens; prompt='Record the code:'; DLM=full-mask denoise, AR=greedy L2R",
+  "results": [
+    {
+      "k": 1,
+      "n_trials": 200,
+      "dlm_mean_tok_acc": 0.0,
+      "ar_mean_tok_acc": 0.0,
+      "dlm_minus_ar": 0.0,
+      "ratio_ar_over_dlm": null
+    },
+    {
+      "k": 2,
+      "n_trials": 200,
+      "dlm_mean_tok_acc": 0.0,
+      "ar_mean_tok_acc": 0.0,
+      "dlm_minus_ar": 0.0,
+      "ratio_ar_over_dlm": null
+    },
+    {
+      "k": 4,
+      "n_trials": 200,
+      "dlm_mean_tok_acc": 0.0,
+      "ar_mean_tok_acc": 0.0,
+      "dlm_minus_ar": 0.0,
+      "ratio_ar_over_dlm": null
+    }
+  ]
+}

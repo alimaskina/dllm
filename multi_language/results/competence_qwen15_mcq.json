@@ -1,0 +1,2190 @@
+{
+  "summary": {
+    "en": {
+      "acc": 0.28,
+      "n": 50
+    },
+    "ru": {
+      "acc": 0.3,
+      "n": 50
+    },
+    "de": {
+      "acc": 0.32,
+      "n": 50
+    },
+    "tr": {
+      "acc": 0.28,
+      "n": 50
+    },
+    "fi": {
+      "acc": 0.36,
+      "n": 50
+    },
+    "zh": {
+      "acc": 0.32,
+      "n": 50
+    },
+    "ko": {
+      "acc": 0.32,
+      "n": 50
+    }
+  },
+  "results": [
+    {
+      "lang": "en",
+      "model": "qwen15",
+      "acc": 0.28,
+      "n": 50,
+      "details": [
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "B",
+          "ok": true,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "D",
+          "gold": "A",
+          "ok": false,
+          "raw": " D\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "D",
+          "gold": "A",
+          "ok": false,
+          "raw": " D\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "D",
+          "gold": "B",
+          "ok": false,
+          "raw": " D\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "B",
+          "ok": true,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "C",
+          "ok": true,
+          "raw": " C\n\nThe main"
+        }
+      ]
+    },
+    {
+      "lang": "ru",
+      "model": "qwen15",
+      "acc": 0.3,
+      "n": 50,
+      "details": [
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "D",
+          "gold": "A",
+          "ok": false,
+          "raw": " D\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "D",
+          "gold": "D",
+          "ok": true,
+          "raw": " D\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "D",
+          "gold": "B",
+          "ok": false,
+          "raw": " D\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "B",
+          "ok": true,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "model": "qwen15",
+      "acc": 0.32,
+      "n": 50,
+      "details": [
+        {
+          "pred": "D",
+          "gold": "B",
+          "ok": false,
+          "raw": " D\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "B",
+          "ok": true,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "D",
+          "gold": "C",
+          "ok": false,
+          "raw": " D\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "D",
+          "gold": "D",
+          "ok": true,
+          "raw": " D\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "D",
+          "gold": "A",
+          "ok": false,
+          "raw": " D\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "D",
+          "gold": "B",
+          "ok": false,
+          "raw": " D\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "C",
+          "ok": true,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "C",
+          "ok": true,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        }
+      ]
+    },
+    {
+      "lang": "tr",
+      "model": "qwen15",
+      "acc": 0.28,
+      "n": 50,
+      "details": [
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "D",
+          "gold": "B",
+          "ok": false,
+          "raw": " D\n\nWhich of"
+        },
+        {
+          "pred": "D",
+          "gold": "B",
+          "ok": false,
+          "raw": " D\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nWhich of"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nWhich of"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nWhich of"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "D",
+          "gold": "B",
+          "ok": false,
+          "raw": " D\n\nWhich of"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "C",
+          "ok": true,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "B",
+          "ok": true,
+          "raw": " B\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "D",
+          "gold": "C",
+          "ok": false,
+          "raw": " D\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        }
+      ]
+    },
+    {
+      "lang": "fi",
+      "model": "qwen15",
+      "acc": 0.36,
+      "n": 50,
+      "details": [
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "D",
+          "gold": "A",
+          "ok": false,
+          "raw": " D\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "D",
+          "gold": "D",
+          "ok": true,
+          "raw": " D\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "D",
+          "gold": "A",
+          "ok": false,
+          "raw": " D\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "D",
+          "gold": "C",
+          "ok": false,
+          "raw": " D\n\nThe following"
+        },
+        {
+          "pred": "D",
+          "gold": "D",
+          "ok": true,
+          "raw": " D\n\nWhich of"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nWhich of"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "C",
+          "ok": true,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "C",
+          "ok": true,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "C",
+          "ok": true,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "model": "qwen15",
+      "acc": 0.32,
+      "n": 50,
+      "details": [
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "D",
+          "gold": "B",
+          "ok": false,
+          "raw": " D\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "D",
+          "gold": "A",
+          "ok": false,
+          "raw": " D\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "B",
+          "ok": true,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "C",
+          "gold": "C",
+          "ok": true,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "C",
+          "ok": true,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "C",
+          "ok": true,
+          "raw": " C\n\nThe main"
+        }
+      ]
+    },
+    {
+      "lang": "ko",
+      "model": "qwen15",
+      "acc": 0.32,
+      "n": 50,
+      "details": [
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "B",
+          "ok": true,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "D",
+          "gold": "D",
+          "ok": true,
+          "raw": " D\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "A",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "C",
+          "ok": true,
+          "raw": " C\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "D",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "D",
+          "ok": false,
+          "raw": " C\n\nWhich of"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "B",
+          "gold": "C",
+          "ok": false,
+          "raw": " B\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "A",
+          "ok": false,
+          "raw": " B\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "C",
+          "gold": "B",
+          "ok": false,
+          "raw": " C\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "B",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "D",
+          "gold": "C",
+          "ok": false,
+          "raw": " D\n\nThe following"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "B",
+          "gold": "D",
+          "ok": false,
+          "raw": " B\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "A",
+          "ok": true,
+          "raw": " A\n\nWhich of"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe main"
+        },
+        {
+          "pred": "A",
+          "gold": "C",
+          "ok": false,
+          "raw": " A\n\nThe following"
+        }
+      ]
+    }
+  ]
+}

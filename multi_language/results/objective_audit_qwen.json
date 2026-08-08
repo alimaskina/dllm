@@ -1,0 +1,422 @@
+[
+  {
+    "lang": "en",
+    "tokenizer": "qwen",
+    "t": 0.1,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.06795399577606989,
+    "p_any_sibling_visible": 0.9320460042239301,
+    "p_whole_word_unresolved": 0.06795399577606989,
+    "expected_k": 1.5849180567215388
+  },
+  {
+    "lang": "en",
+    "tokenizer": "qwen",
+    "t": 0.2,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.14093521282507798,
+    "p_any_sibling_visible": 0.859064787174922,
+    "p_whole_word_unresolved": 0.14093521282507798,
+    "expected_k": 1.5849180567215388
+  },
+  {
+    "lang": "en",
+    "tokenizer": "qwen",
+    "t": 0.3,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.21948103851830916,
+    "p_any_sibling_visible": 0.7805189614816909,
+    "p_whole_word_unresolved": 0.21948103851830916,
+    "expected_k": 1.5849180567215388
+  },
+  {
+    "lang": "en",
+    "tokenizer": "qwen",
+    "t": 0.5,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.3958568028293298,
+    "p_any_sibling_visible": 0.6041431971706702,
+    "p_whole_word_unresolved": 0.3958568028293298,
+    "expected_k": 1.5849180567215388
+  },
+  {
+    "lang": "en",
+    "tokenizer": "qwen",
+    "t": 0.7,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.6035635273403327,
+    "p_any_sibling_visible": 0.3964364726596673,
+    "p_whole_word_unresolved": 0.6035635273403327,
+    "expected_k": 1.5849180567215388
+  },
+  {
+    "lang": "en",
+    "tokenizer": "qwen",
+    "t": 0.9,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.8529321982657772,
+    "p_any_sibling_visible": 0.14706780173422285,
+    "p_whole_word_unresolved": 0.8529321982657772,
+    "expected_k": 1.5849180567215388
+  },
+  {
+    "lang": "de",
+    "tokenizer": "qwen",
+    "t": 0.1,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.038320818828549014,
+    "p_any_sibling_visible": 0.961679181171451,
+    "p_whole_word_unresolved": 0.038320818828549014,
+    "expected_k": 2.4028523562008677
+  },
+  {
+    "lang": "de",
+    "tokenizer": "qwen",
+    "t": 0.2,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.08362050437988088,
+    "p_any_sibling_visible": 0.9163794956201191,
+    "p_whole_word_unresolved": 0.08362050437988088,
+    "expected_k": 2.4028523562008677
+  },
+  {
+    "lang": "de",
+    "tokenizer": "qwen",
+    "t": 0.3,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.13744052834906553,
+    "p_any_sibling_visible": 0.8625594716509345,
+    "p_whole_word_unresolved": 0.13744052834906553,
+    "expected_k": 2.4028523562008677
+  },
+  {
+    "lang": "de",
+    "tokenizer": "qwen",
+    "t": 0.5,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.2786947660208642,
+    "p_any_sibling_visible": 0.7213052339791358,
+    "p_whole_word_unresolved": 0.2786947660208642,
+    "expected_k": 2.4028523562008677
+  },
+  {
+    "lang": "de",
+    "tokenizer": "qwen",
+    "t": 0.7,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.4837642958871742,
+    "p_any_sibling_visible": 0.5162357041128258,
+    "p_whole_word_unresolved": 0.4837642958871742,
+    "expected_k": 2.4028523562008677
+  },
+  {
+    "lang": "de",
+    "tokenizer": "qwen",
+    "t": 0.9,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.7889437277764717,
+    "p_any_sibling_visible": 0.2110562722235283,
+    "p_whole_word_unresolved": 0.7889437277764717,
+    "expected_k": 2.4028523562008677
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "qwen",
+    "t": 0.1,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.024554814142866924,
+    "p_any_sibling_visible": 0.975445185857133,
+    "p_whole_word_unresolved": 0.024554814142866924,
+    "expected_k": 2.9691136027078486
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "qwen",
+    "t": 0.2,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.05491709398483092,
+    "p_any_sibling_visible": 0.9450829060151691,
+    "p_whole_word_unresolved": 0.05491709398483092,
+    "expected_k": 2.9691136027078486
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "qwen",
+    "t": 0.3,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.0933965689017784,
+    "p_any_sibling_visible": 0.9066034310982216,
+    "p_whole_word_unresolved": 0.0933965689017784,
+    "expected_k": 2.9691136027078486
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "qwen",
+    "t": 0.5,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.20765004385847546,
+    "p_any_sibling_visible": 0.7923499561415246,
+    "p_whole_word_unresolved": 0.20765004385847546,
+    "expected_k": 2.9691136027078486
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "qwen",
+    "t": 0.7,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.40375723016355036,
+    "p_any_sibling_visible": 0.5962427698364496,
+    "p_whole_word_unresolved": 0.40375723016355036,
+    "expected_k": 2.9691136027078486
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "qwen",
+    "t": 0.9,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.7435471826252178,
+    "p_any_sibling_visible": 0.2564528173747822,
+    "p_whole_word_unresolved": 0.7435471826252178,
+    "expected_k": 2.9691136027078486
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "qwen",
+    "t": 0.1,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.01781753486499495,
+    "p_any_sibling_visible": 0.9821824651350051,
+    "p_whole_word_unresolved": 0.01781753486499495,
+    "expected_k": 2.87590704509966
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "qwen",
+    "t": 0.2,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.04352372656239564,
+    "p_any_sibling_visible": 0.9564762734376043,
+    "p_whole_word_unresolved": 0.04352372656239564,
+    "expected_k": 2.87590704509966
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "qwen",
+    "t": 0.3,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.0794761309539902,
+    "p_any_sibling_visible": 0.9205238690460098,
+    "p_whole_word_unresolved": 0.0794761309539902,
+    "expected_k": 2.87590704509966
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "qwen",
+    "t": 0.5,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.19482309820238766,
+    "p_any_sibling_visible": 0.8051769017976124,
+    "p_whole_word_unresolved": 0.19482309820238766,
+    "expected_k": 2.87590704509966
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "qwen",
+    "t": 0.7,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.3984948704748727,
+    "p_any_sibling_visible": 0.6015051295251272,
+    "p_whole_word_unresolved": 0.3984948704748727,
+    "expected_k": 2.87590704509966
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "qwen",
+    "t": 0.9,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.7460897526602551,
+    "p_any_sibling_visible": 0.2539102473397449,
+    "p_whole_word_unresolved": 0.7460897526602551,
+    "expected_k": 2.87590704509966
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "qwen",
+    "t": 0.1,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.01540750082491469,
+    "p_any_sibling_visible": 0.9845924991750853,
+    "p_whole_word_unresolved": 0.01540750082491469,
+    "expected_k": 3.25288216798922
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "qwen",
+    "t": 0.2,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.037377419237570736,
+    "p_any_sibling_visible": 0.9626225807624292,
+    "p_whole_word_unresolved": 0.037377419237570736,
+    "expected_k": 3.25288216798922
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "qwen",
+    "t": 0.3,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.06829841357849045,
+    "p_any_sibling_visible": 0.9317015864215096,
+    "p_whole_word_unresolved": 0.06829841357849045,
+    "expected_k": 3.25288216798922
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "qwen",
+    "t": 0.5,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.17079938016692434,
+    "p_any_sibling_visible": 0.8292006198330757,
+    "p_whole_word_unresolved": 0.17079938016692434,
+    "expected_k": 3.25288216798922
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "qwen",
+    "t": 0.7,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.36351288648521335,
+    "p_any_sibling_visible": 0.6364871135147867,
+    "p_whole_word_unresolved": 0.36351288648521335,
+    "expected_k": 3.25288216798922
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "qwen",
+    "t": 0.9,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.720320317395683,
+    "p_any_sibling_visible": 0.27967968260431697,
+    "p_whole_word_unresolved": 0.720320317395683,
+    "expected_k": 3.25288216798922
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "qwen",
+    "t": 0.1,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.0999753150380179,
+    "p_any_sibling_visible": 0.9000246849619821,
+    "p_whole_word_unresolved": 0.0999753150380179,
+    "expected_k": 1.0002742773553568
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "qwen",
+    "t": 0.2,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.19995611562314292,
+    "p_any_sibling_visible": 0.8000438843768571,
+    "p_whole_word_unresolved": 0.19995611562314292,
+    "expected_k": 1.0002742773553568
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "qwen",
+    "t": 0.3,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.29994240175537507,
+    "p_any_sibling_visible": 0.7000575982446249,
+    "p_whole_word_unresolved": 0.29994240175537507,
+    "expected_k": 1.0002742773553568
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "qwen",
+    "t": 0.5,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.4999314306611608,
+    "p_any_sibling_visible": 0.5000685693388391,
+    "p_whole_word_unresolved": 0.4999314306611608,
+    "expected_k": 1.0002742773553568
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "qwen",
+    "t": 0.7,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.699942401755375,
+    "p_any_sibling_visible": 0.30005759824462497,
+    "p_whole_word_unresolved": 0.699942401755375,
+    "expected_k": 1.0002742773553568
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "qwen",
+    "t": 0.9,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.8999753150380179,
+    "p_any_sibling_visible": 0.10002468496198214,
+    "p_whole_word_unresolved": 0.8999753150380179,
+    "expected_k": 1.0002742773553568
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "qwen",
+    "t": 0.1,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.09900520110327111,
+    "p_any_sibling_visible": 0.9009947988967288,
+    "p_whole_word_unresolved": 0.09900520110327111,
+    "expected_k": 1.0153799984995124
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "qwen",
+    "t": 0.2,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.1981821317081588,
+    "p_any_sibling_visible": 0.8018178682918412,
+    "p_whole_word_unresolved": 0.1981821317081588,
+    "expected_k": 1.0153799984995124
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "qwen",
+    "t": 0.3,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.297544285573728,
+    "p_any_sibling_visible": 0.702455714426272,
+    "p_whole_word_unresolved": 0.297544285573728,
+    "expected_k": 1.0153799984995124
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "qwen",
+    "t": 0.5,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.49688847544885684,
+    "p_any_sibling_visible": 0.5031115245511432,
+    "p_whole_word_unresolved": 0.49688847544885684,
+    "expected_k": 1.0153799984995124
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "qwen",
+    "t": 0.7,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.6971936545091229,
+    "p_any_sibling_visible": 0.30280634549087715,
+    "p_whole_word_unresolved": 0.6971936545091229,
+    "expected_k": 1.0153799984995124
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "qwen",
+    "t": 0.9,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.8986883040076331,
+    "p_any_sibling_visible": 0.10131169599236689,
+    "p_whole_word_unresolved": 0.8986883040076331,
+    "expected_k": 1.0153799984995124
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "dataset": "wikitext-103-raw-v1",
+  "split": "train",
+  "n": 512,
+  "prompt_tokens": 48,
+  "quant": "fp16",
+  "gen_length": 64,
+  "steps": 64,
+  "checkpoint_dir": "checkpoints/results_wikitext_fp16_g64_train_seed4043_n512",
+  "elapsed_sec": 619.1,
+  "avg_chars": 223.6
+}

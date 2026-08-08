@@ -1,0 +1,17 @@
+Skipping import of cpp extensions due to incompatible torch version. Please upgrade to torch >= 2.11.0 (found 2.10.0+cu128).
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Device : cuda
+FP     : GSAI-ML/LLaDA-8B-Instruct [fp16]
+Q      : GSAI-ML/LLaDA-8B-Instruct [int4]
+Samples: 30 × 3 = 90 states
+
+Loading FP model...
+Traceback (most recent call last):
+  File "/home/alimaskina/dllm/quant_unmask/exp1_fidelity.py", line 480, in <module>
+    main()
+    ~~~~^^
+  File "/home/alimaskina/dllm/quant_unmask/exp1_fidelity.py", line 397, in main
+    fp_model = load_model(args.model, args.fp_quant, device)
+  File "/home/alimaskina/dllm/quant_unmask/exp1_fidelity.py", line 109, in load_model
+    raise RuntimeError(f"Could not load {model_name} with any Auto class")
+RuntimeError: Could not load GSAI-ML/LLaDA-8B-Instruct with any Auto class

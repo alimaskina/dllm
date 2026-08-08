@@ -1,0 +1,422 @@
+[
+  {
+    "lang": "en",
+    "tokenizer": "llada",
+    "t": 0.1,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.06788095196072584,
+    "p_any_sibling_visible": 0.9321190480392741,
+    "p_whole_word_unresolved": 0.06788095196072584,
+    "expected_k": 1.5868890754462168
+  },
+  {
+    "lang": "en",
+    "tokenizer": "llada",
+    "t": 0.2,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.14082066403465623,
+    "p_any_sibling_visible": 0.8591793359653438,
+    "p_whole_word_unresolved": 0.14082066403465623,
+    "expected_k": 1.5868890754462168
+  },
+  {
+    "lang": "en",
+    "tokenizer": "llada",
+    "t": 0.3,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.2193486273513737,
+    "p_any_sibling_visible": 0.7806513726486263,
+    "p_whole_word_unresolved": 0.2193486273513737,
+    "expected_k": 1.5868890754462168
+  },
+  {
+    "lang": "en",
+    "tokenizer": "llada",
+    "t": 0.5,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.3957272935253713,
+    "p_any_sibling_visible": 0.6042727064746287,
+    "p_whole_word_unresolved": 0.3957272935253713,
+    "expected_k": 1.5868890754462168
+  },
+  {
+    "lang": "en",
+    "tokenizer": "llada",
+    "t": 0.7,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.603450270213829,
+    "p_any_sibling_visible": 0.396549729786171,
+    "p_whole_word_unresolved": 0.603450270213829,
+    "expected_k": 1.5868890754462168
+  },
+  {
+    "lang": "en",
+    "tokenizer": "llada",
+    "t": 0.9,
+    "n_words": 27397,
+    "p_all_siblings_masked": 0.8528619391191204,
+    "p_any_sibling_visible": 0.14713806088087955,
+    "p_whole_word_unresolved": 0.8528619391191204,
+    "expected_k": 1.5868890754462168
+  },
+  {
+    "lang": "de",
+    "tokenizer": "llada",
+    "t": 0.1,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.0350054274089623,
+    "p_any_sibling_visible": 0.9649945725910377,
+    "p_whole_word_unresolved": 0.0350054274089623,
+    "expected_k": 2.591219554104558
+  },
+  {
+    "lang": "de",
+    "tokenizer": "llada",
+    "t": 0.2,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.07683018812157054,
+    "p_any_sibling_visible": 0.9231698118784295,
+    "p_whole_word_unresolved": 0.07683018812157054,
+    "expected_k": 2.591219554104558
+  },
+  {
+    "lang": "de",
+    "tokenizer": "llada",
+    "t": 0.3,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.1270526814273688,
+    "p_any_sibling_visible": 0.8729473185726312,
+    "p_whole_word_unresolved": 0.1270526814273688,
+    "expected_k": 2.591219554104558
+  },
+  {
+    "lang": "de",
+    "tokenizer": "llada",
+    "t": 0.5,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.26138286283560586,
+    "p_any_sibling_visible": 0.7386171371643941,
+    "p_whole_word_unresolved": 0.26138286283560586,
+    "expected_k": 2.591219554104558
+  },
+  {
+    "lang": "de",
+    "tokenizer": "llada",
+    "t": 0.7,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.46270836055447173,
+    "p_any_sibling_visible": 0.5372916394455283,
+    "p_whole_word_unresolved": 0.46270836055447173,
+    "expected_k": 2.591219554104558
+  },
+  {
+    "lang": "de",
+    "tokenizer": "llada",
+    "t": 0.9,
+    "n_words": 23279,
+    "p_all_siblings_masked": 0.7754527385738466,
+    "p_any_sibling_visible": 0.22454726142615344,
+    "p_whole_word_unresolved": 0.7754527385738466,
+    "expected_k": 2.591219554104558
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "llada",
+    "t": 0.1,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.017611681094662095,
+    "p_any_sibling_visible": 0.982388318905338,
+    "p_whole_word_unresolved": 0.017611681094662095,
+    "expected_k": 3.9446160355405118
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "llada",
+    "t": 0.2,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.039033884294471015,
+    "p_any_sibling_visible": 0.960966115705529,
+    "p_whole_word_unresolved": 0.039033884294471015,
+    "expected_k": 3.9446160355405118
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "llada",
+    "t": 0.3,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.06611839188442334,
+    "p_any_sibling_visible": 0.9338816081155766,
+    "p_whole_word_unresolved": 0.06611839188442334,
+    "expected_k": 3.9446160355405118
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "llada",
+    "t": 0.5,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.1504750095494358,
+    "p_any_sibling_visible": 0.8495249904505642,
+    "p_whole_word_unresolved": 0.1504750095494358,
+    "expected_k": 3.9446160355405118
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "llada",
+    "t": 0.7,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.31805700864559605,
+    "p_any_sibling_visible": 0.681942991354404,
+    "p_whole_word_unresolved": 0.31805700864559605,
+    "expected_k": 3.9446160355405118
+  },
+  {
+    "lang": "ru",
+    "tokenizer": "llada",
+    "t": 0.9,
+    "n_words": 23635,
+    "p_all_siblings_masked": 0.6779553942197968,
+    "p_any_sibling_visible": 0.3220446057802032,
+    "p_whole_word_unresolved": 0.6779553942197968,
+    "expected_k": 3.9446160355405118
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "llada",
+    "t": 0.1,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.01671232482702223,
+    "p_any_sibling_visible": 0.9832876751729778,
+    "p_whole_word_unresolved": 0.01671232482702223,
+    "expected_k": 3.2817121337374853
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "llada",
+    "t": 0.2,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.0399324227612029,
+    "p_any_sibling_visible": 0.9600675772387971,
+    "p_whole_word_unresolved": 0.0399324227612029,
+    "expected_k": 3.2817121337374853
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "llada",
+    "t": 0.3,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.07189947549866868,
+    "p_any_sibling_visible": 0.9281005245013313,
+    "p_whole_word_unresolved": 0.07189947549866868,
+    "expected_k": 3.2817121337374853
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "llada",
+    "t": 0.5,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.17507206047929175,
+    "p_any_sibling_visible": 0.8249279395207083,
+    "p_whole_word_unresolved": 0.17507206047929175,
+    "expected_k": 3.2817121337374853
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "llada",
+    "t": 0.7,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.3655981539810814,
+    "p_any_sibling_visible": 0.6344018460189186,
+    "p_whole_word_unresolved": 0.3655981539810814,
+    "expected_k": 3.2817121337374853
+  },
+  {
+    "lang": "tr",
+    "tokenizer": "llada",
+    "t": 0.9,
+    "n_words": 10887,
+    "p_all_siblings_masked": 0.7193397319279492,
+    "p_any_sibling_visible": 0.2806602680720508,
+    "p_whole_word_unresolved": 0.7193397319279492,
+    "expected_k": 3.2817121337374853
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "llada",
+    "t": 0.1,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.015204282776204623,
+    "p_any_sibling_visible": 0.9847957172237953,
+    "p_whole_word_unresolved": 0.015204282776204623,
+    "expected_k": 3.2843988621051055
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "llada",
+    "t": 0.2,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.036898435944581184,
+    "p_any_sibling_visible": 0.9631015640554188,
+    "p_whole_word_unresolved": 0.036898435944581184,
+    "expected_k": 3.2843988621051055
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "llada",
+    "t": 0.3,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.06745844501977523,
+    "p_any_sibling_visible": 0.9325415549802247,
+    "p_whole_word_unresolved": 0.06745844501977523,
+    "expected_k": 3.2843988621051055
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "llada",
+    "t": 0.5,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.1689985189310786,
+    "p_any_sibling_visible": 0.8310014810689215,
+    "p_whole_word_unresolved": 0.1689985189310786,
+    "expected_k": 3.2843988621051055
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "llada",
+    "t": 0.7,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.3607919482003765,
+    "p_any_sibling_visible": 0.6392080517996235,
+    "p_whole_word_unresolved": 0.3607919482003765,
+    "expected_k": 3.2843988621051055
+  },
+  {
+    "lang": "fi",
+    "tokenizer": "llada",
+    "t": 0.9,
+    "n_words": 13358,
+    "p_all_siblings_masked": 0.7182191750957891,
+    "p_any_sibling_visible": 0.28178082490421086,
+    "p_whole_word_unresolved": 0.7182191750957891,
+    "expected_k": 3.2843988621051055
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "llada",
+    "t": 0.1,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.09978167522513601,
+    "p_any_sibling_visible": 0.900218324774864,
+    "p_whole_word_unresolved": 0.09978167522513601,
+    "expected_k": 1.002453258567358
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "llada",
+    "t": 0.2,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.19961137946272114,
+    "p_any_sibling_visible": 0.8003886205372789,
+    "p_whole_word_unresolved": 0.19961137946272114,
+    "expected_k": 1.002453258567358
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "llada",
+    "t": 0.3,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.29948929556432563,
+    "p_any_sibling_visible": 0.7005107044356744,
+    "p_whole_word_unresolved": 0.29948929556432563,
+    "expected_k": 1.002453258567358
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "llada",
+    "t": 0.5,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.4993904947658738,
+    "p_any_sibling_visible": 0.5006095052341262,
+    "p_whole_word_unresolved": 0.4993904947658738,
+    "expected_k": 1.002453258567358
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "llada",
+    "t": 0.7,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.6994867356423423,
+    "p_any_sibling_visible": 0.3005132643576577,
+    "p_whole_word_unresolved": 0.6994867356423423,
+    "expected_k": 1.002453258567358
+  },
+  {
+    "lang": "zh",
+    "tokenizer": "llada",
+    "t": 0.9,
+    "n_words": 65627,
+    "p_all_siblings_masked": 0.8997794810062931,
+    "p_any_sibling_visible": 0.10022051899370688,
+    "p_whole_word_unresolved": 0.8997794810062931,
+    "expected_k": 1.002453258567358
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "llada",
+    "t": 0.1,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.05145253027275115,
+    "p_any_sibling_visible": 0.9485474697272489,
+    "p_whole_word_unresolved": 0.05145253027275115,
+    "expected_k": 1.6843349088453747
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "llada",
+    "t": 0.2,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.11114658755618649,
+    "p_any_sibling_visible": 0.8888534124438136,
+    "p_whole_word_unresolved": 0.11114658755618649,
+    "expected_k": 1.6843349088453747
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "llada",
+    "t": 0.3,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.18003208018052488,
+    "p_any_sibling_visible": 0.8199679198194751,
+    "p_whole_word_unresolved": 0.18003208018052488,
+    "expected_k": 1.6843349088453747
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "llada",
+    "t": 0.5,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.34918714762717806,
+    "p_any_sibling_visible": 0.6508128523728219,
+    "p_whole_word_unresolved": 0.34918714762717806,
+    "expected_k": 1.6843349088453747
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "llada",
+    "t": 0.7,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.5665655652531337,
+    "p_any_sibling_visible": 0.43343443474686627,
+    "p_whole_word_unresolved": 0.5665655652531337,
+    "expected_k": 1.6843349088453747
+  },
+  {
+    "lang": "ko",
+    "tokenizer": "llada",
+    "t": 0.9,
+    "n_words": 26658,
+    "p_all_siblings_masked": 0.8398915487389089,
+    "p_any_sibling_visible": 0.16010845126109108,
+    "p_whole_word_unresolved": 0.8398915487389089,
+    "expected_k": 1.6843349088453747
+  }
+]

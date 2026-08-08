@@ -1,0 +1,29 @@
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]
+Loading checkpoint shards:  17%|█▋        | 1/6 [00:01<00:08,  1.62s/it]
+Loading checkpoint shards:  33%|███▎      | 2/6 [00:02<00:05,  1.43s/it]
+Loading checkpoint shards:  50%|█████     | 3/6 [00:04<00:04,  1.62s/it]
+Loading checkpoint shards:  67%|██████▋   | 4/6 [00:06<00:03,  1.68s/it]
+Loading checkpoint shards:  83%|████████▎ | 5/6 [00:08<00:01,  1.60s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:09<00:00,  1.44s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:09<00:00,  1.52s/it]
+
+traces=32 layers=[16, 31]
+  4/32 traces → 512 events
+  8/32 traces → 1024 events
+  12/32 traces → 1536 events
+  16/32 traces → 2048 events
+  20/32 traces → 2560 events
+  24/32 traces → 3072 events
+  28/32 traces → 3584 events
+  32/32 traces → 4096 events
+Wrote attention_late_correlation.md
+

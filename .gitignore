@@ -1,0 +1,9 @@
+# Large model weights (hosted locally, not on GitHub)
+quant_dllm_upstream/output/
+
+# Python caches
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/

@@ -1,0 +1,12 @@
+{
+  "dataset": "wikitext-103-raw-v1",
+  "split": "validation",
+  "n": 256,
+  "prompt_tokens": 48,
+  "quant": "fp16",
+  "gen_length": 64,
+  "steps": 64,
+  "checkpoint_dir": "checkpoints/results_wikitext_fp16_g64_n256",
+  "elapsed_sec": 515.4,
+  "avg_chars": 227.9
+}

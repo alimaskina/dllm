@@ -1,0 +1,13 @@
+{
+  "model_path": "Efficient-Large-Model/Fast_dLLM_v2_7B",
+  "task": "gsm8k",
+  "max_new_tokens": 256,
+  "bd_size": 32,
+  "small_block_size": 8,
+  "threshold": 1.0,
+  "attn_layers": "all",
+  "seed": 1234,
+  "n_samples": 2,
+  "experiment": "kv_proxy_one_shot",
+  "elapsed_sec": 25.020020723342896
+}

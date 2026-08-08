@@ -1,0 +1,26 @@
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]
+Loading checkpoint shards:  17%|█▋        | 1/6 [00:01<00:07,  1.45s/it]
+Loading checkpoint shards:  33%|███▎      | 2/6 [00:02<00:04,  1.20s/it]
+Loading checkpoint shards:  50%|█████     | 3/6 [00:04<00:04,  1.40s/it]
+Loading checkpoint shards:  67%|██████▋   | 4/6 [00:05<00:02,  1.47s/it]
+Loading checkpoint shards:  83%|████████▎ | 5/6 [00:06<00:01,  1.36s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:07<00:00,  1.20s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:07<00:00,  1.29s/it]
+
+Dream-protocol sweep on tasks/sudoku4/data/sudoku_4x4_10.jsonl limit=30
+valid=26.7% exact=26.7% remask=entropy steps=24 max_new=24 block=8
+valid=43.3% exact=43.3% remask=entropy steps=24 max_new=24 block=24
+valid=46.7% exact=46.7% remask=low_confidence steps=24 max_new=24 block=24
+valid=46.7% exact=46.7% remask=topk_margin steps=24 max_new=24 block=24
+valid=23.3% exact=23.3% remask=entropy steps=24 max_new=48 block=8
+valid=26.7% exact=26.7% remask=entropy steps=32 max_new=32 block=8
+

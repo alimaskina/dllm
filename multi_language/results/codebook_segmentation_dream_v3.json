@@ -1,0 +1,44 @@
+{
+  "dlm": "dream",
+  "ar": "qwen",
+  "fewshot": 2,
+  "method": "OPUS word codebook; DLM=denoise, AR=greedy L2R, AR_tf=teacher-forced upper bound",
+  "results": [
+    {
+      "k": 1,
+      "n_trials": 200,
+      "fewshot": 2,
+      "dlm_mean_tok_acc": 0.12544642857142857,
+      "ar_mean_tok_acc": 0.0,
+      "ar_teacher_mean_tok_acc": 0.0,
+      "dlm_minus_ar": 0.12544642857142857,
+      "ratio_ar_over_dlm": 0.0,
+      "dlm_oracle_mean_tok_acc": 0.043125,
+      "dlm_oracle_minus_free": -0.08232142857142857
+    },
+    {
+      "k": 2,
+      "n_trials": 200,
+      "fewshot": 2,
+      "dlm_mean_tok_acc": 0.094,
+      "ar_mean_tok_acc": 0.0075,
+      "ar_teacher_mean_tok_acc": 0.0275,
+      "dlm_minus_ar": 0.0865,
+      "ratio_ar_over_dlm": 0.07978723404255318,
+      "dlm_oracle_mean_tok_acc": 0.026545454545454546,
+      "dlm_oracle_minus_free": -0.06745454545454546
+    },
+    {
+      "k": 4,
+      "n_trials": 200,
+      "fewshot": 2,
+      "dlm_mean_tok_acc": 0.02911764705882353,
+      "ar_mean_tok_acc": 0.0075,
+      "ar_teacher_mean_tok_acc": 0.15625,
+      "dlm_minus_ar": 0.02161764705882353,
+      "ratio_ar_over_dlm": 0.25757575757575757,
+      "dlm_oracle_mean_tok_acc": 0.04108455882352941,
+      "dlm_oracle_minus_free": 0.011966911764705882
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "n_source_observer_pairs": 49,
+  "n_unique_source_blocks": 13,
+  "next_block_proxy": {
+    "n_pairs": 13,
+    "spearman_vs_oracle_mean": 1.0,
+    "overlap_10_mean": 1.0,
+    "overlap_20_mean": 1.0,
+    "overlap_30_mean": 1.0,
+    "recall_10_mean": 1.0,
+    "recall_20_mean": 1.0,
+    "recall_30_mean": 1.0
+  },
+  "by_distance": [
+    {
+      "distance": 1,
+      "n_pairs": 13,
+      "spearman_vs_oracle_mean": 1.0,
+      "overlap_10_mean": 1.0,
+      "overlap_20_mean": 1.0,
+      "overlap_30_mean": 1.0,
+      "recall_10_mean": 1.0,
+      "recall_20_mean": 1.0,
+      "recall_30_mean": 1.0
+    },
+    {
+      "distance": 2,
+      "n_pairs": 11,
+      "spearman_vs_oracle_mean": 1.0,
+      "overlap_10_mean": 1.0,
+      "overlap_20_mean": 1.0,
+      "overlap_30_mean": 1.0,
+      "recall_10_mean": 1.0,
+      "recall_20_mean": 1.0,
+      "recall_30_mean": 1.0
+    },
+    {
+      "distance": 3,
+      "n_pairs": 9,
+      "spearman_vs_oracle_mean": 1.0,
+      "overlap_10_mean": 1.0,
+      "overlap_20_mean": 1.0,
+      "overlap_30_mean": 1.0,
+      "recall_10_mean": 1.0,
+      "recall_20_mean": 1.0,
+      "recall_30_mean": 1.0
+    },
+    {
+      "distance": 4,
+      "n_pairs": 7,
+      "spearman_vs_oracle_mean": 1.0,
+      "overlap_10_mean": 1.0,
+      "overlap_20_mean": 1.0,
+      "overlap_30_mean": 1.0,
+      "recall_10_mean": 1.0,
+      "recall_20_mean": 1.0,
+      "recall_30_mean": 1.0
+    },
+    {
+      "distance": 5,
+      "n_pairs": 5,
+      "spearman_vs_oracle_mean": 1.0,
+      "overlap_10_mean": 1.0,
+      "overlap_20_mean": 1.0,
+      "overlap_30_mean": 1.0,
+      "recall_10_mean": 1.0,
+      "recall_20_mean": 1.0,
+      "recall_30_mean": 1.0
+    },
+    {
+      "distance": 6,
+      "n_pairs": 3,
+      "spearman_vs_oracle_mean": 1.0,
+      "overlap_10_mean": 1.0,
+      "overlap_20_mean": 1.0,
+      "overlap_30_mean": 1.0,
+      "recall_10_mean": 1.0,
+      "recall_20_mean": 1.0,
+      "recall_30_mean": 1.0
+    },
+    {
+      "distance": 7,
+      "n_pairs": 1,
+      "spearman_vs_oracle_mean": 1.0,
+      "overlap_10_mean": 1.0,
+      "overlap_20_mean": 1.0,
+      "overlap_30_mean": 1.0,
+      "recall_10_mean": 1.0,
+      "recall_20_mean": 1.0,
+      "recall_30_mean": 1.0
+    }
+  ]
+}

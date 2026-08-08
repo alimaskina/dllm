@@ -1,0 +1,31 @@
+{
+  "dlm": "dream",
+  "ar": "qwen",
+  "method": "Numeric codebook (strings with fixed k subtokens); prompt='Record the code:'",
+  "results": [
+    {
+      "k": 1,
+      "n_trials": 200,
+      "dlm_mean_tok_acc": 0.0,
+      "ar_mean_tok_acc": 0.0,
+      "dlm_minus_ar": 0.0,
+      "ratio_ar_over_dlm": null
+    },
+    {
+      "k": 2,
+      "n_trials": 200,
+      "dlm_mean_tok_acc": 0.0008333333333333333,
+      "ar_mean_tok_acc": 0.005,
+      "dlm_minus_ar": -0.004166666666666667,
+      "ratio_ar_over_dlm": 6.000000000000001
+    },
+    {
+      "k": 4,
+      "n_trials": 200,
+      "dlm_mean_tok_acc": 0.003125,
+      "ar_mean_tok_acc": 0.01375,
+      "dlm_minus_ar": -0.010624999999999999,
+      "ratio_ar_over_dlm": 4.3999999999999995
+    }
+  ]
+}

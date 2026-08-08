@@ -1,0 +1,179 @@
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+llada_dist (model_path=GSAI-ML/LLaDA-8B-Base,quant=int4,gen_length=24,steps=24,block_length=24,remasking=low_confidence,checkpoint_dir=checkpoints/results_sudoku_int4_4x4_2shot_n256_2gpu,gen_batch_size=1), gen_kwargs: (None), limit: 256.0, num_fewshot: None, batch_size: 1
+|    Tasks    |Version|Filter|n-shot|   Metric   |   |Value|   |Stderr|
+|-------------|------:|------|-----:|------------|---|----:|---|-----:|
+|sudoku4_2shot|      1|none  |     2|exact_match |↑  | 0.66|±  |0.0476|
+|             |       |none  |     2|valid_sudoku|↑  | 0.66|±  |0.0476|
+
+
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+2026-07-12:18:10:47,624 INFO     [lm_eval.__main__:307] Including path: /home/alimaskina/dllm/quant_where_to_unmask/tasks
+2026-07-12:18:10:48,016 INFO     [lm_eval.__main__:307] Including path: /home/alimaskina/dllm/quant_where_to_unmask/tasks
+2026-07-12:18:11:00,623 WARNING  [lm_eval.__main__:316]  --limit SHOULD ONLY BE USED FOR TESTING.REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-07-12:18:11:00,624 INFO     [lm_eval.__main__:379] Selected Tasks: ['sudoku4_2shot']
+2026-07-12:18:11:00,625 INFO     [lm_eval.evaluator:169] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-07-12:18:11:00,625 INFO     [lm_eval.evaluator:206] Initializing llada_dist model, with arguments: {'model_path': 'GSAI-ML/LLaDA-8B-Base', 'quant': 'int4', 'gen_length': 24, 'steps': 24, 'block_length': 24, 'remasking': 'low_confidence', 'checkpoint_dir': 'checkpoints/results_sudoku_int4_4x4_2shot_n256_2gpu', 'gen_batch_size': 1}
+2026-07-12:18:11:00,751 WARNING  [lm_eval.__main__:316]  --limit SHOULD ONLY BE USED FOR TESTING.REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-07-12:18:11:00,753 INFO     [lm_eval.__main__:379] Selected Tasks: ['sudoku4_2shot']
+2026-07-12:18:11:00,754 INFO     [lm_eval.evaluator:169] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-07-12:18:11:00,754 INFO     [lm_eval.evaluator:206] Initializing llada_dist model, with arguments: {'model_path': 'GSAI-ML/LLaDA-8B-Base', 'quant': 'int4', 'gen_length': 24, 'steps': 24, 'block_length': 24, 'remasking': 'low_confidence', 'checkpoint_dir': 'checkpoints/results_sudoku_int4_4x4_2shot_n256_2gpu', 'gen_batch_size': 1}
+2026-07-12:18:11:01,090 WARNING  [accelerate.utils.other:349] Detected kernel version 5.4.210, which is below the recommended minimum of 5.5.0; this can cause the process to hang. It is recommended to upgrade the kernel to the minimum version or higher.
+
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]
+Loading checkpoint shards:  17%|█▋        | 1/6 [00:01<00:09,  1.95s/it]
+Loading checkpoint shards:  17%|█▋        | 1/6 [00:02<00:11,  2.32s/it]
+Loading checkpoint shards:  33%|███▎      | 2/6 [00:04<00:09,  2.28s/it]
+Loading checkpoint shards:  33%|███▎      | 2/6 [00:05<00:10,  2.55s/it]
+Loading checkpoint shards:  50%|█████     | 3/6 [00:07<00:07,  2.43s/it]
+Loading checkpoint shards:  50%|█████     | 3/6 [00:08<00:08,  2.78s/it]
+Loading checkpoint shards:  67%|██████▋   | 4/6 [00:09<00:04,  2.48s/it]
+Loading checkpoint shards:  67%|██████▋   | 4/6 [00:11<00:05,  2.86s/it]
+Loading checkpoint shards:  83%|████████▎ | 5/6 [00:12<00:02,  2.52s/it]
+Loading checkpoint shards:  83%|████████▎ | 5/6 [00:13<00:02,  2.88s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:14<00:00,  2.32s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:14<00:00,  2.36s/it]
+2026-07-12:18:11:18,291 INFO     [lm_eval.api.task:420] Building contexts for sudoku4_2shot on rank 1...
+
+  0%|          | 0/50 [00:00<?, ?it/s]
+100%|██████████| 50/50 [00:00<00:00, 523.70it/s]
+
+Loading checkpoint shards: 100%|██████████| 6/6 [00:16<00:00,  2.63s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:16<00:00,  2.69s/it]
+2026-07-12:18:11:20,104 INFO     [lm_eval.api.task:420] Building contexts for sudoku4_2shot on rank 0...
+
+  0%|          | 0/50 [00:00<?, ?it/s]
+100%|██████████| 50/50 [00:00<00:00, 528.33it/s]
+2026-07-12:18:11:20,863 INFO     [lm_eval.evaluator:517] Running generate_until requests
+2026-07-12:18:11:20,863 INFO     [lm_eval.evaluator:517] Running generate_until requests
+Parameter 'function'=<function LLaDAEvalHarness.generate_until.<locals>._tokenize at 0x7f98f3f72b00> of the transform datasets.arrow_dataset.Dataset._map_single couldn't be hashed properly, a random hash was used instead. Make sure your transforms and parameters are serializable with pickle or dill for the dataset fingerprinting and caching to work. If you reuse this transform, the caching mechanism will consider it to be different from the previous calls and recompute everything. This warning is only shown once. Subsequent hashing failures won't be shown.
+2026-07-12:18:11:20,893 WARNING  [datasets.fingerprint:284] Parameter 'function'=<function LLaDAEvalHarness.generate_until.<locals>._tokenize at 0x7f98f3f72b00> of the transform datasets.arrow_dataset.Dataset._map_single couldn't be hashed properly, a random hash was used instead. Make sure your transforms and parameters are serializable with pickle or dill for the dataset fingerprinting and caching to work. If you reuse this transform, the caching mechanism will consider it to be different from the previous calls and recompute everything. This warning is only shown once. Subsequent hashing failures won't be shown.
+Parameter 'function'=<function LLaDAEvalHarness.generate_until.<locals>._tokenize at 0x7eff94ba6b00> of the transform datasets.arrow_dataset.Dataset._map_single couldn't be hashed properly, a random hash was used instead. Make sure your transforms and parameters are serializable with pickle or dill for the dataset fingerprinting and caching to work. If you reuse this transform, the caching mechanism will consider it to be different from the previous calls and recompute everything. This warning is only shown once. Subsequent hashing failures won't be shown.
+2026-07-12:18:11:20,894 WARNING  [datasets.fingerprint:284] Parameter 'function'=<function LLaDAEvalHarness.generate_until.<locals>._tokenize at 0x7eff94ba6b00> of the transform datasets.arrow_dataset.Dataset._map_single couldn't be hashed properly, a random hash was used instead. Make sure your transforms and parameters are serializable with pickle or dill for the dataset fingerprinting and caching to work. If you reuse this transform, the caching mechanism will consider it to be different from the previous calls and recompute everything. This warning is only shown once. Subsequent hashing failures won't be shown.
+
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]
+Map: 100%|██████████| 50/50 [00:00<00:00, 2129.63 examples/s]
+
+Map: 100%|██████████| 50/50 [00:00<00:00, 2158.45 examples/s]
+
+Generating (int4) rank=0:   0%|          | 0/50 [00:00<?, ?it/s]
+Generating (int4) rank=1:   0%|          | 0/50 [00:00<?, ?it/s]
+Generating (int4) rank=0:   2%|▏         | 1/50 [00:03<02:29,  3.06s/it]
+Generating (int4) rank=1:   2%|▏         | 1/50 [00:03<02:31,  3.10s/it]
+Generating (int4) rank=0:   4%|▍         | 2/50 [00:05<02:12,  2.76s/it]
+Generating (int4) rank=1:   4%|▍         | 2/50 [00:05<02:12,  2.77s/it]
+Generating (int4) rank=0:   6%|▌         | 3/50 [00:08<02:05,  2.66s/it]
+Generating (int4) rank=1:   6%|▌         | 3/50 [00:08<02:05,  2.67s/it]
+Generating (int4) rank=0:   8%|▊         | 4/50 [00:10<02:00,  2.62s/it]
+Generating (int4) rank=1:   8%|▊         | 4/50 [00:10<02:00,  2.62s/it]
+Generating (int4) rank=1:  10%|█         | 5/50 [00:13<01:56,  2.59s/it]
+Generating (int4) rank=0:  10%|█         | 5/50 [00:13<01:56,  2.60s/it]
+Generating (int4) rank=1:  12%|█▏        | 6/50 [00:15<01:52,  2.56s/it]
+Generating (int4) rank=0:  12%|█▏        | 6/50 [00:15<01:53,  2.58s/it]
+Generating (int4) rank=1:  14%|█▍        | 7/50 [00:18<01:49,  2.55s/it]
+Generating (int4) rank=0:  14%|█▍        | 7/50 [00:18<01:50,  2.57s/it]
+Generating (int4) rank=1:  16%|█▌        | 8/50 [00:20<01:46,  2.54s/it]
+Generating (int4) rank=0:  16%|█▌        | 8/50 [00:20<01:47,  2.56s/it]
+Generating (int4) rank=1:  18%|█▊        | 9/50 [00:23<01:43,  2.53s/it]
+Generating (int4) rank=0:  18%|█▊        | 9/50 [00:23<01:44,  2.56s/it]
+Generating (int4) rank=1:  20%|██        | 10/50 [00:25<01:41,  2.53s/it]
+Generating (int4) rank=0:  20%|██        | 10/50 [00:26<01:42,  2.56s/it]
+Generating (int4) rank=1:  22%|██▏       | 11/50 [00:28<01:38,  2.53s/it]
+Generating (int4) rank=0:  22%|██▏       | 11/50 [00:28<01:39,  2.55s/it]
+Generating (int4) rank=1:  24%|██▍       | 12/50 [00:30<01:35,  2.52s/it]
+Generating (int4) rank=0:  24%|██▍       | 12/50 [00:31<01:36,  2.55s/it]
+Generating (int4) rank=1:  26%|██▌       | 13/50 [00:33<01:33,  2.52s/it]
+Generating (int4) rank=0:  26%|██▌       | 13/50 [00:33<01:34,  2.55s/it]
+Generating (int4) rank=1:  28%|██▊       | 14/50 [00:35<01:30,  2.52s/it]
+Generating (int4) rank=0:  28%|██▊       | 14/50 [00:36<01:31,  2.55s/it]
+Generating (int4) rank=1:  30%|███       | 15/50 [00:38<01:28,  2.52s/it]
+Generating (int4) rank=0:  30%|███       | 15/50 [00:38<01:29,  2.54s/it]
+Generating (int4) rank=1:  32%|███▏      | 16/50 [00:40<01:25,  2.52s/it]
+Generating (int4) rank=0:  32%|███▏      | 16/50 [00:41<01:26,  2.54s/it]
+Generating (int4) rank=1:  34%|███▍      | 17/50 [00:43<01:22,  2.51s/it]
+Generating (int4) rank=0:  34%|███▍      | 17/50 [00:43<01:24,  2.55s/it]
+Generating (int4) rank=1:  36%|███▌      | 18/50 [00:45<01:20,  2.52s/it]
+Generating (int4) rank=0:  36%|███▌      | 18/50 [00:46<01:21,  2.55s/it]
+Generating (int4) rank=1:  38%|███▊      | 19/50 [00:48<01:18,  2.52s/it]
+Generating (int4) rank=0:  38%|███▊      | 19/50 [00:48<01:19,  2.55s/it]
+Generating (int4) rank=1:  40%|████      | 20/50 [00:51<01:15,  2.52s/it]
+Generating (int4) rank=0:  40%|████      | 20/50 [00:51<01:16,  2.54s/it]
+Generating (int4) rank=1:  42%|████▏     | 21/50 [00:53<01:12,  2.51s/it]
+Generating (int4) rank=0:  42%|████▏     | 21/50 [00:53<01:13,  2.54s/it]
+Generating (int4) rank=1:  44%|████▍     | 22/50 [00:56<01:10,  2.52s/it]
+Generating (int4) rank=0:  44%|████▍     | 22/50 [00:56<01:11,  2.56s/it]
+Generating (int4) rank=1:  46%|████▌     | 23/50 [00:58<01:08,  2.52s/it]
+Generating (int4) rank=0:  46%|████▌     | 23/50 [00:59<01:08,  2.55s/it]
+Generating (int4) rank=1:  48%|████▊     | 24/50 [01:01<01:05,  2.54s/it]
+Generating (int4) rank=0:  48%|████▊     | 24/50 [01:01<01:07,  2.62s/it]
+Generating (int4) rank=1:  50%|█████     | 25/50 [01:03<01:03,  2.53s/it]
+Generating (int4) rank=0:  50%|█████     | 25/50 [01:04<01:04,  2.59s/it]
+Generating (int4) rank=1:  52%|█████▏    | 26/50 [01:06<01:00,  2.53s/it]
+Generating (int4) rank=0:  52%|█████▏    | 26/50 [01:06<01:01,  2.57s/it]
+Generating (int4) rank=1:  54%|█████▍    | 27/50 [01:08<00:58,  2.52s/it]
+Generating (int4) rank=0:  54%|█████▍    | 27/50 [01:09<00:58,  2.56s/it]
+Generating (int4) rank=1:  56%|█████▌    | 28/50 [01:11<00:55,  2.52s/it]
+Generating (int4) rank=0:  56%|█████▌    | 28/50 [01:12<00:56,  2.55s/it]
+Generating (int4) rank=1:  58%|█████▊    | 29/50 [01:13<00:52,  2.52s/it]
+Generating (int4) rank=0:  58%|█████▊    | 29/50 [01:14<00:53,  2.54s/it]
+Generating (int4) rank=1:  60%|██████    | 30/50 [01:16<00:50,  2.51s/it]
+Generating (int4) rank=0:  60%|██████    | 30/50 [01:17<00:50,  2.53s/it]
+Generating (int4) rank=1:  62%|██████▏   | 31/50 [01:18<00:47,  2.51s/it]
+Generating (int4) rank=0:  62%|██████▏   | 31/50 [01:19<00:47,  2.52s/it]
+Generating (int4) rank=1:  64%|██████▍   | 32/50 [01:21<00:45,  2.51s/it]
+Generating (int4) rank=0:  64%|██████▍   | 32/50 [01:22<00:45,  2.52s/it]
+Generating (int4) rank=1:  66%|██████▌   | 33/50 [01:23<00:42,  2.51s/it]
+Generating (int4) rank=0:  66%|██████▌   | 33/50 [01:24<00:42,  2.52s/it]
+Generating (int4) rank=1:  68%|██████▊   | 34/50 [01:26<00:40,  2.51s/it]
+Generating (int4) rank=0:  68%|██████▊   | 34/50 [01:27<00:40,  2.51s/it]
+Generating (int4) rank=1:  70%|███████   | 35/50 [01:28<00:37,  2.51s/it]
+Generating (int4) rank=0:  70%|███████   | 35/50 [01:29<00:37,  2.51s/it]
+Generating (int4) rank=1:  72%|███████▏  | 36/50 [01:31<00:35,  2.51s/it]
+Generating (int4) rank=0:  72%|███████▏  | 36/50 [01:32<00:35,  2.51s/it]
+Generating (int4) rank=1:  74%|███████▍  | 37/50 [01:33<00:32,  2.51s/it]
+Generating (int4) rank=0:  74%|███████▍  | 37/50 [01:34<00:32,  2.52s/it]
+Generating (int4) rank=1:  76%|███████▌  | 38/50 [01:36<00:30,  2.51s/it]
+Generating (int4) rank=0:  76%|███████▌  | 38/50 [01:37<00:30,  2.53s/it]
+Generating (int4) rank=1:  78%|███████▊  | 39/50 [01:38<00:27,  2.51s/it]
+Generating (int4) rank=0:  78%|███████▊  | 39/50 [01:39<00:27,  2.52s/it]
+Generating (int4) rank=1:  80%|████████  | 40/50 [01:41<00:25,  2.51s/it]
+Generating (int4) rank=0:  80%|████████  | 40/50 [01:42<00:25,  2.52s/it]
+Generating (int4) rank=1:  82%|████████▏ | 41/50 [01:43<00:22,  2.51s/it]
+Generating (int4) rank=0:  82%|████████▏ | 41/50 [01:44<00:22,  2.52s/it]
+Generating (int4) rank=1:  84%|████████▍ | 42/50 [01:46<00:20,  2.51s/it]
+Generating (int4) rank=0:  84%|████████▍ | 42/50 [01:47<00:20,  2.52s/it]
+Generating (int4) rank=1:  86%|████████▌ | 43/50 [01:48<00:17,  2.51s/it]
+Generating (int4) rank=0:  86%|████████▌ | 43/50 [01:49<00:17,  2.51s/it]
+Generating (int4) rank=1:  88%|████████▊ | 44/50 [01:51<00:15,  2.51s/it]
+Generating (int4) rank=0:  88%|████████▊ | 44/50 [01:52<00:15,  2.51s/it]
+Generating (int4) rank=1:  90%|█████████ | 45/50 [01:53<00:12,  2.51s/it]
+Generating (int4) rank=0:  90%|█████████ | 45/50 [01:54<00:12,  2.51s/it]
+Generating (int4) rank=1:  92%|█████████▏| 46/50 [01:56<00:10,  2.51s/it]
+Generating (int4) rank=0:  92%|█████████▏| 46/50 [01:57<00:10,  2.51s/it]
+Generating (int4) rank=1:  94%|█████████▍| 47/50 [01:58<00:07,  2.51s/it]
+Generating (int4) rank=0:  94%|█████████▍| 47/50 [01:59<00:07,  2.51s/it]
+Generating (int4) rank=1:  96%|█████████▌| 48/50 [02:01<00:05,  2.51s/it]
+Generating (int4) rank=0:  96%|█████████▌| 48/50 [02:02<00:05,  2.51s/it]
+Generating (int4) rank=1:  98%|█████████▊| 49/50 [02:03<00:02,  2.51s/it]
+Generating (int4) rank=0:  98%|█████████▊| 49/50 [02:04<00:02,  2.51s/it]
+Generating (int4) rank=1: 100%|██████████| 50/50 [02:06<00:00,  2.51s/it]
+Generating (int4) rank=1: 100%|██████████| 50/50 [02:06<00:00,  2.53s/it]
+
+Generating (int4) rank=0: 100%|██████████| 50/50 [02:07<00:00,  2.51s/it]
+Generating (int4) rank=0: 100%|██████████| 50/50 [02:07<00:00,  2.55s/it]
+fatal: not a git repository (or any of the parent directories): .git
+2026-07-12:18:13:34,934 INFO     [lm_eval.loggers.evaluation_tracker:209] Saving results aggregated
+2026-07-12:18:13:34,936 INFO     [lm_eval.loggers.evaluation_tracker:290] Saving per-sample results for: sudoku4_2shot
+

@@ -1,0 +1,150 @@
+{
+  "results": {
+    "sudoku4_4shot_large": {
+      "alias": "sudoku4_4shot_large",
+      "exact_match,none": 0.17444444444444446,
+      "exact_match_stderr,none": 0.01265674055497656,
+      "valid_sudoku,none": 0.17444444444444446,
+      "valid_sudoku_stderr,none": 0.01265674055497656
+    }
+  },
+  "group_subtasks": {
+    "sudoku4_4shot_large": []
+  },
+  "configs": {
+    "sudoku4_4shot_large": {
+      "task": "sudoku4_4shot_large",
+      "dataset_path": "json",
+      "dataset_kwargs": {
+        "data_files": "tasks/sudoku4/data/sudoku_4x4_combined.jsonl"
+      },
+      "training_split": "train",
+      "test_split": "train",
+      "process_docs": "def process_docs_4shot_large(dataset, seed: int = 42, n_samples: int = 900):\n    \"\"\"Rows 0..3 few-shot; rows 8+ test (900 unique puzzles from all Dream files).\"\"\"\n    return _process_docs(dataset, n_fewshot=8, n_samples=n_samples, seed=seed, test_start=8)\n",
+      "doc_to_text": "Input:\n{{input}}\nOutput:\n ",
+      "doc_to_target": "{{target}}",
+      "unsafe_code": false,
+      "process_results": "def process_results(doc, results):\n    gen = clean_generation(results[0] if results else \"\")\n    gold_flat = doc[\"solution_flat\"]\n    gen_digits = re.sub(r\"[^1-4]\", \"\", gen)\n    exact = int(gen_digits == gold_flat)\n    valid = int(is_valid_sudoku_dream(doc[\"puzzle_input\"], gen))\n    return {\"exact_match\": exact, \"valid_sudoku\": valid}\n",
+      "description": "Fill the positions where the values are 0 in a 4x4 grid with digits 1-4 so that each column, each row, and each of the four 2x2 subgrids that compose the grid contains all of the digits from 1 to 4.",
+      "target_delimiter": " ",
+      "fewshot_delimiter": "\n\n",
+      "fewshot_config": {
+        "sampler": "first_n",
+        "samples": [
+          {
+            "input": "1003\n0300\n3210\n4132\n",
+            "target": "1423\n2341\n3214\n4132\n"
+          },
+          {
+            "input": "0302\n0034\n1423\n3040\n",
+            "target": "4312\n2134\n1423\n3241\n"
+          },
+          {
+            "input": "1023\n3001\n2300\n4130\n",
+            "target": "1423\n3241\n2314\n4132\n"
+          },
+          {
+            "input": "0214\n4130\n1020\n2001\n",
+            "target": "3214\n4132\n1423\n2341\n"
+          }
+        ]
+      },
+      "num_fewshot": 4,
+      "metric_list": [
+        {
+          "metric": "exact_match",
+          "aggregation": "mean",
+          "higher_is_better": true
+        },
+        {
+          "metric": "valid_sudoku",
+          "aggregation": "mean",
+          "higher_is_better": true
+        }
+      ],
+      "output_type": "generate_until",
+      "generation_kwargs": {
+        "until": [
+          "\n\nInput:",
+          "Input:",
+          "</s>",
+          "<|im_end|>"
+        ],
+        "do_sample": false,
+        "temperature": 0.0
+      },
+      "repeats": 1,
+      "should_decontaminate": false,
+      "metadata": {
+        "version": 1.0,
+        "source": "sudoku_4x4_combined.jsonl (4-shot, 900 test)"
+      }
+    }
+  },
+  "versions": {
+    "sudoku4_4shot_large": 1.0
+  },
+  "n-shot": {
+    "sudoku4_4shot_large": 4
+  },
+  "higher_is_better": {
+    "sudoku4_4shot_large": {
+      "exact_match": true,
+      "valid_sudoku": true
+    }
+  },
+  "n-samples": {
+    "sudoku4_4shot_large": {
+      "original": 900,
+      "effective": 900
+    }
+  },
+  "config": {
+    "model": "llada_dist",
+    "model_args": "model_path=GSAI-ML/LLaDA-8B-Base,quant=int4,gen_length=24,steps=24,block_length=24,remasking=low_confidence,checkpoint_dir=checkpoints/results_sudoku_int4_large_4x4_4shot_2gpu,gen_batch_size=1",
+    "batch_size": 1,
+    "batch_sizes": [],
+    "device": null,
+    "use_cache": null,
+    "limit": null,
+    "bootstrap_iters": 100000,
+    "gen_kwargs": null,
+    "random_seed": 0,
+    "numpy_seed": 1234,
+    "torch_seed": 1234,
+    "fewshot_seed": 1234
+  },
+  "git_hash": null,
+  "date": 1783872667.3358066,
+  "pretty_env_info": "PyTorch version: 2.5.1+cu124\nIs debug build: False\nCUDA used to build PyTorch: 12.4\nROCM used to build PyTorch: N/A\n\nOS: Ubuntu 22.04.4 LTS (x86_64)\nGCC version: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\nClang version: 14.0.0-1ubuntu1.1\nCMake version: version 3.22.1\nLibc version: glibc-2.35\n\nPython version: 3.10.20 (main, Jun 11 2026, 15:17:37) [GCC 14.3.0] (64-bit runtime)\nPython platform: Linux-5.4.210-39.1.bert2-x86_64-with-glibc2.35\nIs CUDA available: True\nCUDA runtime version: Could not collect\nCUDA_MODULE_LOADING set to: LAZY\nGPU models and configuration: \nGPU 0: NVIDIA A100-SXM4-80GB\nGPU 1: NVIDIA A100-SXM4-80GB\nGPU 2: NVIDIA A100-SXM4-80GB\nGPU 3: NVIDIA A100-SXM4-80GB\nGPU 4: NVIDIA A100-SXM4-80GB\nGPU 5: NVIDIA A100-SXM4-80GB\nGPU 6: NVIDIA A100-SXM4-80GB\nGPU 7: NVIDIA A100-SXM4-80GB\n\nNvidia driver version: 550.163.01\ncuDNN version: Probably one of the following:\n/usr/lib/x86_64-linux-gnu/libcudnn.so.8.9.5\n/usr/lib/x86_64-linux-gnu/libcudnn_adv_infer.so.8.9.5\n/usr/lib/x86_64-linux-gnu/libcudnn_adv_train.so.8.9.5\n/usr/lib/x86_64-linux-gnu/libcudnn_cnn_infer.so.8.9.5\n/usr/lib/x86_64-linux-gnu/libcudnn_cnn_train.so.8.9.5\n/usr/lib/x86_64-linux-gnu/libcudnn_ops_infer.so.8.9.5\n/usr/lib/x86_64-linux-gnu/libcudnn_ops_train.so.8.9.5\nHIP runtime version: N/A\nMIOpen runtime version: N/A\nIs XNNPACK available: True\n\nCPU:\nArchitecture:                    x86_64\nCPU op-mode(s):                  32-bit, 64-bit\nAddress sizes:                   48 bits physical, 48 bits virtual\nByte Order:                      Little Endian\nCPU(s):                          144\nOn-line CPU(s) list:             0-143\nVendor ID:                       AuthenticAMD\nModel name:                      AMD EPYC 7713 64-Core Processor\nCPU family:                      25\nModel:                           1\nThread(s) per core:              1\nCore(s) per socket:              144\nSocket(s):                       1\nStepping:                        1\nBogoMIPS:                        3991.78\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy svm cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw perfctr_core invpcid_single ssbd ibrs ibpb stibp vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 invpcid rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves clzero xsaveerptr wbnoinvd arat npt nrip_save umip pku ospke vaes vpclmulqdq rdpid arch_capabilities\nVirtualization:                  AMD-V\nL1d cache:                       9 MiB (144 instances)\nL1i cache:                       9 MiB (144 instances)\nL2 cache:                        72 MiB (144 instances)\nL3 cache:                        2.3 GiB (144 instances)\nNUMA node(s):                    4\nNUMA node0 CPU(s):               0-35\nNUMA node1 CPU(s):               36-71\nNUMA node2 CPU(s):               72-107\nNUMA node3 CPU(s):               108-143\nVulnerability Itlb multihit:     Not affected\nVulnerability L1tf:              Not affected\nVulnerability Mds:               Not affected\nVulnerability Meltdown:          Not affected\nVulnerability Mmio stale data:   Not affected\nVulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp\nVulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:        Mitigation; Retpolines, IBPB conditional, IBRS_FW, STIBP disabled, RSB filling, PBRSB-eIBRS Not affected\nVulnerability Srbds:             Not affected\nVulnerability Tsx async abort:   Not affected\n\nVersions of relevant libraries:\n[pip3] numpy==2.2.6\n[pip3] torch==2.5.1+cu124\n[pip3] triton==3.1.0\n[conda] numpy                       2.2.6            pypi_0           pypi\n[conda] torch                       2.5.1+cu124      pypi_0           pypi\n[conda] triton                      3.1.0            pypi_0           pypi",
+  "transformers_version": "4.46.2",
+  "upper_git_hash": null,
+  "tokenizer_pad_token": [
+    "<|endoftext|>",
+    "126081"
+  ],
+  "tokenizer_eos_token": [
+    "<|endoftext|>",
+    "126081"
+  ],
+  "tokenizer_bos_token": [
+    "<|startoftext|>",
+    "126080"
+  ],
+  "eot_token_id": null,
+  "max_length": 4096,
+  "task_hashes": {
+    "sudoku4_4shot_large": "e7098fea5ea6a99de0ba50187c16f0de69161b0a9311f3de987e21db92dcb5dc"
+  },
+  "model_source": "llada_dist",
+  "model_name": "GSAI-ML/LLaDA-8B-Base",
+  "model_name_sanitized": "GSAI-ML__LLaDA-8B-Base",
+  "system_instruction": null,
+  "system_instruction_sha": null,
+  "fewshot_as_multiturn": false,
+  "chat_template": null,
+  "chat_template_sha": null,
+  "start_time": 3406503.277028294,
+  "end_time": 3407777.295258401,
+  "total_evaluation_time_seconds": "1274.0182301071472"
+}

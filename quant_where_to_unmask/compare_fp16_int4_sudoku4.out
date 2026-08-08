@@ -1,0 +1,485 @@
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+
+=== SUMMARY ===
+FP16 exact: 44/100
+INT4 exact: 42/100
+both_ok: 33
+fp16_only: 11
+int4_only: 9
+both_fail_valid: 47
+both_fail_exact_valid: 0
+fp16_valid_int4_invalid: 0
+int4_valid_fp16_invalid: 0
+
+=== BOTH CORRECT (2 examples) ===
+#1
+INPUT: 0321
+0004
+2040
+3412
+GOLD : 4321
+1234
+2143
+3412
+FP16 : 4321
+1234
+2143
+3412
+INT4 : 4321
+1234
+2143
+3412
+
+#3
+INPUT: 3000
+1420
+2014
+4130
+GOLD : 3241
+1423
+2314
+4132
+FP16 : 3241
+1423
+2314
+4132
+INT4 : 3241
+1423
+2314
+4132
+
+
+=== FP16 ONLY ===
+#20
+INPUT: 2340
+1020
+3004
+4032
+GOLD : 2341
+1423
+3214
+4132
+FP16 : 2341
+1423
+3214
+4132
+INT4 : 2314
+1423
+3142
+4231
+
+#24
+INPUT: 2410
+1340
+0024
+0201
+GOLD : 2413
+1342
+3124
+4231
+FP16 : 2413
+1342
+3124
+4231
+INT4 : 2431
+1342
+3124
+4213
+
+#26
+INPUT: 0431
+1024
+3002
+4010
+GOLD : 2431
+1324
+3142
+4213
+FP16 : 2431
+1324
+3142
+4213
+INT4 : 4231
+1324
+3142
+2413
+
+#38
+INPUT: 0400
+3241
+4123
+0010
+GOLD : 1432
+3241
+4123
+2314
+FP16 : 1432
+3241
+4123
+2314
+INT4 : 1234
+3241
+4123
+2341
+
+#42
+INPUT: 0001
+0432
+4123
+3010
+GOLD : 2341
+1432
+4123
+3214
+FP16 : 2341
+1432
+4123
+3214
+INT4 : 0001
+0432
+4123
+3010
+
+#43
+INPUT: 2000
+0042
+3124
+0213
+GOLD : 2431
+1342
+3124
+4213
+FP16 : 2431
+1342
+3124
+4213
+INT4 : 4231
+1342
+3124
+2413
+
+#53
+INPUT: 1203
+0000
+2431
+3104
+GOLD : 1243
+4312
+2431
+3124
+FP16 : 1243
+4312
+2431
+3124
+INT4 : 1203
+0000
+2431
+3104
+
+#57
+INPUT: 2043
+0002
+4230
+1024
+GOLD : 2143
+3412
+4231
+1324
+FP16 : 2143
+3412
+4231
+1324
+INT4 : 3142
+2413
+4231
+1324
+
+#70
+INPUT: 0030
+3102
+0314
+0423
+GOLD : 4231
+3142
+2314
+1423
+FP16 : 4231
+3142
+2314
+1423
+INT4 : 3124
+2431
+1342
+4213
+
+#71
+INPUT: 0021
+2104
+3002
+1240
+GOLD : 4321
+2134
+3412
+1243
+FP16 : 4321
+2134
+3412
+1243
+INT4 : 4231
+2413
+3142
+1324
+
+#88
+INPUT: 3401
+2040
+0204
+4302
+GOLD : 3421
+2143
+1234
+4312
+FP16 : 3421
+2143
+1234
+4312
+INT4 : 3124
+2431
+1342
+4213
+
+
+=== INT4 ONLY ===
+#8
+INPUT: 2041
+0100
+0214
+1420
+GOLD : 2341
+4132
+3214
+1423
+FP16 : 1423
+2341
+3214
+4132
+INT4 : 2341
+4132
+3214
+1423
+
+#12
+INPUT: 3002
+1204
+4320
+2100
+GOLD : 3412
+1234
+4321
+2143
+FP16 : 3142
+2413
+1324
+4231
+INT4 : 3412
+1234
+4321
+2143
+
+#19
+INPUT: 1043
+4302
+3021
+0100
+GOLD : 1243
+4312
+3421
+2134
+FP16 : 1423
+2341
+3214
+4132
+INT4 : 1243
+4312
+3421
+2134
+
+#33
+INPUT: 3100
+4201
+1003
+2304
+GOLD : 3142
+4231
+1423
+2314
+FP16 : 3124
+4213
+1342
+2431
+INT4 : 3142
+4231
+1423
+2314
+
+#49
+INPUT: 4100
+3041
+2310
+0430
+GOLD : 4123
+3241
+2314
+1432
+FP16 : 1423
+3241
+2314
+4132
+INT4 : 4123
+3241
+2314
+1432
+
+#52
+INPUT: 0134
+4010
+3001
+1240
+GOLD : 2134
+4312
+3421
+1243
+FP16 : 3124
+2431
+1342
+4213
+INT4 : 2134
+4312
+3421
+1243
+
+#62
+INPUT: 3014
+1023
+2301
+0030
+GOLD : 3214
+1423
+2341
+4132
+FP16 : 3124
+1423
+2341
+4132
+INT4 : 3214
+1423
+2341
+4132
+
+#66
+INPUT: 0312
+0103
+3420
+0204
+GOLD : 4312
+2143
+3421
+1234
+FP16 : 4321
+2143
+3412
+1234
+INT4 : 4312
+2143
+3421
+1234
+
+#93
+INPUT: 3204
+4020
+2431
+0300
+GOLD : 3214
+4123
+2431
+1342
+FP16 : 3214
+4132
+1423
+2341
+INT4 : 3214
+4123
+2431
+1342
+
+
+=== BOTH FAIL invalid (3 examples) ===
+#0
+INPUT: 0201
+0024
+3010
+2143
+GOLD : 4231
+1324
+3412
+2143
+FP16 : 4231
+1324
+3142
+2413
+INT4 : 4231
+1324
+3142
+2143
+
+#2
+INPUT: 0204
+3401
+0012
+2043
+GOLD : 1234
+3421
+4312
+2143
+FP16 : 3124
+2431
+1342
+4213
+INT4 : 3124
+2431
+1342
+4213
+
+#7
+INPUT: 3004
+2410
+0302
+0231
+GOLD : 3124
+2413
+1342
+4231
+FP16 : 3124
+2431
+1342
+4213
+INT4 : 3124
+2431
+1342
+4213
+
+
+=== BOTH FAIL valid but wrong (2 examples) ===
+
+=== FP16 valid / INT4 invalid (2 examples) ===
+
+=== INT4 valid / FP16 invalid (2 examples) ===
+=== BOTH WRONG: 47 cases, identical wrong answer: 35 (74%) ===
+

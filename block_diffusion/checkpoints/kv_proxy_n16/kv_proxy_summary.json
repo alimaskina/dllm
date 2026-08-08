@@ -1,0 +1,182 @@
+{
+  "n_source_observer_pairs": 948,
+  "n_unique_source_blocks": 161,
+  "next_block_proxy_vs_oracle": {
+    "n_pairs": 145,
+    "spearman_vs_oracle_strict_mean": 0.6011555578642863,
+    "spearman_vs_oracle_all_mean": 0.8783237022273287,
+    "overlap_10_mean": 0.4298850574712644,
+    "overlap_20_mean": 0.5417241379310345,
+    "overlap_30_mean": 0.606056376573618,
+    "recall_10_mean": 0.4298850574712644,
+    "recall_20_mean": 0.5417241379310345,
+    "recall_30_mean": 0.606056376573618
+  },
+  "proxy_vs_distance": [
+    {
+      "distance": 1,
+      "n_pairs": 161,
+      "spearman_mean": 1.0,
+      "overlap_10_mean": 1.0,
+      "overlap_20_mean": 1.0,
+      "overlap_30_mean": 1.0,
+      "recall_10_mean": NaN,
+      "recall_20_mean": NaN,
+      "recall_30_mean": NaN
+    },
+    {
+      "distance": 2,
+      "n_pairs": 145,
+      "spearman_mean": 0.6197942028971013,
+      "overlap_10_mean": 0.45459770114942527,
+      "overlap_20_mean": 0.5630377668308703,
+      "overlap_30_mean": 0.6219813902572523,
+      "recall_10_mean": 0.45459770114942527,
+      "recall_20_mean": 0.5630377668308703,
+      "recall_30_mean": 0.6219813902572523
+    },
+    {
+      "distance": 3,
+      "n_pairs": 129,
+      "spearman_mean": 0.5859430528464932,
+      "overlap_10_mean": 0.4011627906976744,
+      "overlap_20_mean": 0.5170542635658915,
+      "overlap_30_mean": 0.5898763381321521,
+      "recall_10_mean": 0.4011627906976744,
+      "recall_20_mean": 0.5170542635658915,
+      "recall_30_mean": 0.5898763381321521
+    },
+    {
+      "distance": 4,
+      "n_pairs": 113,
+      "spearman_mean": 0.5333691231019899,
+      "overlap_10_mean": 0.3746312684365782,
+      "overlap_20_mean": 0.4771807838179519,
+      "overlap_30_mean": 0.5601769911504425,
+      "recall_10_mean": 0.3746312684365782,
+      "recall_20_mean": 0.4771807838179519,
+      "recall_30_mean": 0.5601769911504425
+    },
+    {
+      "distance": 5,
+      "n_pairs": 97,
+      "spearman_mean": 0.4841410978360443,
+      "overlap_10_mean": 0.36082474226804123,
+      "overlap_20_mean": 0.4790132547864506,
+      "overlap_30_mean": 0.550670921289478,
+      "recall_10_mean": 0.36082474226804123,
+      "recall_20_mean": 0.4790132547864506,
+      "recall_30_mean": 0.550670921289478
+    },
+    {
+      "distance": 6,
+      "n_pairs": 81,
+      "spearman_mean": 0.4219541053718741,
+      "overlap_10_mean": 0.32407407407407407,
+      "overlap_20_mean": 0.45041152263374484,
+      "overlap_30_mean": 0.5231579463060945,
+      "recall_10_mean": 0.32407407407407407,
+      "recall_20_mean": 0.45041152263374484,
+      "recall_30_mean": 0.5231579463060945
+    },
+    {
+      "distance": 7,
+      "n_pairs": 65,
+      "spearman_mean": 0.43689216055704005,
+      "overlap_10_mean": 0.33589743589743587,
+      "overlap_20_mean": 0.45395604395604394,
+      "overlap_30_mean": 0.5349267399267399,
+      "recall_10_mean": 0.33589743589743587,
+      "recall_20_mean": 0.45395604395604394,
+      "recall_30_mean": 0.5349267399267399
+    },
+    {
+      "distance": 8,
+      "n_pairs": 50,
+      "spearman_mean": 0.3536595805325952,
+      "overlap_10_mean": 0.3383333333333333,
+      "overlap_20_mean": 0.429,
+      "overlap_30_mean": 0.5023015873015872,
+      "recall_10_mean": 0.3383333333333333,
+      "recall_20_mean": 0.429,
+      "recall_30_mean": 0.5023015873015872
+    },
+    {
+      "distance": 9,
+      "n_pairs": 37,
+      "spearman_mean": 0.34694645579800315,
+      "overlap_10_mean": 0.3288288288288288,
+      "overlap_20_mean": 0.4512870012870013,
+      "overlap_30_mean": 0.49946374946374944,
+      "recall_10_mean": 0.3288288288288288,
+      "recall_20_mean": 0.4512870012870013,
+      "recall_30_mean": 0.49946374946374944
+    },
+    {
+      "distance": 10,
+      "n_pairs": 27,
+      "spearman_mean": 0.2367377261220082,
+      "overlap_10_mean": 0.2777777777777778,
+      "overlap_20_mean": 0.42583774250440914,
+      "overlap_30_mean": 0.45602586713697824,
+      "recall_10_mean": 0.2777777777777778,
+      "recall_20_mean": 0.42583774250440914,
+      "recall_30_mean": 0.45602586713697824
+    },
+    {
+      "distance": 11,
+      "n_pairs": 19,
+      "spearman_mean": 0.2622092735092818,
+      "overlap_10_mean": 0.2894736842105263,
+      "overlap_20_mean": 0.4469924812030075,
+      "overlap_30_mean": 0.5055973266499583,
+      "recall_10_mean": 0.2894736842105263,
+      "recall_20_mean": 0.4469924812030075,
+      "recall_30_mean": 0.5055973266499583
+    },
+    {
+      "distance": 12,
+      "n_pairs": 13,
+      "spearman_mean": 0.2099325950922539,
+      "overlap_10_mean": 0.27564102564102566,
+      "overlap_20_mean": 0.4921245421245421,
+      "overlap_30_mean": 0.49993894993894994,
+      "recall_10_mean": 0.27564102564102566,
+      "recall_20_mean": 0.4921245421245421,
+      "recall_30_mean": 0.49993894993894994
+    },
+    {
+      "distance": 13,
+      "n_pairs": 7,
+      "spearman_mean": 0.2884370911507063,
+      "overlap_10_mean": 0.08333333333333333,
+      "overlap_20_mean": 0.4629251700680272,
+      "overlap_30_mean": 0.5149659863945578,
+      "recall_10_mean": 0.08333333333333333,
+      "recall_20_mean": 0.4629251700680272,
+      "recall_30_mean": 0.5149659863945578
+    },
+    {
+      "distance": 14,
+      "n_pairs": 3,
+      "spearman_mean": 0.03741701444687565,
+      "overlap_10_mean": 0.16666666666666666,
+      "overlap_20_mean": 0.32857142857142857,
+      "overlap_30_mean": 0.3698412698412698,
+      "recall_10_mean": 0.16666666666666666,
+      "recall_20_mean": 0.32857142857142857,
+      "recall_30_mean": 0.3698412698412698
+    },
+    {
+      "distance": 15,
+      "n_pairs": 1,
+      "spearman_mean": 0.04024767801857587,
+      "overlap_10_mean": 0.0,
+      "overlap_20_mean": 0.25,
+      "overlap_30_mean": 0.16666666666666666,
+      "recall_10_mean": 0.0,
+      "recall_20_mean": 0.25,
+      "recall_30_mean": 0.16666666666666666
+    }
+  ]
+}

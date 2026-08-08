@@ -1,0 +1,87 @@
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+2026-07-10:14:02:50,249 WARNING  [lm_eval.__main__:316]  --limit SHOULD ONLY BE USED FOR TESTING.REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-07-10:14:02:50,250 INFO     [lm_eval.__main__:379] Selected Tasks: ['gsm8k']
+2026-07-10:14:02:50,251 INFO     [lm_eval.evaluator:169] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-07-10:14:02:50,251 INFO     [lm_eval.evaluator:206] Initializing llada_dist model, with arguments: {'model_path': 'GSAI-ML/LLaDA-8B-Base', 'quant': 'int4', 'gen_length': 1024, 'steps': 1024, 'block_length': 1024}
+2026-07-10:14:02:50,526 WARNING  [accelerate.utils.other:349] Detected kernel version 5.4.210, which is below the recommended minimum of 5.5.0; this can cause the process to hang. It is recommended to upgrade the kernel to the minimum version or higher.
+2026-07-10:14:02:52,133 INFO     [accelerate.utils.modeling:1086] We will use 90% of the memory on device 0 for storing the model, and 10% for the buffer to avoid OOM. You can set `max_memory` in to a higher value to use more memory (at your own risk).
+2026-07-10:14:02:52,151 WARNING  [accelerate.utils.modeling:1241] The model weights are not tied. Please use the `tie_weights` method before using the `infer_auto_device` function.
+
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]
+Loading checkpoint shards:  17%|█▋        | 1/6 [00:01<00:05,  1.05s/it]
+Loading checkpoint shards:  33%|███▎      | 2/6 [00:02<00:04,  1.11s/it]
+Loading checkpoint shards:  50%|█████     | 3/6 [00:03<00:04,  1.35s/it]
+Loading checkpoint shards:  67%|██████▋   | 4/6 [00:05<00:02,  1.46s/it]
+Loading checkpoint shards:  83%|████████▎ | 5/6 [00:06<00:01,  1.39s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:07<00:00,  1.25s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:07<00:00,  1.28s/it]
+2026-07-10:14:03:04,476 INFO     [lm_eval.api.task:420] Building contexts for gsm8k on rank 0...
+
+  0%|          | 0/10 [00:00<?, ?it/s]
+100%|██████████| 10/10 [00:00<00:00, 284.19it/s]
+2026-07-10:14:03:04,512 INFO     [lm_eval.evaluator:517] Running generate_until requests
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot locate reference to <enum 'ActivationType'>.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot pickle <enum 'ActivationType'>: transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.configuration_llada.ActivationType has recursive self-references that trigger a RecursionError.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot locate reference to <class 'transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.modeling_llada.LayerNormBase'>.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot pickle <class 'transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.modeling_llada.LayerNormBase'>: transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.modeling_llada.LayerNormBase has recursive self-references that trigger a RecursionError.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot locate reference to <enum 'LayerNormType'>.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot pickle <enum 'LayerNormType'>: transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.configuration_llada.LayerNormType has recursive self-references that trigger a RecursionError.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot locate reference to <enum 'BlockType'>.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot pickle <enum 'BlockType'>: transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.configuration_llada.BlockType has recursive self-references that trigger a RecursionError.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot locate reference to <class 'transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.modeling_llada.LLaDABlock'>.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot pickle <class 'transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.modeling_llada.LLaDABlock'>: transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.modeling_llada.LLaDABlock has recursive self-references that trigger a RecursionError.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot locate reference to <enum 'InitFnType'>.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot pickle <enum 'InitFnType'>: transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.configuration_llada.InitFnType has recursive self-references that trigger a RecursionError.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot locate reference to <enum 'ModuleType'>.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot pickle <enum 'ModuleType'>: transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.modeling_llada.ModuleType has recursive self-references that trigger a RecursionError.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot locate reference to <enum 'ActivationCheckpointingStrategy'>.
+  StockPickler.save(self, obj, save_persistent_id)
+/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/dill/_dill.py:423: PicklingWarning: Cannot pickle <enum 'ActivationCheckpointingStrategy'>: transformers_modules.GSAI-ML.LLaDA-8B-Base.0f2787f2d87eac5eed8a087d5ecd24277e6255b2.configuration_llada.ActivationCheckpointingStrategy has recursive self-references that trigger a RecursionError.
+  StockPickler.save(self, obj, save_persistent_id)
+
+Map:   0%|          | 0/10 [00:00<?, ? examples/s]
+Map: 100%|██████████| 10/10 [00:00<00:00, 425.58 examples/s]
+
+Generating (int4)...:   0%|          | 0/10 [00:00<?, ?it/s]
+Generating (int4)...:  10%|█         | 1/10 [04:58<44:46, 298.52s/it]
+Generating (int4)...:  20%|██        | 2/10 [09:58<39:53, 299.13s/it]
+Generating (int4)...:  30%|███       | 3/10 [14:58<34:59, 299.94s/it]
+Generating (int4)...:  40%|████      | 4/10 [19:33<28:58, 289.77s/it]
+Generating (int4)...:  50%|█████     | 5/10 [24:35<24:30, 294.17s/it]
+Generating (int4)...:  60%|██████    | 6/10 [29:05<19:03, 285.99s/it]
+Generating (int4)...:  70%|███████   | 7/10 [33:50<14:17, 285.88s/it]
+Generating (int4)...:  80%|████████  | 8/10 [38:41<09:34, 287.29s/it]
+Generating (int4)...:  90%|█████████ | 9/10 [43:43<04:51, 291.98s/it]
+Generating (int4)...: 100%|██████████| 10/10 [48:17<00:00, 286.40s/it]
+Generating (int4)...: 100%|██████████| 10/10 [48:17<00:00, 289.74s/it]
+fatal: not a git repository (or any of the parent directories): .git
+2026-07-10:14:51:38,008 INFO     [lm_eval.loggers.evaluation_tracker:209] Saving results aggregated
+
+llada_dist (model_path=GSAI-ML/LLaDA-8B-Base,quant=int4,gen_length=1024,steps=1024,block_length=1024), gen_kwargs: (None), limit: 10.0, num_fewshot: None, batch_size: 1
+|Tasks|Version|     Filter     |n-shot|  Metric   |   |Value|   |Stderr|
+|-----|------:|----------------|-----:|-----------|---|----:|---|-----:|
+|gsm8k|      3|flexible-extract|     5|exact_match|↑  |  0.6|±  |0.1633|
+|     |       |strict-match    |     5|exact_match|↑  |  0.6|±  |0.1633|
+
+

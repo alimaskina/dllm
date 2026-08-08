@@ -1,0 +1,44 @@
+=== KV proxy experiment: n=16 → checkpoints/kv_proxy_n16 (GPU 1) ===
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+Config: n=16 bd_size=32 sbs=8 max_new_tokens=512 layers=all
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.19s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:01,  1.02it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:02<00:00,  1.28it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:02<00:00,  1.89it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:02<00:00,  1.48it/s]
+/home/alimaskina/dllm/block_diffusion/run_kv_proxy.py:63: DeprecationWarning: get_task_dict is deprecated. Use TaskManager.load() instead.
+  task_dict = tasks.get_task_dict(["gsm8k"])
+  0%|          | 0/16 [00:00<?, ?it/s]100%|██████████| 16/16 [00:00<00:00, 1376.87it/s]
+[1/16] blocks=9 attn_records=36 correct=True
+[2/16] blocks=7 attn_records=21 correct=True
+[3/16] blocks=9 attn_records=36 correct=False
+[4/16] blocks=8 attn_records=28 correct=True
+[5/16] blocks=14 attn_records=91 correct=False
+[6/16] blocks=10 attn_records=45 correct=False
+[7/16] blocks=8 attn_records=28 correct=True
+[8/16] blocks=15 attn_records=105 correct=False
+[9/16] blocks=16 attn_records=120 correct=False
+[10/16] blocks=9 attn_records=36 correct=True
+[11/16] blocks=11 attn_records=55 correct=True
+[12/16] blocks=10 attn_records=45 correct=True
+[13/16] blocks=11 attn_records=55 correct=False
+[14/16] blocks=13 attn_records=78 correct=True
+[15/16] blocks=14 attn_records=91 correct=True
+[16/16] blocks=13 attn_records=78 correct=True
+Done → checkpoints/kv_proxy_n16/attn_traces.jsonl
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+Pairs: 161
+Proxy vs strict-oracle Spearman: 0.601
+Recall@20%: 0.542
+Report → checkpoints/kv_proxy_n16/kv_proxy_report.md
+=== Done: checkpoints/kv_proxy_n16/kv_proxy_report.md ===

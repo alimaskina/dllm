@@ -1,0 +1,45 @@
+task: sudoku4_1shot
+dataset_path: json
+dataset_kwargs:
+  data_files: tasks/sudoku4/data/sudoku_4x4_10.jsonl
+output_type: generate_until
+training_split: train
+test_split: train
+process_docs: !function utils.process_docs_1shot
+description: "Fill the positions where the values are 0 in a 4x4 grid with digits 1-4 so that each column, each row, and each of the four 2x2 subgrids that compose the grid contains all of the digits from 1 to 4."
+doc_to_text: "Input:\n{{input}}\nOutput:\n "
+doc_to_target: "{{target}}"
+process_results: !function utils.process_results
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+  - metric: valid_sudoku
+    aggregation: mean
+    higher_is_better: true
+generation_kwargs:
+  until:
+    - "\n\nInput:"
+    - "Input:"
+    - "</s>"
+    - "<|im_end|>"
+  do_sample: false
+  temperature: 0.0
+repeats: 1
+num_fewshot: 1
+fewshot_config:
+  sampler: first_n
+  samples:
+    - input: |
+        1003
+        0300
+        3210
+        4132
+      target: |
+        1423
+        2341
+        3214
+        4132
+metadata:
+  version: 1.0
+  source: DreamLM/Dream eval/data/sudoku_4x4_10.jsonl (1-shot, same 100 test as 8-shot)

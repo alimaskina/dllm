@@ -1,0 +1,153 @@
+
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]
+Loading checkpoint shards:  17%|█▋        | 1/6 [00:01<00:07,  1.59s/it]
+Loading checkpoint shards:  33%|███▎      | 2/6 [00:03<00:06,  1.68s/it]
+Loading checkpoint shards:  50%|█████     | 3/6 [00:07<00:08,  2.98s/it]
+Loading checkpoint shards:  67%|██████▋   | 4/6 [00:11<00:06,  3.18s/it]
+Loading checkpoint shards:  83%|████████▎ | 5/6 [00:13<00:02,  2.92s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:15<00:00,  2.51s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:15<00:00,  2.59s/it]
+The model weights are not tied. Please use the `tie_weights` method before using the `infer_auto_device` function.
+
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]
+Loading checkpoint shards:  17%|█▋        | 1/6 [00:01<00:08,  1.72s/it]
+Loading checkpoint shards:  33%|███▎      | 2/6 [00:03<00:06,  1.53s/it]
+Loading checkpoint shards:  50%|█████     | 3/6 [00:06<00:07,  2.36s/it]
+Loading checkpoint shards:  67%|██████▋   | 4/6 [00:09<00:05,  2.82s/it]
+Loading checkpoint shards:  83%|████████▎ | 5/6 [00:12<00:02,  2.74s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:14<00:00,  2.44s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:14<00:00,  2.41s/it]
+
+Device : cuda
+FP     : GSAI-ML/LLaDA-8B-Base [fp16]
+Q      : GSAI-ML/LLaDA-8B-Base [int4]
+Samples: 200 × 3 = 600 states
+Loading FP model...
+Loading Q model...
+Loading tokenizer...
+Prompt set: 'generic'  (15 unique prompts)
+
+Running forward passes...
+    5/200  (4.8s)
+   10/200  (8.8s)
+   15/200  (14.5s)
+   20/200  (20.1s)
+   25/200  (25.5s)
+   30/200  (30.6s)
+   35/200  (35.6s)
+   40/200  (41.3s)
+   45/200  (47.9s)
+   50/200  (54.0s)
+   55/200  (59.6s)
+   60/200  (64.7s)
+   65/200  (70.1s)
+   70/200  (76.0s)
+   75/200  (82.0s)
+   80/200  (87.8s)
+   85/200  (93.8s)
+   90/200  (99.1s)
+   95/200  (104.7s)
+  100/200  (111.4s)
+  105/200  (116.8s)
+  110/200  (122.4s)
+  115/200  (127.8s)
+  120/200  (133.2s)
+  125/200  (139.0s)
+  130/200  (144.7s)
+  135/200  (149.6s)
+  140/200  (154.5s)
+  145/200  (159.8s)
+  150/200  (165.0s)
+  155/200  (169.9s)
+  160/200  (175.9s)
+  165/200  (181.7s)
+  170/200  (187.0s)
+  175/200  (192.5s)
+  180/200  (197.7s)
+  185/200  (203.4s)
+  190/200  (208.8s)
+  195/200  (214.2s)
+  200/200  (219.3s)
+
+Done in 219.3s
+
+=================================================================
+EXPERIMENT 1 — FIXED-STATE FIDELITY
+FP: GSAI-ML/LLaDA-8B-Base [fp16]  vs  Q: GSAI-ML/LLaDA-8B-Base [int4]
+Hypothesis: token_top1_agree >> confidence_topk1_overlap
+=================================================================
+
+  ── early ──
+    token top-1 agree           [WHAT]             +0.9957 ± 0.0120
+    token top-3 agree           [WHAT]             +0.8778 ± 0.0281
+    token top-5 agree           [WHAT]             +0.8757 ± 0.0237
+    token top-10 agree          [WHAT]             +0.8871 ± 0.0227
+    KL(FP||Q) per position      [WHAT]             +0.0038 ± 0.0144
+    conf spearman               [WHERE/conf]       +0.9632 ± 0.0197
+    conf topk-1 overlap         [WHERE/conf]       +0.5500 ± 0.4975
+    conf topk-10step overlap    [WHERE/conf]       +0.8073 ± 0.0943
+    conf topk-llada overlap     [WHERE/conf]       +0.5500 ± 0.4975
+    margin spearman             [WHERE/margin]     +0.9618 ± 0.0195
+    margin topk-1 overlap       [WHERE/margin]     +0.5800 ± 0.4936
+    margin topk-10step overlap  [WHERE/margin]     +0.7936 ± 0.0990
+    neg-entropy spearman        [WHERE/entropy]    +0.9630 ± 0.0202
+    neg-entropy topk-1 overlap  [WHERE/entropy]    +0.5600 ± 0.4964
+    neg-entropy topk-10step     [WHERE/entropy]    +0.8118 ± 0.0960
+    what − where gap            [SIGNAL]           +0.4457 ± 0.4978
+
+  ── mid ──
+    token top-1 agree           [WHAT]             +0.9999 ± 0.0009
+    token top-3 agree           [WHAT]             +0.9025 ± 0.0296
+    token top-5 agree           [WHAT]             +0.9050 ± 0.0213
+    token top-10 agree          [WHAT]             +0.9067 ± 0.0175
+    KL(FP||Q) per position      [WHAT]             +0.0002 ± 0.0005
+    conf spearman               [WHERE/conf]       +0.9492 ± 0.0287
+    conf topk-1 overlap         [WHERE/conf]       +0.4750 ± 0.4994
+    conf topk-10step overlap    [WHERE/conf]       +0.7179 ± 0.1446
+    conf topk-llada overlap     [WHERE/conf]       +0.4750 ± 0.4994
+    margin spearman             [WHERE/margin]     +0.9485 ± 0.0282
+    margin topk-1 overlap       [WHERE/margin]     +0.5350 ± 0.4988
+    margin topk-10step overlap  [WHERE/margin]     +0.7207 ± 0.1500
+    neg-entropy spearman        [WHERE/entropy]    +0.9495 ± 0.0283
+    neg-entropy topk-1 overlap  [WHERE/entropy]    +0.5000 ± 0.5000
+    neg-entropy topk-10step     [WHERE/entropy]    +0.7243 ± 0.1509
+    what − where gap            [SIGNAL]           +0.5249 ± 0.4993
+
+  ── late ──
+    token top-1 agree           [WHAT]             +1.0000 ± 0.0000
+    token top-3 agree           [WHAT]             +0.9109 ± 0.0428
+    token top-5 agree           [WHAT]             +0.9102 ± 0.0323
+    token top-10 agree          [WHAT]             +0.9108 ± 0.0259
+    KL(FP||Q) per position      [WHAT]             +0.0002 ± 0.0012
+    conf spearman               [WHERE/conf]       +0.9324 ± 0.0493
+    conf topk-1 overlap         [WHERE/conf]       +0.6350 ± 0.4814
+    conf topk-10step overlap    [WHERE/conf]       +0.6850 ± 0.3175
+    conf topk-llada overlap     [WHERE/conf]       +0.6350 ± 0.4814
+    margin spearman             [WHERE/margin]     +0.9300 ± 0.0534
+    margin topk-1 overlap       [WHERE/margin]     +0.5750 ± 0.4943
+    margin topk-10step overlap  [WHERE/margin]     +0.6875 ± 0.3219
+    neg-entropy spearman        [WHERE/entropy]    +0.9320 ± 0.0506
+    neg-entropy topk-1 overlap  [WHERE/entropy]    +0.6200 ± 0.4854
+    neg-entropy topk-10step     [WHERE/entropy]    +0.6875 ± 0.3140
+    what − where gap            [SIGNAL]           +0.3650 ± 0.4814
+
+  ── ALL ──
+    token top-1 agree           [WHAT]             +0.9985 ± 0.0073
+    token top-3 agree           [WHAT]             +0.8970 ± 0.0370
+    token top-5 agree           [WHAT]             +0.8970 ± 0.0303
+    token top-10 agree          [WHAT]             +0.9015 ± 0.0246
+    KL(FP||Q) per position      [WHAT]             +0.0014 ± 0.0085
+    conf spearman               [WHERE/conf]       +0.9483 ± 0.0370
+    conf topk-1 overlap         [WHERE/conf]       +0.5533 ± 0.4971
+    conf topk-10step overlap    [WHERE/conf]       +0.7367 ± 0.2149
+    conf topk-llada overlap     [WHERE/conf]       +0.5533 ± 0.4971
+    margin spearman             [WHERE/margin]     +0.9467 ± 0.0389
+    margin topk-1 overlap       [WHERE/margin]     +0.5633 ± 0.4960
+    margin topk-10step overlap  [WHERE/margin]     +0.7340 ± 0.2174
+    neg-entropy spearman        [WHERE/entropy]    +0.9481 ± 0.0377
+    neg-entropy topk-1 overlap  [WHERE/entropy]    +0.5600 ± 0.4964
+    neg-entropy topk-10step     [WHERE/entropy]    +0.7412 ± 0.2150
+    what − where gap            [SIGNAL]           +0.4452 ± 0.4972
+
+Results saved → results_generic_int4.json
+

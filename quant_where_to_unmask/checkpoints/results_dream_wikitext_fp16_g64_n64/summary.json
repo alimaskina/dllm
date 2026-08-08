@@ -1,0 +1,13 @@
+{
+  "dataset": "wikitext-103-raw-v1",
+  "split": "validation",
+  "n": 64,
+  "model": "Dream-org/Dream-v0-Base-7B",
+  "quant": "bf16",
+  "gen_length": 64,
+  "steps": 64,
+  "mask_id": 151666,
+  "checkpoint_dir": "checkpoints/results_dream_wikitext_fp16_g64_n64",
+  "elapsed_sec": 135.24672102928162,
+  "note": "Dream maskgit_plus; logits AR-shifted per official generation_utils; k forced to 1 when steps==gen_length"
+}

@@ -1,0 +1,56 @@
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]
+Loading checkpoint shards:  17%|█▋        | 1/6 [00:01<00:08,  1.63s/it]
+Loading checkpoint shards:  33%|███▎      | 2/6 [00:02<00:05,  1.40s/it]
+Loading checkpoint shards:  50%|█████     | 3/6 [00:05<00:05,  1.79s/it]
+Loading checkpoint shards:  67%|██████▋   | 4/6 [00:07<00:04,  2.09s/it]
+Loading checkpoint shards:  83%|████████▎ | 5/6 [00:09<00:01,  1.99s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:10<00:00,  1.80s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:10<00:00,  1.82s/it]
+Traceback (most recent call last):
+  File "/home/alimaskina/dllm/quant_where_to_unmask/sweep_sudoku4_hypers.py", line 152, in <module>
+    main()
+  File "/home/alimaskina/dllm/quant_where_to_unmask/sweep_sudoku4_hypers.py", line 141, in main
+    exact, valid, _ = score_config(model, tokenizer, device, fewshot, test_rows, cfg)
+  File "/home/alimaskina/dllm/quant_where_to_unmask/sweep_sudoku4_hypers.py", line 61, in score_config
+    out = generate(
+  File "/home/alimaskina/miniconda3/envs/llada_quant/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/alimaskina/dllm/quant_where_to_unmask/generate.py", line 180, in generate
+    assert gen_length % block_length == 0
+AssertionError
+
+ERROR conda.cli.main_run:execute(127): `conda run python sweep_sudoku4_hypers.py --limit 30 --gpu 0` failed. (See above for error)
+model=GSAI-ML/LLaDA-8B-Base quant=fp16 n=30 device=cuda:0
+  exact   valid  config
+------------------------------------------------------------------------
+  3.3%   3.3%  remask=low_confidence gen=24 steps=24 block=24 temp=0.0
+  0.0%   0.0%  remask=entropy gen=24 steps=24 block=24 temp=0.0
+  3.3%   3.3%  remask=topk_margin gen=24 steps=24 block=24 temp=0.0
+  3.3%   3.3%  remask=random gen=24 steps=24 block=24 temp=0.0
+  0.0%   0.0%  remask=low_confidence gen=19 steps=19 block=19 temp=0.0
+  3.3%   3.3%  remask=entropy gen=19 steps=19 block=19 temp=0.0
+  3.3%   3.3%  remask=low_confidence gen=24 steps=48 block=24 temp=0.0
+  0.0%   0.0%  remask=entropy gen=24 steps=48 block=24 temp=0.0
+  3.3%   3.3%  remask=low_confidence gen=24 steps=96 block=24 temp=0.0
+  0.0%   0.0%  remask=entropy gen=24 steps=96 block=24 temp=0.0
+  0.0%   0.0%  remask=low_confidence gen=32 steps=32 block=32 temp=0.0
+  3.3%   3.3%  remask=entropy gen=32 steps=32 block=32 temp=0.0
+  0.0%   0.0%  remask=low_confidence gen=24 steps=24 block=8 temp=0.0
+  6.7%   6.7%  remask=entropy gen=24 steps=24 block=8 temp=0.0
+  0.0%   0.0%  remask=low_confidence gen=24 steps=24 block=4 temp=0.0
+  3.3%   3.3%  remask=entropy gen=24 steps=24 block=4 temp=0.0
+  3.3%   3.3%  remask=entropy gen=24 steps=24 block=24 temp=0.1
+  6.7%   6.7%  remask=entropy gen=24 steps=48 block=8 temp=0.0
+  6.7%   6.7%  remask=entropy gen=24 steps=96 block=8 temp=0.0
+  0.0%   0.0%  remask=entropy gen=24 steps=24 block=6 temp=0.0
+  3.3%   3.3%  remask=entropy gen=24 steps=24 block=12 temp=0.0
+

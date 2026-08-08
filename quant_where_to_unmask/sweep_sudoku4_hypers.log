@@ -1,0 +1,41 @@
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+/home/alimaskina/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (6.0.0.post1)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]
+Loading checkpoint shards:  17%|█▋        | 1/6 [00:01<00:08,  1.69s/it]
+Loading checkpoint shards:  33%|███▎      | 2/6 [00:02<00:05,  1.44s/it]
+Loading checkpoint shards:  50%|█████     | 3/6 [00:04<00:04,  1.48s/it]
+Loading checkpoint shards:  67%|██████▋   | 4/6 [00:05<00:02,  1.46s/it]
+Loading checkpoint shards:  83%|████████▎ | 5/6 [00:07<00:01,  1.40s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:08<00:00,  1.26s/it]
+Loading checkpoint shards: 100%|██████████| 6/6 [00:08<00:00,  1.36s/it]
+
+model=GSAI-ML/LLaDA-8B-Base quant=fp16 n=30 device=cuda:0
+  exact   valid  config
+------------------------------------------------------------------------
+  3.3%   3.3%  remask=low_confidence gen=24 steps=24 block=24 temp=0.0
+  0.0%   0.0%  remask=entropy gen=24 steps=24 block=24 temp=0.0
+  3.3%   3.3%  remask=topk_margin gen=24 steps=24 block=24 temp=0.0
+  0.0%   0.0%  remask=random gen=24 steps=24 block=24 temp=0.0
+  0.0%   0.0%  remask=low_confidence gen=19 steps=19 block=19 temp=0.0
+  3.3%   3.3%  remask=entropy gen=19 steps=19 block=19 temp=0.0
+  3.3%   3.3%  remask=low_confidence gen=24 steps=48 block=24 temp=0.0
+  0.0%   0.0%  remask=entropy gen=24 steps=48 block=24 temp=0.0
+  3.3%   3.3%  remask=low_confidence gen=24 steps=96 block=24 temp=0.0
+  0.0%   0.0%  remask=entropy gen=24 steps=96 block=24 temp=0.0
+  0.0%   0.0%  remask=low_confidence gen=32 steps=32 block=32 temp=0.0
+  3.3%   3.3%  remask=entropy gen=32 steps=32 block=32 temp=0.0
+  0.0%   0.0%  remask=low_confidence gen=24 steps=24 block=8 temp=0.0
+  6.7%   6.7%  remask=entropy gen=24 steps=24 block=8 temp=0.0
+  0.0%   0.0%  remask=low_confidence gen=24 steps=24 block=4 temp=0.0
+  3.3%   3.3%  remask=entropy gen=24 steps=24 block=4 temp=0.0
+  3.3%   3.3%  remask=entropy gen=24 steps=24 block=24 temp=0.1
+------------------------------------------------------------------------
+BEST valid=6.7% exact=6.7% :: remask=entropy gen=24 steps=24 block=8 temp=0.0
+
