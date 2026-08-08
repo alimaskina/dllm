@@ -1,0 +1,14 @@
+# LLaDA quantization & eval — pip deps (after torch+cu124)
+# Install torch first:
+#   pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu124
+
+transformers==4.46.2
+accelerate==0.34.2
+datasets==5.0.0
+lm_eval==0.4.8
+bitsandbytes==0.44.1
+peft==0.19.1
+safetensors==0.8.0
+tqdm
+sentencepiece
+numpy

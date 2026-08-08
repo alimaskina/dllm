@@ -1,0 +1,7 @@
+{
+  "mode": "span",
+  "steps": 800,
+  "mean_loss_last100": 3.7028485107421876,
+  "intervention_rate": 0.21177944862155387,
+  "save_path": "causal_pilot/checkpoints/span/final"
+}

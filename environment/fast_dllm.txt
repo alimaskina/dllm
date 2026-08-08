@@ -1,0 +1,14 @@
+# Fast-dLLM / block_diffusion — pip deps (after torch+cu124)
+# Install torch first:
+#   pip install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 \
+#     --index-url https://download.pytorch.org/whl/cu124
+
+transformers==4.53.1
+accelerate==1.14.0
+datasets==5.0.1
+lm_eval==0.4.12
+tqdm
+sentencepiece
+einops
+matplotlib
+numpy

@@ -44,6 +44,7 @@ PoC проверял links **#1–#4** плюс sanity check на языкову
 | `fast_dllm_policy_sweep.py` | #6 | Policy sweep via block MDM adapter |
 | `run_next_experiments.sh` | infra | Batch: codebook + Dream/Fast-dLLM policy sweep |
 | `run_batch_v3.sh` | infra | Batch: codebook v3 + Fast-dLLM native + short prompt gen |
+| `causal_pilot/` | #7 | Causal continued pretraining: IID vs WORD vs SPAN |
 | `nll_oracle_audit.py` | #4 | Gold NLL на oracle trajectories |
 | `trajectory_utils.py` | infra | Shared trajectory / NLL helpers |
 | `language_competence_mcq.py` | sanity | MCQ: модель знает язык или нет |
@@ -870,11 +871,55 @@ MCQ из OPUS-100: 4 варианта перевода, вопрос «како�
 
 ## 10. Следующие шаги (приоритет)
 
-1. ~~**Fast-dLLM native trajectory**~~ — **сделано** (`fast_dllm_trajectory.py`); улучшить t-bin coverage (multi-unmask/step).
-2. **Codebook #5 v3+** — in-vocab codes, LLaDA same-vocab baseline, больше few-shot.
-3. ~~**Prompt gen short texts**~~ — **сделано** (`prompt_gen_eval_llada_short.json`).
-4. **Causal training** — lexical/group masking (§7), если #5 держится.
+1. **Causal pilot (§7)** — реализован в `causal_pilot/`; запуск `bash causal_pilot/run_causal_pilot.sh all`.
+2. ~~**Fast-dLLM native trajectory**~~ — **сделано**; улучшить t-bin coverage.
+3. **Codebook #5 v3+** — in-vocab codes, LLaDA same-vocab baseline.
+4. ~~**Prompt gen short texts**~~ — **сделано**.
 5. **ZH audit** с jieba; **competence** на Belebele / MGSM.
+
+---
+
+## 7. Causal pilot — selective training exposure (реализован, не запущен)
+
+### Гипотеза
+
+High NLL на **whole-unresolved multi-token states** — следствие недостаточного training exposure (t^k) или intrinsic difficulty? Pilot проверяет **причинно**: matched continued pretraining с extra exposure на whole units.
+
+### Три compute-matched режима (`causal_pilot/corruption.py`)
+
+| Mode | Что делаем |
+|------|------------|
+| **IID** | Independent Bernoulli(t) per token (baseline) |
+| **WORD** | ~25% eligible: слово k≥3 → fully masked |
+| **SPAN** | ~25% eligible: contiguous span k≥3, **не** = одно слово |
+
+**Matching:** IID → M masked; intervention force unit masked → rebalance unmask/mask **вне** unit до ровно M. Skip если len(unit) > M.
+
+### Pipeline
+
+```bash
+cd multi_language
+bash causal_pilot/run_causal_pilot.sh probe   # fix held-out probe (OPUS EN val)
+bash causal_pilot/run_causal_pilot.sh base    # NLL base LLaDA-8B-Base
+bash causal_pilot/run_causal_pilot.sh train   # 3 runs: IID, WORD, SPAN
+bash causal_pilot/run_causal_pilot.sh eval    # probe NLL + compare
+```
+
+**Shared:** OPUS EN train, AdamW lr=1e-5, 800 steps (default), max_seq_len=128, один init checkpoint `/home/alimaskina/dllm/model/LLaDA-8B-Base`.
+
+### Probe eval buckets
+
+`eval_probe.py`: oracle trajectory, gold NLL → buckets **k∈{2,3,4+}** × **t≈{0.2,0.3,0.4}** × **whole/partial**.
+
+`compare_runs.py`: **NLL_IID − NLL_WORD**, **NLL_IID − NLL_SPAN** per bucket.
+
+### Интерпретация
+
+- **WORD > SPAN > IID** (whole, k3/k4+, low t) → lexical fragmentation signal
+- **WORD ≈ SPAN > IID** → local-fragmentation GO
+- **≈ 0** → causal exposure hypothesis weak
+
+**Не в scope:** downstream benchmarks, multilingual eval.
 
 ---
 
@@ -899,3 +944,6 @@ MCQ из OPUS-100: 4 варианта перевода, вопрос «како�
 | `prompt_gen_eval_llada_short.json` | Prompt gen on short OPUS (≤48 tok) |
 | `nll_oracle_llada.json` | Gold NLL + by_k_t strata |
 | `competence_qwen15_mcq.json` | MCQ accuracy по языкам |
+| `causal_pilot/probe_set_en.json` | Fixed held-out probe (causal pilot) |
+| `causal_pilot/results/nll_probe_*.json` | Probe NLL per run (base/iid/word/span) |
+| `causal_pilot/results/causal_pilot_comparison.json` | NLL_IID − NLL_WORD/SPAN deltas |

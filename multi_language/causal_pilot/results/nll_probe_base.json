@@ -1,0 +1,86 @@
+{
+  "run_name": "base",
+  "checkpoint": "/home/alimaskina/dllm/model/LLaDA-8B-Base",
+  "n_probe_sentences": 120,
+  "n_nll_records": 61116,
+  "buckets": {
+    "k2|t0.2|partial": {
+      "mean_nll": 3.0090862543551955,
+      "n": 154
+    },
+    "k2|t0.2|whole": {
+      "mean_nll": 6.102205875941685,
+      "n": 840
+    },
+    "k2|t0.3|partial": {
+      "mean_nll": 3.2719773192154733,
+      "n": 95
+    },
+    "k2|t0.3|whole": {
+      "mean_nll": 6.433063744053696,
+      "n": 990
+    },
+    "k2|t0.4|partial": {
+      "mean_nll": 2.499164778776843,
+      "n": 99
+    },
+    "k2|t0.4|whole": {
+      "mean_nll": 6.792507167169225,
+      "n": 1710
+    },
+    "k3|t0.2|partial": {
+      "mean_nll": 3.141424821104322,
+      "n": 140
+    },
+    "k3|t0.2|whole": {
+      "mean_nll": 5.600989626165022,
+      "n": 456
+    },
+    "k3|t0.3|partial": {
+      "mean_nll": 3.319191924086562,
+      "n": 111
+    },
+    "k3|t0.3|whole": {
+      "mean_nll": 6.562944568452381,
+      "n": 525
+    },
+    "k3|t0.4|partial": {
+      "mean_nll": 3.7209673080038517,
+      "n": 141
+    },
+    "k3|t0.4|whole": {
+      "mean_nll": 6.694960700141059,
+      "n": 936
+    },
+    "k4plus|t0.2|partial": {
+      "mean_nll": 2.874820512594636,
+      "n": 291
+    },
+    "k4plus|t0.2|whole": {
+      "mean_nll": 5.155192729855372,
+      "n": 242
+    },
+    "k4plus|t0.3|partial": {
+      "mean_nll": 2.9391766572609925,
+      "n": 273
+    },
+    "k4plus|t0.3|whole": {
+      "mean_nll": 5.020954120046333,
+      "n": 317
+    },
+    "k4plus|t0.4|partial": {
+      "mean_nll": 3.1485805381723,
+      "n": 441
+    },
+    "k4plus|t0.4|whole": {
+      "mean_nll": 5.022480785940576,
+      "n": 635
+    }
+  },
+  "t_bins": [
+    0.2,
+    0.3,
+    0.4
+  ],
+  "t_tol": 0.08
+}

@@ -1,0 +1,5500 @@
+{
+  "model": "llada",
+  "lang": "en",
+  "seed": 42,
+  "n_probe": 20,
+  "min_len": 16,
+  "max_len": 128,
+  "sentences": [
+    {
+      "text": "The recent joint mission of Kuwaiti and Iraqi experts to Jordan is another example of continued efforts aimed at returning Kuwaiti property.",
+      "token_ids": [
+        678,
+        85526,
+        34364,
+        4798,
+        1732,
+        104552,
+        21114,
+        72,
+        457,
+        40,
+        17002,
+        72,
+        26984,
+        1616,
+        1534,
+        73538,
+        276,
+        43215,
+        18075,
+        1732,
+        96697,
+        20851,
+        3897,
+        2764,
+        286,
+        265,
+        1692,
+        283,
+        104552,
+        21114,
+        72,
+        8827,
+        13
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5,
+          6,
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9,
+          10,
+          11
+        ],
+        [
+          12,
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19
+        ],
+        [
+          20
+        ],
+        [
+          21,
+          22
+        ],
+        [
+          23,
+          24
+        ],
+        [
+          25
+        ],
+        [
+          26,
+          27
+        ],
+        [
+          28,
+          29,
+          30
+        ],
+        [
+          31,
+          32
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "The",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "recent",
+          "positions": [
+            1
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "joint",
+          "positions": [
+            2
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "mission",
+          "positions": [
+            3
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "of",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "Kuwaiti",
+          "positions": [
+            5,
+            6,
+            7
+          ],
+          "k": 3,
+          "char_len": 7
+        },
+        {
+          "word": "and",
+          "positions": [
+            8
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "Iraqi",
+          "positions": [
+            9,
+            10,
+            11
+          ],
+          "k": 3,
+          "char_len": 5
+        },
+        {
+          "word": "experts",
+          "positions": [
+            12,
+            13
+          ],
+          "k": 2,
+          "char_len": 7
+        },
+        {
+          "word": "to",
+          "positions": [
+            14
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "Jordan",
+          "positions": [
+            15
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "is",
+          "positions": [
+            16
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "another",
+          "positions": [
+            17
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "example",
+          "positions": [
+            18
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "of",
+          "positions": [
+            19
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "continued",
+          "positions": [
+            20
+          ],
+          "k": 1,
+          "char_len": 9
+        },
+        {
+          "word": "efforts",
+          "positions": [
+            21,
+            22
+          ],
+          "k": 2,
+          "char_len": 7
+        },
+        {
+          "word": "aimed",
+          "positions": [
+            23,
+            24
+          ],
+          "k": 2,
+          "char_len": 5
+        },
+        {
+          "word": "at",
+          "positions": [
+            25
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "returning",
+          "positions": [
+            26,
+            27
+          ],
+          "k": 2,
+          "char_len": 9
+        },
+        {
+          "word": "Kuwaiti",
+          "positions": [
+            28,
+            29,
+            30
+          ],
+          "k": 3,
+          "char_len": 7
+        },
+        {
+          "word": "property.",
+          "positions": [
+            31,
+            32
+          ],
+          "k": 2,
+          "char_len": 9
+        }
+      ]
+    },
+    {
+      "text": "We met on Garosu-gil*! (*Seoul's trendy area)",
+      "token_ids": [
+        1672,
+        5572,
+        262,
+        44229,
+        475,
+        84,
+        3941,
+        319,
+        9,
+        0,
+        9360,
+        3331,
+        7510,
+        698,
+        83,
+        15857,
+        88,
+        15875,
+        8
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        [
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16
+        ],
+        [
+          17,
+          18
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "We",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "met",
+          "positions": [
+            1
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "on",
+          "positions": [
+            2
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "Garosu-gil*!",
+          "positions": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "k": 7,
+          "char_len": 12
+        },
+        {
+          "word": "(*Seoul's",
+          "positions": [
+            10,
+            11,
+            12,
+            13
+          ],
+          "k": 4,
+          "char_len": 9
+        },
+        {
+          "word": "trendy",
+          "positions": [
+            14,
+            15,
+            16
+          ],
+          "k": 3,
+          "char_len": 6
+        },
+        {
+          "word": "area)",
+          "positions": [
+            17,
+            18
+          ],
+          "k": 2,
+          "char_len": 5
+        }
+      ]
+    },
+    {
+      "text": "But who, precisely, are those who do not repay their debts, and who are those who hire assassins to get rid of their creditors?",
+      "token_ids": [
+        3319,
+        17576,
+        11,
+        60348,
+        16288,
+        11,
+        647,
+        47128,
+        17576,
+        4279,
+        2345,
+        4411,
+        357,
+        35407,
+        38036,
+        1616,
+        11,
+        457,
+        17576,
+        647,
+        47128,
+        17576,
+        21351,
+        598,
+        598,
+        1608,
+        1534,
+        749,
+        2211,
+        1732,
+        35407,
+        63523,
+        8300,
+        30
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9
+        ],
+        [
+          10
+        ],
+        [
+          11,
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14,
+          15,
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19
+        ],
+        [
+          20
+        ],
+        [
+          21
+        ],
+        [
+          22
+        ],
+        [
+          23,
+          24,
+          25
+        ],
+        [
+          26
+        ],
+        [
+          27
+        ],
+        [
+          28
+        ],
+        [
+          29
+        ],
+        [
+          30
+        ],
+        [
+          31,
+          32,
+          33
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "But",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "who,",
+          "positions": [
+            1,
+            2
+          ],
+          "k": 2,
+          "char_len": 4
+        },
+        {
+          "word": "precisely,",
+          "positions": [
+            3,
+            4,
+            5
+          ],
+          "k": 3,
+          "char_len": 10
+        },
+        {
+          "word": "are",
+          "positions": [
+            6
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "those",
+          "positions": [
+            7
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "who",
+          "positions": [
+            8
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "do",
+          "positions": [
+            9
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "not",
+          "positions": [
+            10
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "repay",
+          "positions": [
+            11,
+            12
+          ],
+          "k": 2,
+          "char_len": 5
+        },
+        {
+          "word": "their",
+          "positions": [
+            13
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "debts,",
+          "positions": [
+            14,
+            15,
+            16
+          ],
+          "k": 3,
+          "char_len": 6
+        },
+        {
+          "word": "and",
+          "positions": [
+            17
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "who",
+          "positions": [
+            18
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "are",
+          "positions": [
+            19
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "those",
+          "positions": [
+            20
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "who",
+          "positions": [
+            21
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "hire",
+          "positions": [
+            22
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "assassins",
+          "positions": [
+            23,
+            24,
+            25
+          ],
+          "k": 3,
+          "char_len": 9
+        },
+        {
+          "word": "to",
+          "positions": [
+            26
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "get",
+          "positions": [
+            27
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "rid",
+          "positions": [
+            28
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "of",
+          "positions": [
+            29
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "their",
+          "positions": [
+            30
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "creditors?",
+          "positions": [
+            31,
+            32,
+            33
+          ],
+          "k": 3,
+          "char_len": 10
+        }
+      ]
+    },
+    {
+      "text": "6 That the Gentiles should be fellowheirs, and of the same body, and partakers of his promise in Christ by the gospel:",
+      "token_ids": [
+        21,
+        5638,
+        1614,
+        38,
+        310,
+        3192,
+        12735,
+        2339,
+        98363,
+        260,
+        24098,
+        11,
+        457,
+        1732,
+        1614,
+        36710,
+        5777,
+        11,
+        457,
+        5429,
+        9076,
+        1732,
+        21760,
+        105998,
+        258,
+        16116,
+        2473,
+        1614,
+        70,
+        21500,
+        25
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8,
+          9,
+          10,
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15
+        ],
+        [
+          16,
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19,
+          20
+        ],
+        [
+          21
+        ],
+        [
+          22
+        ],
+        [
+          23
+        ],
+        [
+          24
+        ],
+        [
+          25
+        ],
+        [
+          26
+        ],
+        [
+          27
+        ],
+        [
+          28,
+          29,
+          30
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "6",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 1
+        },
+        {
+          "word": "That",
+          "positions": [
+            1
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "the",
+          "positions": [
+            2
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "Gentiles",
+          "positions": [
+            3,
+            4,
+            5
+          ],
+          "k": 3,
+          "char_len": 8
+        },
+        {
+          "word": "should",
+          "positions": [
+            6
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "be",
+          "positions": [
+            7
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "fellowheirs,",
+          "positions": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "k": 4,
+          "char_len": 12
+        },
+        {
+          "word": "and",
+          "positions": [
+            12
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "of",
+          "positions": [
+            13
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "the",
+          "positions": [
+            14
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "same",
+          "positions": [
+            15
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "body,",
+          "positions": [
+            16,
+            17
+          ],
+          "k": 2,
+          "char_len": 5
+        },
+        {
+          "word": "and",
+          "positions": [
+            18
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "partakers",
+          "positions": [
+            19,
+            20
+          ],
+          "k": 2,
+          "char_len": 9
+        },
+        {
+          "word": "of",
+          "positions": [
+            21
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "his",
+          "positions": [
+            22
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "promise",
+          "positions": [
+            23
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "in",
+          "positions": [
+            24
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "Christ",
+          "positions": [
+            25
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "by",
+          "positions": [
+            26
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "the",
+          "positions": [
+            27
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "gospel:",
+          "positions": [
+            28,
+            29,
+            30
+          ],
+          "k": 3,
+          "char_len": 7
+        }
+      ]
+    },
+    {
+      "text": "25/03/2008, 18:41",
+      "token_ids": [
+        17,
+        20,
+        14,
+        15,
+        18,
+        14,
+        17,
+        15,
+        15,
+        23,
+        11,
+        16,
+        23,
+        25,
+        19,
+        16
+      ],
+      "word_positions": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        [
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "25/03/2008,",
+          "positions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "k": 11,
+          "char_len": 11
+        },
+        {
+          "word": "18:41",
+          "positions": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "k": 5,
+          "char_len": 5
+        }
+      ]
+    },
+    {
+      "text": "The epithom of indulgence ... Not an easy place to find, but once you are in and have shaken the initial shock at the beauty of it you want to stay there forever.",
+      "token_ids": [
+        678,
+        702,
+        377,
+        318,
+        1732,
+        606,
+        375,
+        18032,
+        1152,
+        4056,
+        278,
+        63718,
+        2980,
+        1534,
+        14896,
+        11,
+        6418,
+        29779,
+        10063,
+        647,
+        258,
+        457,
+        21189,
+        1292,
+        3849,
+        1614,
+        23581,
+        1292,
+        1441,
+        265,
+        1614,
+        122373,
+        1732,
+        275,
+        10063,
+        66911,
+        1534,
+        55627,
+        14707,
+        1388,
+        370,
+        13
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5,
+          6,
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9
+        ],
+        [
+          10
+        ],
+        [
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14,
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19
+        ],
+        [
+          20
+        ],
+        [
+          21
+        ],
+        [
+          22
+        ],
+        [
+          23,
+          24
+        ],
+        [
+          25
+        ],
+        [
+          26
+        ],
+        [
+          27,
+          28
+        ],
+        [
+          29
+        ],
+        [
+          30
+        ],
+        [
+          31
+        ],
+        [
+          32
+        ],
+        [
+          33
+        ],
+        [
+          34
+        ],
+        [
+          35
+        ],
+        [
+          36
+        ],
+        [
+          37
+        ],
+        [
+          38
+        ],
+        [
+          39,
+          40,
+          41
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "The",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "epithom",
+          "positions": [
+            1,
+            2,
+            3
+          ],
+          "k": 3,
+          "char_len": 7
+        },
+        {
+          "word": "of",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "indulgence",
+          "positions": [
+            5,
+            6,
+            7
+          ],
+          "k": 3,
+          "char_len": 10
+        },
+        {
+          "word": "...",
+          "positions": [
+            8
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "Not",
+          "positions": [
+            9
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "an",
+          "positions": [
+            10
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "easy",
+          "positions": [
+            11
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "place",
+          "positions": [
+            12
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "to",
+          "positions": [
+            13
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "find,",
+          "positions": [
+            14,
+            15
+          ],
+          "k": 2,
+          "char_len": 5
+        },
+        {
+          "word": "but",
+          "positions": [
+            16
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "once",
+          "positions": [
+            17
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "you",
+          "positions": [
+            18
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "are",
+          "positions": [
+            19
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "in",
+          "positions": [
+            20
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "and",
+          "positions": [
+            21
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "have",
+          "positions": [
+            22
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "shaken",
+          "positions": [
+            23,
+            24
+          ],
+          "k": 2,
+          "char_len": 6
+        },
+        {
+          "word": "the",
+          "positions": [
+            25
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "initial",
+          "positions": [
+            26
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "shock",
+          "positions": [
+            27,
+            28
+          ],
+          "k": 2,
+          "char_len": 5
+        },
+        {
+          "word": "at",
+          "positions": [
+            29
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "the",
+          "positions": [
+            30
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "beauty",
+          "positions": [
+            31
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "of",
+          "positions": [
+            32
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "it",
+          "positions": [
+            33
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "you",
+          "positions": [
+            34
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "want",
+          "positions": [
+            35
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "to",
+          "positions": [
+            36
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "stay",
+          "positions": [
+            37
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "there",
+          "positions": [
+            38
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "forever.",
+          "positions": [
+            39,
+            40,
+            41
+          ],
+          "k": 3,
+          "char_len": 8
+        }
+      ]
+    },
+    {
+      "text": "\u201cThe catchword for the Emelia will be environmental sustainability as well.",
+      "token_ids": [
+        13364,
+        35971,
+        3081,
+        2127,
+        1614,
+        7836,
+        43573,
+        17474,
+        2339,
+        40552,
+        280,
+        82,
+        19498,
+        2299,
+        302,
+        8729,
+        13
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9,
+          10
+        ],
+        [
+          11,
+          12,
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15,
+          16
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "\u201cThe",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "catchword",
+          "positions": [
+            1,
+            2
+          ],
+          "k": 2,
+          "char_len": 9
+        },
+        {
+          "word": "for",
+          "positions": [
+            3
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "the",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "Emelia",
+          "positions": [
+            5,
+            6
+          ],
+          "k": 2,
+          "char_len": 6
+        },
+        {
+          "word": "will",
+          "positions": [
+            7
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "be",
+          "positions": [
+            8
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "environmental",
+          "positions": [
+            9,
+            10
+          ],
+          "k": 2,
+          "char_len": 13
+        },
+        {
+          "word": "sustainability",
+          "positions": [
+            11,
+            12,
+            13
+          ],
+          "k": 3,
+          "char_len": 14
+        },
+        {
+          "word": "as",
+          "positions": [
+            14
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "well.",
+          "positions": [
+            15,
+            16
+          ],
+          "k": 2,
+          "char_len": 5
+        }
+      ]
+    },
+    {
+      "text": "Contracts may be signed at Customer Points (CPs) and/or Distribution Points (DPs).",
+      "token_ids": [
+        68209,
+        20910,
+        2339,
+        5169,
+        265,
+        21872,
+        20527,
+        7,
+        6584,
+        82,
+        8,
+        457,
+        6053,
+        50645,
+        20527,
+        10946,
+        10725,
+        931
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7,
+          8,
+          9,
+          10
+        ],
+        [
+          11,
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15,
+          16,
+          17
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "Contracts",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 9
+        },
+        {
+          "word": "may",
+          "positions": [
+            1
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "be",
+          "positions": [
+            2
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "signed",
+          "positions": [
+            3
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "at",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "Customer",
+          "positions": [
+            5
+          ],
+          "k": 1,
+          "char_len": 8
+        },
+        {
+          "word": "Points",
+          "positions": [
+            6
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "(CPs)",
+          "positions": [
+            7,
+            8,
+            9,
+            10
+          ],
+          "k": 4,
+          "char_len": 5
+        },
+        {
+          "word": "and/or",
+          "positions": [
+            11,
+            12
+          ],
+          "k": 2,
+          "char_len": 6
+        },
+        {
+          "word": "Distribution",
+          "positions": [
+            13
+          ],
+          "k": 1,
+          "char_len": 12
+        },
+        {
+          "word": "Points",
+          "positions": [
+            14
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "(DPs).",
+          "positions": [
+            15,
+            16,
+            17
+          ],
+          "k": 3,
+          "char_len": 6
+        }
+      ]
+    },
+    {
+      "text": "Like... like you could put on a pair of rubber gloves and head off to work for the day?",
+      "token_ids": [
+        9617,
+        1152,
+        5605,
+        10063,
+        35083,
+        1155,
+        262,
+        64,
+        25226,
+        1732,
+        81,
+        74191,
+        70,
+        502,
+        2487,
+        457,
+        3098,
+        3164,
+        1534,
+        2294,
+        2127,
+        1614,
+        1393,
+        30
+      ],
+      "word_positions": [
+        [
+          0,
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9
+        ],
+        [
+          10,
+          11
+        ],
+        [
+          12,
+          13,
+          14
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19
+        ],
+        [
+          20
+        ],
+        [
+          21
+        ],
+        [
+          22,
+          23
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "Like...",
+          "positions": [
+            0,
+            1
+          ],
+          "k": 2,
+          "char_len": 7
+        },
+        {
+          "word": "like",
+          "positions": [
+            2
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "you",
+          "positions": [
+            3
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "could",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "put",
+          "positions": [
+            5
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "on",
+          "positions": [
+            6
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "a",
+          "positions": [
+            7
+          ],
+          "k": 1,
+          "char_len": 1
+        },
+        {
+          "word": "pair",
+          "positions": [
+            8
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "of",
+          "positions": [
+            9
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "rubber",
+          "positions": [
+            10,
+            11
+          ],
+          "k": 2,
+          "char_len": 6
+        },
+        {
+          "word": "gloves",
+          "positions": [
+            12,
+            13,
+            14
+          ],
+          "k": 3,
+          "char_len": 6
+        },
+        {
+          "word": "and",
+          "positions": [
+            15
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "head",
+          "positions": [
+            16
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "off",
+          "positions": [
+            17
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "to",
+          "positions": [
+            18
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "work",
+          "positions": [
+            19
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "for",
+          "positions": [
+            20
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "the",
+          "positions": [
+            21
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "day?",
+          "positions": [
+            22,
+            23
+          ],
+          "k": 2,
+          "char_len": 4
+        }
+      ]
+    },
+    {
+      "text": "Trash packs #3 Unknown encounter (00:02:20)",
+      "token_ids": [
+        2729,
+        1461,
+        4488,
+        82,
+        2,
+        18,
+        21466,
+        3581,
+        9282,
+        7,
+        15,
+        15,
+        25,
+        15,
+        17,
+        25,
+        17,
+        15,
+        8
+      ],
+      "word_positions": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "Trash",
+          "positions": [
+            0,
+            1
+          ],
+          "k": 2,
+          "char_len": 5
+        },
+        {
+          "word": "packs",
+          "positions": [
+            2,
+            3
+          ],
+          "k": 2,
+          "char_len": 5
+        },
+        {
+          "word": "#3",
+          "positions": [
+            4,
+            5
+          ],
+          "k": 2,
+          "char_len": 2
+        },
+        {
+          "word": "Unknown",
+          "positions": [
+            6
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "encounter",
+          "positions": [
+            7,
+            8
+          ],
+          "k": 2,
+          "char_len": 9
+        },
+        {
+          "word": "(00:02:20)",
+          "positions": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18
+          ],
+          "k": 10,
+          "char_len": 10
+        }
+      ]
+    },
+    {
+      "text": "#8 \u7eb3\u5179\u6208\u6797\u5c06\u519b 25 (00:06:45)",
+      "token_ids": [
+        2,
+        23,
+        3956,
+        16622,
+        15033,
+        2112,
+        11145,
+        17,
+        20,
+        7,
+        15,
+        15,
+        25,
+        15,
+        21,
+        25,
+        19,
+        20,
+        8
+      ],
+      "word_positions": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "#8",
+          "positions": [
+            0,
+            1
+          ],
+          "k": 2,
+          "char_len": 2
+        },
+        {
+          "word": "\u7eb3\u5179\u6208\u6797\u5c06\u519b",
+          "positions": [
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "k": 5,
+          "char_len": 6
+        },
+        {
+          "word": "25",
+          "positions": [
+            7,
+            8
+          ],
+          "k": 2,
+          "char_len": 2
+        },
+        {
+          "word": "(00:06:45)",
+          "positions": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18
+          ],
+          "k": 10,
+          "char_len": 10
+        }
+      ]
+    },
+    {
+      "text": "Phone: +7 (8442) 23 66 80, fax: +7 (8442) 23 66 72",
+      "token_ids": [
+        8758,
+        25,
+        10,
+        22,
+        7,
+        23,
+        19,
+        19,
+        17,
+        8,
+        17,
+        18,
+        21,
+        21,
+        23,
+        15,
+        11,
+        57461,
+        25,
+        10,
+        22,
+        7,
+        23,
+        19,
+        19,
+        17,
+        8,
+        17,
+        18,
+        21,
+        21,
+        22,
+        17
+      ],
+      "word_positions": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        [
+          10,
+          11
+        ],
+        [
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16
+        ],
+        [
+          17,
+          18
+        ],
+        [
+          19,
+          20
+        ],
+        [
+          21,
+          22,
+          23,
+          24,
+          25,
+          26
+        ],
+        [
+          27,
+          28
+        ],
+        [
+          29,
+          30
+        ],
+        [
+          31,
+          32
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "Phone:",
+          "positions": [
+            0,
+            1
+          ],
+          "k": 2,
+          "char_len": 6
+        },
+        {
+          "word": "+7",
+          "positions": [
+            2,
+            3
+          ],
+          "k": 2,
+          "char_len": 2
+        },
+        {
+          "word": "(8442)",
+          "positions": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "k": 6,
+          "char_len": 6
+        },
+        {
+          "word": "23",
+          "positions": [
+            10,
+            11
+          ],
+          "k": 2,
+          "char_len": 2
+        },
+        {
+          "word": "66",
+          "positions": [
+            12,
+            13
+          ],
+          "k": 2,
+          "char_len": 2
+        },
+        {
+          "word": "80,",
+          "positions": [
+            14,
+            15,
+            16
+          ],
+          "k": 3,
+          "char_len": 3
+        },
+        {
+          "word": "fax:",
+          "positions": [
+            17,
+            18
+          ],
+          "k": 2,
+          "char_len": 4
+        },
+        {
+          "word": "+7",
+          "positions": [
+            19,
+            20
+          ],
+          "k": 2,
+          "char_len": 2
+        },
+        {
+          "word": "(8442)",
+          "positions": [
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "k": 6,
+          "char_len": 6
+        },
+        {
+          "word": "23",
+          "positions": [
+            27,
+            28
+          ],
+          "k": 2,
+          "char_len": 2
+        },
+        {
+          "word": "66",
+          "positions": [
+            29,
+            30
+          ],
+          "k": 2,
+          "char_len": 2
+        },
+        {
+          "word": "72",
+          "positions": [
+            31,
+            32
+          ],
+          "k": 2,
+          "char_len": 2
+        }
+      ]
+    },
+    {
+      "text": "There you are! You are called upon to spend in the Way of Allah.",
+      "token_ids": [
+        3727,
+        10063,
+        647,
+        0,
+        2496,
+        647,
+        52129,
+        53293,
+        1534,
+        1470,
+        486,
+        258,
+        1614,
+        37986,
+        1732,
+        3808,
+        1964,
+        13
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9,
+          10
+        ],
+        [
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15,
+          16,
+          17
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "There",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "you",
+          "positions": [
+            1
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "are!",
+          "positions": [
+            2,
+            3
+          ],
+          "k": 2,
+          "char_len": 4
+        },
+        {
+          "word": "You",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "are",
+          "positions": [
+            5
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "called",
+          "positions": [
+            6
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "upon",
+          "positions": [
+            7
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "to",
+          "positions": [
+            8
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "spend",
+          "positions": [
+            9,
+            10
+          ],
+          "k": 2,
+          "char_len": 5
+        },
+        {
+          "word": "in",
+          "positions": [
+            11
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "the",
+          "positions": [
+            12
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "Way",
+          "positions": [
+            13
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "of",
+          "positions": [
+            14
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "Allah.",
+          "positions": [
+            15,
+            16,
+            17
+          ],
+          "k": 3,
+          "char_len": 6
+        }
+      ]
+    },
+    {
+      "text": "The explanation is that after the defeat at the front the government has lost credit with the foreign bankers.",
+      "token_ids": [
+        678,
+        535,
+        38758,
+        276,
+        7973,
+        12660,
+        1614,
+        1413,
+        58050,
+        265,
+        1614,
+        14932,
+        1614,
+        67762,
+        10995,
+        68911,
+        72255,
+        5775,
+        1614,
+        54003,
+        28382,
+        427,
+        13
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          9
+        ],
+        [
+          10
+        ],
+        [
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19
+        ],
+        [
+          20,
+          21,
+          22
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "The",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "explanation",
+          "positions": [
+            1,
+            2
+          ],
+          "k": 2,
+          "char_len": 11
+        },
+        {
+          "word": "is",
+          "positions": [
+            3
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "that",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "after",
+          "positions": [
+            5
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "the",
+          "positions": [
+            6
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "defeat",
+          "positions": [
+            7,
+            8
+          ],
+          "k": 2,
+          "char_len": 6
+        },
+        {
+          "word": "at",
+          "positions": [
+            9
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "the",
+          "positions": [
+            10
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "front",
+          "positions": [
+            11
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "the",
+          "positions": [
+            12
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "government",
+          "positions": [
+            13
+          ],
+          "k": 1,
+          "char_len": 10
+        },
+        {
+          "word": "has",
+          "positions": [
+            14
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "lost",
+          "positions": [
+            15
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "credit",
+          "positions": [
+            16
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "with",
+          "positions": [
+            17
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "the",
+          "positions": [
+            18
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "foreign",
+          "positions": [
+            19
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "bankers.",
+          "positions": [
+            20,
+            21,
+            22
+          ],
+          "k": 3,
+          "char_len": 8
+        }
+      ]
+    },
+    {
+      "text": "As evidence of its contract losses, Wolff & M\u00fcller provided extracts from the contract with Amanat along with the general terms and conditions.",
+      "token_ids": [
+        2441,
+        64763,
+        1732,
+        1331,
+        29823,
+        35688,
+        273,
+        11,
+        54,
+        342,
+        579,
+        5,
+        44,
+        96249,
+        76518,
+        48539,
+        82,
+        4332,
+        1614,
+        29823,
+        5775,
+        32,
+        2228,
+        265,
+        47720,
+        5775,
+        1614,
+        44293,
+        39706,
+        457,
+        38755,
+        13
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5,
+          6,
+          7
+        ],
+        [
+          8,
+          9,
+          10
+        ],
+        [
+          11
+        ],
+        [
+          12,
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15,
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19
+        ],
+        [
+          20
+        ],
+        [
+          21,
+          22,
+          23
+        ],
+        [
+          24
+        ],
+        [
+          25
+        ],
+        [
+          26
+        ],
+        [
+          27
+        ],
+        [
+          28
+        ],
+        [
+          29
+        ],
+        [
+          30,
+          31
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "As",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "evidence",
+          "positions": [
+            1
+          ],
+          "k": 1,
+          "char_len": 8
+        },
+        {
+          "word": "of",
+          "positions": [
+            2
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "its",
+          "positions": [
+            3
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "contract",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 8
+        },
+        {
+          "word": "losses,",
+          "positions": [
+            5,
+            6,
+            7
+          ],
+          "k": 3,
+          "char_len": 7
+        },
+        {
+          "word": "Wolff",
+          "positions": [
+            8,
+            9,
+            10
+          ],
+          "k": 3,
+          "char_len": 5
+        },
+        {
+          "word": "&",
+          "positions": [
+            11
+          ],
+          "k": 1,
+          "char_len": 1
+        },
+        {
+          "word": "M\u00fcller",
+          "positions": [
+            12,
+            13
+          ],
+          "k": 2,
+          "char_len": 6
+        },
+        {
+          "word": "provided",
+          "positions": [
+            14
+          ],
+          "k": 1,
+          "char_len": 8
+        },
+        {
+          "word": "extracts",
+          "positions": [
+            15,
+            16
+          ],
+          "k": 2,
+          "char_len": 8
+        },
+        {
+          "word": "from",
+          "positions": [
+            17
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "the",
+          "positions": [
+            18
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "contract",
+          "positions": [
+            19
+          ],
+          "k": 1,
+          "char_len": 8
+        },
+        {
+          "word": "with",
+          "positions": [
+            20
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "Amanat",
+          "positions": [
+            21,
+            22,
+            23
+          ],
+          "k": 3,
+          "char_len": 6
+        },
+        {
+          "word": "along",
+          "positions": [
+            24
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "with",
+          "positions": [
+            25
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "the",
+          "positions": [
+            26
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "general",
+          "positions": [
+            27
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "terms",
+          "positions": [
+            28
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "and",
+          "positions": [
+            29
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "conditions.",
+          "positions": [
+            30,
+            31
+          ],
+          "k": 2,
+          "char_len": 11
+        }
+      ]
+    },
+    {
+      "text": "She says that even before she left her house forever, she knew that whether or not the house survived was \u201cnot her decision\u201d \u2013 it was up to God.",
+      "token_ids": [
+        6572,
+        123953,
+        7973,
+        9807,
+        25253,
+        12768,
+        3634,
+        415,
+        8701,
+        1388,
+        370,
+        11,
+        12768,
+        74,
+        2484,
+        7973,
+        42452,
+        269,
+        2345,
+        1614,
+        8701,
+        29164,
+        85,
+        2781,
+        13220,
+        424,
+        2345,
+        415,
+        108457,
+        447,
+        3302,
+        275,
+        13220,
+        1224,
+        1534,
+        23105,
+        13
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9,
+          10,
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13,
+          14
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19
+        ],
+        [
+          20
+        ],
+        [
+          21,
+          22,
+          23
+        ],
+        [
+          24
+        ],
+        [
+          25,
+          26
+        ],
+        [
+          27
+        ],
+        [
+          28,
+          29
+        ],
+        [
+          30
+        ],
+        [
+          31
+        ],
+        [
+          32
+        ],
+        [
+          33
+        ],
+        [
+          34
+        ],
+        [
+          35,
+          36
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "She",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "says",
+          "positions": [
+            1
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "that",
+          "positions": [
+            2
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "even",
+          "positions": [
+            3
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "before",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "she",
+          "positions": [
+            5
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "left",
+          "positions": [
+            6
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "her",
+          "positions": [
+            7
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "house",
+          "positions": [
+            8
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "forever,",
+          "positions": [
+            9,
+            10,
+            11
+          ],
+          "k": 3,
+          "char_len": 8
+        },
+        {
+          "word": "she",
+          "positions": [
+            12
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "knew",
+          "positions": [
+            13,
+            14
+          ],
+          "k": 2,
+          "char_len": 4
+        },
+        {
+          "word": "that",
+          "positions": [
+            15
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "whether",
+          "positions": [
+            16
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "or",
+          "positions": [
+            17
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "not",
+          "positions": [
+            18
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "the",
+          "positions": [
+            19
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "house",
+          "positions": [
+            20
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "survived",
+          "positions": [
+            21,
+            22,
+            23
+          ],
+          "k": 3,
+          "char_len": 8
+        },
+        {
+          "word": "was",
+          "positions": [
+            24
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "\u201cnot",
+          "positions": [
+            25,
+            26
+          ],
+          "k": 2,
+          "char_len": 4
+        },
+        {
+          "word": "her",
+          "positions": [
+            27
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "decision\u201d",
+          "positions": [
+            28,
+            29
+          ],
+          "k": 2,
+          "char_len": 9
+        },
+        {
+          "word": "\u2013",
+          "positions": [
+            30
+          ],
+          "k": 1,
+          "char_len": 1
+        },
+        {
+          "word": "it",
+          "positions": [
+            31
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "was",
+          "positions": [
+            32
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "up",
+          "positions": [
+            33
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "to",
+          "positions": [
+            34
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "God.",
+          "positions": [
+            35,
+            36
+          ],
+          "k": 2,
+          "char_len": 4
+        }
+      ]
+    },
+    {
+      "text": "Building codes have a long history. It is believed that the first building code was the Code of Hammurabi, the king of Babylon (18th century BC).",
+      "token_ids": [
+        31472,
+        45668,
+        21189,
+        64,
+        9274,
+        47454,
+        13,
+        1666,
+        276,
+        32986,
+        2297,
+        7973,
+        1614,
+        11682,
+        29987,
+        3065,
+        13220,
+        1614,
+        5069,
+        1732,
+        39,
+        11795,
+        359,
+        26323,
+        11,
+        1614,
+        10945,
+        1732,
+        93707,
+        29966,
+        7,
+        16,
+        23,
+        444,
+        2161,
+        3013,
+        5954,
+        931
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9,
+          10
+        ],
+        [
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24
+        ],
+        [
+          25
+        ],
+        [
+          26
+        ],
+        [
+          27
+        ],
+        [
+          28,
+          29
+        ],
+        [
+          30,
+          31,
+          32,
+          33
+        ],
+        [
+          34,
+          35
+        ],
+        [
+          36,
+          37
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "Building",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 8
+        },
+        {
+          "word": "codes",
+          "positions": [
+            1
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "have",
+          "positions": [
+            2
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "a",
+          "positions": [
+            3
+          ],
+          "k": 1,
+          "char_len": 1
+        },
+        {
+          "word": "long",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "history.",
+          "positions": [
+            5,
+            6
+          ],
+          "k": 2,
+          "char_len": 8
+        },
+        {
+          "word": "It",
+          "positions": [
+            7
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "is",
+          "positions": [
+            8
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "believed",
+          "positions": [
+            9,
+            10
+          ],
+          "k": 2,
+          "char_len": 8
+        },
+        {
+          "word": "that",
+          "positions": [
+            11
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "the",
+          "positions": [
+            12
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "first",
+          "positions": [
+            13
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "building",
+          "positions": [
+            14
+          ],
+          "k": 1,
+          "char_len": 8
+        },
+        {
+          "word": "code",
+          "positions": [
+            15
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "was",
+          "positions": [
+            16
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "the",
+          "positions": [
+            17
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "Code",
+          "positions": [
+            18
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "of",
+          "positions": [
+            19
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "Hammurabi,",
+          "positions": [
+            20,
+            21,
+            22,
+            23,
+            24
+          ],
+          "k": 5,
+          "char_len": 10
+        },
+        {
+          "word": "the",
+          "positions": [
+            25
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "king",
+          "positions": [
+            26
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "of",
+          "positions": [
+            27
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "Babylon",
+          "positions": [
+            28,
+            29
+          ],
+          "k": 2,
+          "char_len": 7
+        },
+        {
+          "word": "(18th",
+          "positions": [
+            30,
+            31,
+            32,
+            33
+          ],
+          "k": 4,
+          "char_len": 5
+        },
+        {
+          "word": "century",
+          "positions": [
+            34,
+            35
+          ],
+          "k": 2,
+          "char_len": 7
+        },
+        {
+          "word": "BC).",
+          "positions": [
+            36,
+            37
+          ],
+          "k": 2,
+          "char_len": 4
+        }
+      ]
+    },
+    {
+      "text": "Radiohead's album \"In Rainbows\" - 38% of downloaders have paid on Slashdot there's an interesting entry on the [...] ...",
+      "token_ids": [
+        34512,
+        3098,
+        698,
+        62900,
+        58507,
+        56890,
+        61861,
+        1,
+        12,
+        18,
+        23,
+        4,
+        1732,
+        25847,
+        427,
+        21189,
+        75862,
+        262,
+        104905,
+        17208,
+        14707,
+        698,
+        278,
+        83844,
+        8641,
+        262,
+        1614,
+        39077,
+        1152
+      ],
+      "word_positions": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5,
+          6,
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9,
+          10,
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13,
+          14
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18,
+          19
+        ],
+        [
+          20,
+          21
+        ],
+        [
+          22
+        ],
+        [
+          23
+        ],
+        [
+          24
+        ],
+        [
+          25
+        ],
+        [
+          26
+        ],
+        [
+          27
+        ],
+        [
+          28
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "Radiohead's",
+          "positions": [
+            0,
+            1,
+            2
+          ],
+          "k": 3,
+          "char_len": 11
+        },
+        {
+          "word": "album",
+          "positions": [
+            3
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "\"In",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "Rainbows\"",
+          "positions": [
+            5,
+            6,
+            7
+          ],
+          "k": 3,
+          "char_len": 9
+        },
+        {
+          "word": "-",
+          "positions": [
+            8
+          ],
+          "k": 1,
+          "char_len": 1
+        },
+        {
+          "word": "38%",
+          "positions": [
+            9,
+            10,
+            11
+          ],
+          "k": 3,
+          "char_len": 3
+        },
+        {
+          "word": "of",
+          "positions": [
+            12
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "downloaders",
+          "positions": [
+            13,
+            14
+          ],
+          "k": 2,
+          "char_len": 11
+        },
+        {
+          "word": "have",
+          "positions": [
+            15
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "paid",
+          "positions": [
+            16
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "on",
+          "positions": [
+            17
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "Slashdot",
+          "positions": [
+            18,
+            19
+          ],
+          "k": 2,
+          "char_len": 8
+        },
+        {
+          "word": "there's",
+          "positions": [
+            20,
+            21
+          ],
+          "k": 2,
+          "char_len": 7
+        },
+        {
+          "word": "an",
+          "positions": [
+            22
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "interesting",
+          "positions": [
+            23
+          ],
+          "k": 1,
+          "char_len": 11
+        },
+        {
+          "word": "entry",
+          "positions": [
+            24
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "on",
+          "positions": [
+            25
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "the",
+          "positions": [
+            26
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "[...]",
+          "positions": [
+            27
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "...",
+          "positions": [
+            28
+          ],
+          "k": 1,
+          "char_len": 3
+        }
+      ]
+    },
+    {
+      "text": "In connection with the implementation of article 7 of the Convention, the Committee reiterates its previous recommendation that the State party take all necessary measures to ensure the training and education of law enforcement officials, teachers and social workers, and include the teaching of human rights in school curricula.",
+      "token_ids": [
+        846,
+        21425,
+        5775,
+        1614,
+        39741,
+        1732,
+        16906,
+        22,
+        1732,
+        1614,
+        52760,
+        11,
+        1614,
+        102705,
+        261,
+        3290,
+        1068,
+        1331,
+        44816,
+        261,
+        27593,
+        356,
+        7973,
+        1614,
+        3754,
+        58668,
+        37523,
+        557,
+        96022,
+        119270,
+        1534,
+        20316,
+        1614,
+        70474,
+        457,
+        80289,
+        1732,
+        20080,
+        271,
+        28350,
+        46402,
+        82,
+        11,
+        932,
+        26641,
+        457,
+        49847,
+        77571,
+        11,
+        457,
+        3274,
+        1614,
+        932,
+        4623,
+        1732,
+        34783,
+        98601,
+        258,
+        56320,
+        14437,
+        94888,
+        13
+      ],
+      "word_positions": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9
+        ],
+        [
+          10,
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14,
+          15,
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19,
+          20,
+          21
+        ],
+        [
+          22
+        ],
+        [
+          23
+        ],
+        [
+          24
+        ],
+        [
+          25
+        ],
+        [
+          26
+        ],
+        [
+          27
+        ],
+        [
+          28
+        ],
+        [
+          29
+        ],
+        [
+          30
+        ],
+        [
+          31
+        ],
+        [
+          32
+        ],
+        [
+          33
+        ],
+        [
+          34
+        ],
+        [
+          35
+        ],
+        [
+          36
+        ],
+        [
+          37
+        ],
+        [
+          38,
+          39
+        ],
+        [
+          40,
+          41,
+          42
+        ],
+        [
+          43,
+          44
+        ],
+        [
+          45
+        ],
+        [
+          46
+        ],
+        [
+          47,
+          48
+        ],
+        [
+          49
+        ],
+        [
+          50
+        ],
+        [
+          51
+        ],
+        [
+          52,
+          53
+        ],
+        [
+          54
+        ],
+        [
+          55
+        ],
+        [
+          56
+        ],
+        [
+          57
+        ],
+        [
+          58
+        ],
+        [
+          59,
+          60,
+          61
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "In",
+          "positions": [
+            0
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "connection",
+          "positions": [
+            1
+          ],
+          "k": 1,
+          "char_len": 10
+        },
+        {
+          "word": "with",
+          "positions": [
+            2
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "the",
+          "positions": [
+            3
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "implementation",
+          "positions": [
+            4
+          ],
+          "k": 1,
+          "char_len": 14
+        },
+        {
+          "word": "of",
+          "positions": [
+            5
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "article",
+          "positions": [
+            6
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "7",
+          "positions": [
+            7
+          ],
+          "k": 1,
+          "char_len": 1
+        },
+        {
+          "word": "of",
+          "positions": [
+            8
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "the",
+          "positions": [
+            9
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "Convention,",
+          "positions": [
+            10,
+            11
+          ],
+          "k": 2,
+          "char_len": 11
+        },
+        {
+          "word": "the",
+          "positions": [
+            12
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "Committee",
+          "positions": [
+            13
+          ],
+          "k": 1,
+          "char_len": 9
+        },
+        {
+          "word": "reiterates",
+          "positions": [
+            14,
+            15,
+            16
+          ],
+          "k": 3,
+          "char_len": 10
+        },
+        {
+          "word": "its",
+          "positions": [
+            17
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "previous",
+          "positions": [
+            18
+          ],
+          "k": 1,
+          "char_len": 8
+        },
+        {
+          "word": "recommendation",
+          "positions": [
+            19,
+            20,
+            21
+          ],
+          "k": 3,
+          "char_len": 14
+        },
+        {
+          "word": "that",
+          "positions": [
+            22
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "the",
+          "positions": [
+            23
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "State",
+          "positions": [
+            24
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "party",
+          "positions": [
+            25
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "take",
+          "positions": [
+            26
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "all",
+          "positions": [
+            27
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "necessary",
+          "positions": [
+            28
+          ],
+          "k": 1,
+          "char_len": 9
+        },
+        {
+          "word": "measures",
+          "positions": [
+            29
+          ],
+          "k": 1,
+          "char_len": 8
+        },
+        {
+          "word": "to",
+          "positions": [
+            30
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "ensure",
+          "positions": [
+            31
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "the",
+          "positions": [
+            32
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "training",
+          "positions": [
+            33
+          ],
+          "k": 1,
+          "char_len": 8
+        },
+        {
+          "word": "and",
+          "positions": [
+            34
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "education",
+          "positions": [
+            35
+          ],
+          "k": 1,
+          "char_len": 9
+        },
+        {
+          "word": "of",
+          "positions": [
+            36
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "law",
+          "positions": [
+            37
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "enforcement",
+          "positions": [
+            38,
+            39
+          ],
+          "k": 2,
+          "char_len": 11
+        },
+        {
+          "word": "officials,",
+          "positions": [
+            40,
+            41,
+            42
+          ],
+          "k": 3,
+          "char_len": 10
+        },
+        {
+          "word": "teachers",
+          "positions": [
+            43,
+            44
+          ],
+          "k": 2,
+          "char_len": 8
+        },
+        {
+          "word": "and",
+          "positions": [
+            45
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "social",
+          "positions": [
+            46
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "workers,",
+          "positions": [
+            47,
+            48
+          ],
+          "k": 2,
+          "char_len": 8
+        },
+        {
+          "word": "and",
+          "positions": [
+            49
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "include",
+          "positions": [
+            50
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "the",
+          "positions": [
+            51
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "teaching",
+          "positions": [
+            52,
+            53
+          ],
+          "k": 2,
+          "char_len": 8
+        },
+        {
+          "word": "of",
+          "positions": [
+            54
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "human",
+          "positions": [
+            55
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "rights",
+          "positions": [
+            56
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "in",
+          "positions": [
+            57
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "school",
+          "positions": [
+            58
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "curricula.",
+          "positions": [
+            59,
+            60,
+            61
+          ],
+          "k": 3,
+          "char_len": 10
+        }
+      ]
+    },
+    {
+      "text": "Uh, anyway, that floatation device that those men were found clinging to... the boys in the lab were able to clean it up and pull a serial number, which I ran through various maritime databases, and it belongs",
+      "token_ids": [
+        70501,
+        11,
+        1496,
+        1885,
+        11,
+        7973,
+        10298,
+        356,
+        20729,
+        7973,
+        47128,
+        8728,
+        36224,
+        22626,
+        615,
+        53179,
+        1534,
+        1152,
+        1614,
+        38849,
+        258,
+        1614,
+        18252,
+        36224,
+        600,
+        1534,
+        34477,
+        275,
+        1224,
+        457,
+        60578,
+        64,
+        32937,
+        13154,
+        11,
+        8040,
+        40,
+        6956,
+        19964,
+        2707,
+        1183,
+        7261,
+        31812,
+        18156,
+        23247,
+        11,
+        457,
+        275,
+        16398,
+        40871
+      ],
+      "word_positions": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9
+        ],
+        [
+          10
+        ],
+        [
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14,
+          15
+        ],
+        [
+          16,
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19
+        ],
+        [
+          20
+        ],
+        [
+          21
+        ],
+        [
+          22
+        ],
+        [
+          23
+        ],
+        [
+          24
+        ],
+        [
+          25
+        ],
+        [
+          26
+        ],
+        [
+          27
+        ],
+        [
+          28
+        ],
+        [
+          29
+        ],
+        [
+          30
+        ],
+        [
+          31
+        ],
+        [
+          32
+        ],
+        [
+          33,
+          34
+        ],
+        [
+          35
+        ],
+        [
+          36
+        ],
+        [
+          37
+        ],
+        [
+          38
+        ],
+        [
+          39,
+          40
+        ],
+        [
+          41,
+          42
+        ],
+        [
+          43,
+          44,
+          45
+        ],
+        [
+          46
+        ],
+        [
+          47
+        ],
+        [
+          48,
+          49
+        ]
+      ],
+      "word_metas": [
+        {
+          "word": "Uh,",
+          "positions": [
+            0,
+            1
+          ],
+          "k": 2,
+          "char_len": 3
+        },
+        {
+          "word": "anyway,",
+          "positions": [
+            2,
+            3,
+            4
+          ],
+          "k": 3,
+          "char_len": 7
+        },
+        {
+          "word": "that",
+          "positions": [
+            5
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "floatation",
+          "positions": [
+            6,
+            7
+          ],
+          "k": 2,
+          "char_len": 10
+        },
+        {
+          "word": "device",
+          "positions": [
+            8
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "that",
+          "positions": [
+            9
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "those",
+          "positions": [
+            10
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "men",
+          "positions": [
+            11
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "were",
+          "positions": [
+            12
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "found",
+          "positions": [
+            13
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "clinging",
+          "positions": [
+            14,
+            15
+          ],
+          "k": 2,
+          "char_len": 8
+        },
+        {
+          "word": "to...",
+          "positions": [
+            16,
+            17
+          ],
+          "k": 2,
+          "char_len": 5
+        },
+        {
+          "word": "the",
+          "positions": [
+            18
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "boys",
+          "positions": [
+            19
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "in",
+          "positions": [
+            20
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "the",
+          "positions": [
+            21
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "lab",
+          "positions": [
+            22
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "were",
+          "positions": [
+            23
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "able",
+          "positions": [
+            24
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "to",
+          "positions": [
+            25
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "clean",
+          "positions": [
+            26
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "it",
+          "positions": [
+            27
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "up",
+          "positions": [
+            28
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "and",
+          "positions": [
+            29
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "pull",
+          "positions": [
+            30
+          ],
+          "k": 1,
+          "char_len": 4
+        },
+        {
+          "word": "a",
+          "positions": [
+            31
+          ],
+          "k": 1,
+          "char_len": 1
+        },
+        {
+          "word": "serial",
+          "positions": [
+            32
+          ],
+          "k": 1,
+          "char_len": 6
+        },
+        {
+          "word": "number,",
+          "positions": [
+            33,
+            34
+          ],
+          "k": 2,
+          "char_len": 7
+        },
+        {
+          "word": "which",
+          "positions": [
+            35
+          ],
+          "k": 1,
+          "char_len": 5
+        },
+        {
+          "word": "I",
+          "positions": [
+            36
+          ],
+          "k": 1,
+          "char_len": 1
+        },
+        {
+          "word": "ran",
+          "positions": [
+            37
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "through",
+          "positions": [
+            38
+          ],
+          "k": 1,
+          "char_len": 7
+        },
+        {
+          "word": "various",
+          "positions": [
+            39,
+            40
+          ],
+          "k": 2,
+          "char_len": 7
+        },
+        {
+          "word": "maritime",
+          "positions": [
+            41,
+            42
+          ],
+          "k": 2,
+          "char_len": 8
+        },
+        {
+          "word": "databases,",
+          "positions": [
+            43,
+            44,
+            45
+          ],
+          "k": 3,
+          "char_len": 10
+        },
+        {
+          "word": "and",
+          "positions": [
+            46
+          ],
+          "k": 1,
+          "char_len": 3
+        },
+        {
+          "word": "it",
+          "positions": [
+            47
+          ],
+          "k": 1,
+          "char_len": 2
+        },
+        {
+          "word": "belongs",
+          "positions": [
+            48,
+            49
+          ],
+          "k": 2,
+          "char_len": 7
+        }
+      ]
+    }
+  ]
+}

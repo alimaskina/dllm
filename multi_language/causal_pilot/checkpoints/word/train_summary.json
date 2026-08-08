@@ -1,0 +1,7 @@
+{
+  "mode": "word",
+  "steps": 800,
+  "mean_loss_last100": 3.5590492248535157,
+  "intervention_rate": 0.19573400250941028,
+  "save_path": "causal_pilot/checkpoints/word/final"
+}

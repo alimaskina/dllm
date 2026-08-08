@@ -1,5 +1,6 @@
 # Large model weights (hosted locally, not on GitHub)
 quant_dllm_upstream/output/
+multi_language/causal_pilot/checkpoints/**/model.safetensors
 
 # Python caches
 __pycache__/
