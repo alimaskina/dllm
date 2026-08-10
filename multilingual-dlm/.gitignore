@@ -1,0 +1,11 @@
+# Minimal shared repo for LLaDA / Dream experiments.
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.DS_Store
+*.safetensors
+checkpoints/

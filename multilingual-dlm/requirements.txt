@@ -1,0 +1,8 @@
+# Install torch separately via setup.sh (CUDA wheel).
+transformers>=4.46.0,<6
+accelerate>=0.34.0
+safetensors>=0.4.0
+huggingface_hub>=0.24.0
+datasets>=3.0.0
+numpy
+sentencepiece
