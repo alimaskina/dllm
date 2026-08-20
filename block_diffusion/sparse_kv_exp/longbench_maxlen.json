@@ -1,0 +1,6 @@
+{
+  "2wikimqa": 32,
+  "narrativeqa": 128,
+  "qmsum": 512,
+  "repobench-p": 64
+}

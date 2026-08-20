@@ -1,0 +1,27 @@
+selector:
+  mode: all_mean
+  uniform_n: 3
+  topk: 256
+
+selector_precision:
+  k_bits: fp16
+  v_bits: fp16
+  q_bits: fp16
+
+exec_precision:
+  k_bits: fp16
+  v_bits: fp16
+  q_bits: fp16
+
+sparse_old_cache: true
+baseline: custom
+
+model_path: Efficient-Large-Model/Fast_dLLM_v2_7B
+block_size: 32
+small_block_size: 8
+threshold: 1.0
+max_new_tokens: 2048
+seed: 1234
+num_examples: 3
+task: gsm8k
+output_dir: block_diffusion/sparse_kv_exp/results/smoke
