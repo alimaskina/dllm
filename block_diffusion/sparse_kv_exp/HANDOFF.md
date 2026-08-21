@@ -49,7 +49,9 @@ git clone <repo-url> dllm && cd dllm
 ```bash
 conda create -n fast_dllm python=3.10 -y
 conda activate fast_dllm
-pip install torch transformers datasets lm-eval accelerate pyyaml
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+pip install "transformers==4.53.1" accelerate datasets lm-eval tqdm sentencepiece einops pyyaml
+pip install rouge-score fuzzywuzzy python-Levenshtein
 ```
 
 Модель скачается с HF при первом запуске:
