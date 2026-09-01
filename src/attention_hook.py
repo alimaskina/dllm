@@ -13,10 +13,7 @@ from cost_model import RunCostSummary, StepCost
 from kv_store import DualPrecisionCache
 from quantization import apply_precision
 
-_ORIG_SDPA = None
-# Native sdpa snapshot at module import — used to unconditionally call the true
-# backend, avoiding recursion when fast_dllm_attn_capture is chained on top.
-_NATIVE_SDPA = ALL_ATTENTION_FUNCTIONS.get("sdpa")
+_ORIG_SDPA = None  # points at the sdpa function this hook wraps (dynamic)
 
 
 @dataclass
@@ -182,7 +179,7 @@ def _capturing_sdpa(module, query, key, value, attn_mask, **kwargs):
         # Always go to the true native backend, not any prior wrapper. This is
         # what prevents circular chains when fast_dllm_attn_capture is layered
         # on top (capture-outer → hook-inner → native).
-        return _NATIVE_SDPA(module, query, key, value, attn_mask, **kwargs)
+        return _ORIG_SDPA(module, query, key, value, attn_mask, **kwargs)
 
     layer_idx = int(getattr(module, "layer_idx", -1))
     q, k, v, _ = _prepare_qkv(query, key, value, layer_idx)
@@ -212,7 +209,7 @@ def _capturing_sdpa(module, query, key, value, attn_mask, **kwargs):
                 q.device,
             )
 
-    out = _NATIVE_SDPA(module, q, k, v, mask, **kwargs)
+    out = _ORIG_SDPA(module, q, k, v, mask, **kwargs)
 
     if (
         not CTX._recorded_this_forward
@@ -249,13 +246,18 @@ def _capturing_sdpa(module, query, key, value, attn_mask, **kwargs):
     return out
 
 
-def _ensure_patch() -> None:
-    """Keep this hook outermost so capture sees post-quant Q/K."""
+def _push_patch() -> None:
+    """Enter this hook: save the current sdpa (may be a wrapper from a nested
+    context) and install ours. Paired with _pop_patch on context exit — this is
+    what enables clean chaining with fast_dllm_attn_capture without recursion."""
     global _ORIG_SDPA
-    current = ALL_ATTENTION_FUNCTIONS["sdpa"]
-    if current is not _capturing_sdpa:
-        _ORIG_SDPA = current
-        ALL_ATTENTION_FUNCTIONS["sdpa"] = _capturing_sdpa
+    _ORIG_SDPA = ALL_ATTENTION_FUNCTIONS["sdpa"]
+    ALL_ATTENTION_FUNCTIONS["sdpa"] = _capturing_sdpa
+
+
+def _pop_patch(prev) -> None:
+    """Restore the previous sdpa entry — always call in the finally-block."""
+    ALL_ATTENTION_FUNCTIONS["sdpa"] = prev
 
 
 def configure_from_model(model) -> None:
@@ -283,7 +285,8 @@ def attention_experiment(
     cost_summary: RunCostSummary | None,
     enabled: bool = True,
 ) -> Iterator[None]:
-    _ensure_patch()
+    prev_sdpa = ALL_ATTENTION_FUNCTIONS["sdpa"]
+    _push_patch()
     prev = AttentionContext(
         enabled=CTX.enabled,
         cache_len=CTX.cache_len,
@@ -333,3 +336,4 @@ def attention_experiment(
         CTX.v_bits = prev.v_bits
         CTX.kv_store = prev.kv_store
         CTX.cost_summary = prev.cost_summary
+        _pop_patch(prev_sdpa)

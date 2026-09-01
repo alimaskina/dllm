@@ -27,8 +27,10 @@ import torch
 import torch.nn.functional as F
 from transformers.cache_utils import DynamicCache
 
-# Both this file and its sibling modules live in the same package.
 _SRC_DIR = Path(__file__).resolve().parent
+
+
+
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
@@ -313,7 +315,11 @@ def block_diffusion_generate_sparse(
                 if use_kv_store
                 else nullcontext()
             )
-            with sel_ctx, capture_attention(None, head_mean=True) as captured:
+            # ORDER MATTERS: capture must be OUTER so that fast_dllm captures
+            # attention weights AFTER attention_hook substitutes quantized K/V
+            # from kv_store — otherwise keep-set is picked from fp16 attention
+            # even when selector_k_bits=4.
+            with capture_attention(None, head_mean=True) as captured, sel_ctx:
                 logits = model(
                     cur_x,
                     attention_mask=cur_attn_mask,

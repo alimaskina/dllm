@@ -72,11 +72,15 @@ def _capturing_sdpa(module, query, key, value, attn_mask, **kwargs):
     return _ORIG_SDPA(module, query, key, value, attn_mask, **kwargs)
 
 
-def _ensure_patch() -> None:
+def _push_patch() -> None:
+    """Push this capture wrapper onto ALL[sdpa]; call _pop_patch on exit."""
     global _ORIG_SDPA
-    if _ORIG_SDPA is None:
-        _ORIG_SDPA = ALL_ATTENTION_FUNCTIONS["sdpa"]
-        ALL_ATTENTION_FUNCTIONS["sdpa"] = _capturing_sdpa
+    _ORIG_SDPA = ALL_ATTENTION_FUNCTIONS["sdpa"]
+    ALL_ATTENTION_FUNCTIONS["sdpa"] = _capturing_sdpa
+
+
+def _pop_patch(prev) -> None:
+    ALL_ATTENTION_FUNCTIONS["sdpa"] = prev
 
 
 def get_layers(model):
@@ -91,7 +95,8 @@ def capture_attention(
 ) -> Iterator[dict[int, torch.Tensor]]:
     """Capture attention per layer during model.forward."""
     global _CAPTURING, _ACTIVE_LAYERS, _HEAD_MEAN
-    _ensure_patch()
+    prev_sdpa = ALL_ATTENTION_FUNCTIONS["sdpa"]
+    _push_patch()
     _CAPTURED.clear()
     _CAPTURED_QK.clear()
     _CAPTURING = True
@@ -105,6 +110,7 @@ def capture_attention(
         _ACTIVE_LAYERS = None
         _CAPTURED.clear()
         _CAPTURED_QK.clear()
+        _pop_patch(prev_sdpa)
 
 
 def captured_qk_snapshot() -> dict[int, dict[str, torch.Tensor | float | None]]:
