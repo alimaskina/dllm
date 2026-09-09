@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bitsieve-fastdllm"
+version = "0.1.0"
+description = "Packed low-bit sparse KV-cache runtime for Fast-dLLM v2 block diffusion"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = {text = "Apache-2.0"}
+authors = [{name = "BitSieve Fast-dLLM Workshop contributors"}]
+dependencies = [
+  "torch>=2.6",
+  "transformers==4.53.1",
+  "accelerate>=0.27.2",
+  "datasets>=2.14.6",
+  "einops>=0.6.1",
+  "numpy>=1.24",
+  "pyyaml>=6.0",
+  "tqdm>=4.66",
+  "rouge-score>=0.1.2",
+]
+
+[project.scripts]
+bitsieve-quality = "bitsieve_fastdllm.eval.quality:main"
+bitsieve-perf = "bitsieve_fastdllm.eval.performance:main"
+bitsieve-microbench = "bitsieve_fastdllm.eval.microbench:main"
+bitsieve-summarize = "bitsieve_fastdllm.eval.summarize:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,282 @@
+from __future__ import annotations
+
+import json
+import os
+import random
+import zipfile
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Iterable
+
+
+@dataclass(slots=True)
+class BenchmarkExample:
+    example_id: str
+    prompt: str
+    references: list[str]
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+LONG_BENCH_CONFIGS = {
+    "hotpotqa": "hotpotqa",
+    "narrativeqa": "narrativeqa",
+    "qasper": "qasper",
+    "qmsum": "qmsum",
+    "repobench-p": "repobench-p",
+    "repobench_p": "repobench-p",
+    "triviaqa": "triviaqa",
+    "lcc": "lcc",
+    "2wikimqa": "2wikimqa",
+    "musique": "musique",
+}
+
+
+def _take(dataset: Iterable, limit: int | None):
+    for idx, row in enumerate(dataset):
+        if limit is not None and idx >= limit:
+            break
+        yield idx, row
+
+
+def _load_hf(name: str, config: str | None, split: str):
+    try:
+        from datasets import load_dataset
+    except ImportError as exc:
+        raise RuntimeError("install the project dependencies to use benchmark datasets") from exc
+
+
+    if config is None:
+        return load_dataset(name, split=split)
+    return load_dataset(name, config, split=split)
+
+
+def load_gsm8k(limit: int | None = None, split: str = "test") -> list[BenchmarkExample]:
+    ds = _load_hf("openai/gsm8k", "main", split)
+    out = []
+    for idx, row in _take(ds, limit):
+        answer = str(row["answer"])
+        ref = answer.split("####")[-1].strip()
+        prompt = (
+            "Solve the following grade-school mathematics problem. Explain the reasoning clearly, "
+            "then put only the final answer inside \\boxed{...}.\n\n"
+            f"Problem: {row['question']}\n\nSolution:"
+        )
+        out.append(BenchmarkExample(str(idx), prompt, [ref], {"raw_answer": answer}))
+    return out
+
+
+def load_math500(limit: int | None = None, split: str = "test") -> list[BenchmarkExample]:
+    ds = _load_hf("HuggingFaceH4/MATH-500", None, split)
+    out = []
+    for idx, row in _take(ds, limit):
+        problem = row.get("problem") or row.get("question")
+        answer = row.get("answer") or row.get("solution")
+        prompt = (
+            "Solve the following competition mathematics problem rigorously. Show the key steps and "
+            "put the final answer inside \\boxed{...}.\n\n"
+            f"Problem: {problem}\n\nSolution:"
+        )
+        out.append(
+            BenchmarkExample(
+                str(row.get("unique_id", idx)),
+                prompt,
+                [str(answer)],
+                {k: row[k] for k in ("subject", "level") if k in row},
+            )
+        )
+    return out
+
+
+def _longbench_prompt(task: str, context: str, question: str) -> str:
+    if task == "qmsum":
+        return (
+            "Read the meeting transcript and answer the query with a concise, faithful summary. "
+            "Do not add facts not supported by the transcript.\n\n"
+            f"Transcript:\n{context}\n\nQuery: {question}\n\nAnswer:"
+        )
+    if task in {"repobench-p", "lcc"}:
+        return (
+            "Complete the code at the end of the following repository context. Return only the code "
+            "continuation, without Markdown fences.\n\n"
+            f"Repository context:\n{context}\n\nCode prefix:\n{question}"
+        )
+    return (
+        "Answer the question using only the supplied context. Keep the answer concise; when the "
+        "context does not contain the answer, say so.\n\n"
+        f"Context:\n{context}\n\nQuestion: {question}\n\nAnswer:"
+    )
+
+
+def _longbench_archive_path() -> Path:
+    override = os.environ.get("LONG_BENCH_ARCHIVE_PATH")
+    if override:
+        path = Path(override).expanduser()
+        if not path.is_file():
+            raise FileNotFoundError(
+                f"LONG_BENCH_ARCHIVE_PATH does not exist or is not a file: {path}"
+            )
+        return path
+
+    try:
+        from huggingface_hub import hf_hub_download
+    except ImportError as exc:
+        raise RuntimeError(
+            "LongBench loading requires huggingface-hub (normally installed with transformers)"
+        ) from exc
+
+    repo_id = os.environ.get("LONG_BENCH_REPO_ID", "zai-org/LongBench")
+    revision = os.environ.get("LONG_BENCH_REVISION") or None
+    return Path(
+        hf_hub_download(
+            repo_id=repo_id,
+            repo_type="dataset",
+            filename="data.zip",
+            revision=revision,
+        )
+    )
+
+
+def load_longbench(
+    task: str,
+    limit: int | None = None,
+    split: str = "test",
+) -> list[BenchmarkExample]:
+    if split != "test":
+        raise ValueError(f"LongBench only provides a test split, got split={split!r}")
+
+    config = LONG_BENCH_CONFIGS[task]
+    archive = _longbench_archive_path()
+    member = f"data/{config}.jsonl"
+
+    out: list[BenchmarkExample] = []
+    with zipfile.ZipFile(archive) as zf:
+        try:
+            raw = zf.open(member)
+        except KeyError as exc:
+            available = sorted(
+                name for name in zf.namelist() if name.startswith("data/") and name.endswith(".jsonl")
+            )
+            raise RuntimeError(
+                f"LongBench archive {archive} does not contain {member}; "
+                f"available data files: {available[:8]}{'...' if len(available) > 8 else ''}"
+            ) from exc
+
+        with raw:
+            for idx, line in enumerate(raw):
+                if limit is not None and idx >= limit:
+                    break
+                row = json.loads(line.decode("utf-8"))
+                refs = row.get("answers", row.get("answer", []))
+                if isinstance(refs, str):
+                    refs = [refs]
+                prompt = _longbench_prompt(
+                    config, str(row.get("context", "")), str(row.get("input", ""))
+                )
+                out.append(
+                    BenchmarkExample(
+                        str(row.get("_id", idx)),
+                        prompt,
+                        [str(x) for x in refs],
+                        {
+                            "task": config,
+                            "length": row.get("length"),
+                            "all_classes": row.get("all_classes"),
+                        },
+                    )
+                )
+    return out
+
+
+def build_niah(
+    tokenizer,
+    *,
+    context_lengths: list[int],
+    depths: list[float],
+    seed: int = 1234,
+) -> list[BenchmarkExample]:
+    rng = random.Random(seed)
+    filler_sentence = (
+        "In an old technical notebook, researchers discussed ordinary experiments, schedules, "
+        "weather, books, and unrelated observations. "
+    )
+    filler_tokens = tokenizer.encode(filler_sentence, add_special_tokens=False)
+    out: list[BenchmarkExample] = []
+    for length in context_lengths:
+        for depth in depths:
+            key = str(rng.randint(1_000_000, 9_999_999))
+            needle = (
+                f" Important fact: the pass key is {key}. Remember that {key} is the pass key. "
+            )
+            needle_ids = tokenizer.encode(needle, add_special_tokens=False)
+            target_filler = max(1, length - len(needle_ids) - 96)
+            repeats = (target_filler + len(filler_tokens) - 1) // len(filler_tokens)
+            body = (filler_tokens * repeats)[:target_filler]
+            insert = min(len(body), max(0, int(round(depth * len(body)))))
+            context_ids = body[:insert] + needle_ids + body[insert:]
+            context = tokenizer.decode(context_ids, skip_special_tokens=True)
+            prompt = (
+                "There is one important pass key hidden in the text. Find it and answer with the "
+                "seven-digit key only.\n\n"
+                f"Text:\n{context}\n\nWhat is the pass key?\nAnswer:"
+            )
+            out.append(
+                BenchmarkExample(
+                    f"n{length}-d{depth:.2f}",
+                    prompt,
+                    [key],
+                    {"context_length": length, "depth": depth},
+                )
+            )
+    return out
+
+
+# Per-benchmark output budgets, in one place so the multi-GPU runner and a
+# direct `python -m bitsieve_fastdllm.eval.quality` invocation cannot disagree.
+# Math needs room for a full chain of thought: a truncated CoT never emits its
+# \boxed{...}, and the grader then falls back to "last number in the text",
+# which scores by accident rather than by reasoning.
+MATH_BENCHMARKS = frozenset({"gsm8k", "math500", "math-500"})
+DEFAULT_MAX_NEW_TOKENS = 512
+MAX_NEW_TOKENS = {
+    "gsm8k": 2048,
+    "math500": 2048,
+    "math-500": 2048,
+    "niah": 64,
+}
+
+
+def max_new_tokens_for(benchmark: str | None) -> int:
+    """Output budget for a benchmark; 128 for the synthetic performance points."""
+    if not benchmark:
+        return 128
+    return MAX_NEW_TOKENS.get(benchmark.lower(), DEFAULT_MAX_NEW_TOKENS)
+
+
+def load_benchmark(
+    name: str,
+    *,
+    tokenizer=None,
+    limit: int | None = None,
+    split: str = "test",
+    niah_contexts: list[int] | None = None,
+    niah_depths: list[float] | None = None,
+    seed: int = 1234,
+) -> list[BenchmarkExample]:
+    key = name.lower()
+    if key == "gsm8k":
+        return load_gsm8k(limit, split)
+    if key in {"math500", "math-500"}:
+        return load_math500(limit, split)
+    if key in LONG_BENCH_CONFIGS:
+        return load_longbench(key, limit, split)
+    if key == "niah":
+        if tokenizer is None:
+            raise ValueError("tokenizer is required for NIAH")
+        examples = build_niah(
+            tokenizer,
+            context_lengths=niah_contexts or [8192, 16384, 28672],
+            depths=niah_depths or [0.0, 0.25, 0.5, 0.75, 1.0],
+            seed=seed,
+        )
+        return examples[:limit] if limit is not None else examples
+    raise ValueError(f"unknown benchmark: {name}")
