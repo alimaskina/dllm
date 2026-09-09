@@ -163,7 +163,10 @@ def make_jobs(args):
     if args.action != 'quality' and args.warmup < 0:
         raise ValueError('--warmup must be nonnegative')
     src_hash = source_hash()
-    common = ['--model', args.model, '--revision', args.revision, '--device', 'cuda', '--dtype', args.dtype]
+    # Each child receives a remapped CUDA_VISIBLE_DEVICES, so its selected
+    # physical GPU is always local device cuda:0. An unindexed "cuda" is
+    # rejected by torch.cuda.set_device on current PyTorch releases.
+    common = ['--model', args.model, '--revision', args.revision, '--device', 'cuda:0', '--dtype', args.dtype]
     if args.attn_implementation:
         common += ['--attn-implementation', args.attn_implementation]
     jobs = []
