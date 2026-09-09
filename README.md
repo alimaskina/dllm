@@ -101,6 +101,48 @@ This keeps a shadow fp16 key cache and recomputes reference attention, so it
 costs memory and time: it is off by default and must stay off for performance
 and memory runs. The packed kernels are untouched by it.
 
+## One-button suite (quality + coverage + speed, four variants)
+
+```bash
+bash scripts/run_suite.sh
+```
+
+Runs 15 GSM8K + 15 LongBench examples (5 each of `2wikimqa`/`qmsum`/`repobench-p`
+by default) through four variants at a shared 5%-of-prefix budget:
+
+| variant | cache | selector |
+|---|---|---|
+| `dense` | 16-bit, full attention | none (ceiling) |
+| `sparse_fp16_all` | 16-bit | all masked queries (MAGE-style) |
+| `sparse_fp16_middle` | 16-bit | one center query (HERALD-proxy) |
+| `sparse_k4v4_all` | KIVI K4/V4 | all masked queries |
+
+Every selector variant runs twice: a **quality pass** (`coverage_diagnostics`
+off) that quality and speed are read from, and a separate **coverage pass**
+(diagnostics on) that only measures coverage - the diagnostic shadow key cache
+must never be the thing tokens/s gets measured against. `dense` has no
+selector, so it runs once and reports no coverage.
+
+The printed table carries `sparse_frac` (median `sparse_block_fraction`) on
+every selector row; anything under `1.00` means the budget failed to engage on
+some examples - the run warns about this explicitly, because it is the exact
+way an earlier revision's `k512` configs measured nothing about selection on
+short prompts (see above). Percent-of-prefix budgets keep this at `1.00` here.
+
+Try `python scripts/run_suite.py --smoke` first (~2 minutes, one example per
+benchmark) to confirm the environment works before committing to the full run,
+which is on the order of an hour on one A100. Everything is configurable via
+env vars (`bash scripts/run_suite.sh --help` after setting `PYTHON=`, or read
+the flags in `scripts/run_suite.py`) - GPU, model revision, example counts,
+which LongBench tasks, which variants, the budget percentage. Re-running with
+the same `--output-root` resumes from what is already in its JSONL files.
+
+`PYTHON` must point at an interpreter with this project's dependencies (the env
+`scripts/setup.sh` creates, or your own with `transformers==4.53.1` - anything
+newer fails inside the model's remote code with an unrelated-looking
+`KeyError` during RoPE init). The script checks this and fails with a clear
+message before attempting to load the model if it does not hold.
+
 ## Quality evaluation
 
 Each worker processes one request at a time; multiple GPUs can run independent jobs.
