@@ -51,6 +51,7 @@ PY
 
 DEVICE="${DEVICE:-cuda:0}"
 MODEL="${MODEL:-Efficient-Large-Model/Fast_dLLM_v2_7B}"
+MODEL_REVISION="${MODEL_REVISION:-0661abf5f9f0ee338970d091052a26c8efa51974}"
 GSM8K_N="${GSM8K_N:-15}"
 LONGBENCH_TASKS="${LONGBENCH_TASKS:-2wikimqa,qmsum,repobench-p}"
 LONGBENCH_N="${LONGBENCH_N:-5}"
@@ -59,7 +60,7 @@ TOPK_PCT="${TOPK_PCT:-5.0}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-results/suite_run_$(date +%Y%m%d_%H%M%S)}"
 
 echo "=== BitSieve suite ==="
-echo "device=$DEVICE  model=$MODEL"
+echo "device=$DEVICE  model=$MODEL@$MODEL_REVISION"
 echo "gsm8k_n=$GSM8K_N  longbench_tasks=$LONGBENCH_TASKS  longbench_n=$LONGBENCH_N"
 echo "variants=$VARIANTS  topk_pct=$TOPK_PCT"
 echo "output_root=$OUTPUT_ROOT"
@@ -68,6 +69,7 @@ echo
 "$PYTHON" scripts/run_suite.py \
   --device "$DEVICE" \
   --model "$MODEL" \
+  --revision "$MODEL_REVISION" \
   --gsm8k-n "$GSM8K_N" \
   --longbench-tasks "$LONGBENCH_TASKS" \
   --longbench-n "$LONGBENCH_N" \

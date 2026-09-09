@@ -145,6 +145,31 @@ message before attempting to load the model if it does not hold.
 
 ## Quality evaluation
 
+### Independent quality check
+
+For a directly comparable quality run, use the pinned one-button harness:
+
+```bash
+bash scripts/run_quality_repro.sh
+```
+
+The default run evaluates 50 GSM8K examples and 20 examples each from
+2WikiMQA, QMSum, and RepoBench-P across the four suite variants. It runs the
+official task prompts and metrics, saves every prediction/reference pair, and
+writes `manifest.json` with the model revision, dataset revisions, example
+IDs, and prompt fingerprints. The quality pass intentionally skips coverage
+diagnostics, so its timing and scores are not changed by audit-only work.
+
+Useful overrides are environment variables, for example:
+
+```bash
+DEVICE=cuda:1 VARIANTS=dense,sparse_k4v4_all bash scripts/run_quality_repro.sh
+```
+
+Re-running with the same `OUTPUT_ROOT` resumes completed examples. Compare
+`summary.json` and `manifest.json`; a different manifest means the runs are
+not a like-for-like comparison.
+
 Each worker processes one request at a time; multiple GPUs can run independent jobs.
 
 ```bash

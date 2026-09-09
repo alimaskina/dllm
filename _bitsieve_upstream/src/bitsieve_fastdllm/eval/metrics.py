@@ -1,8 +1,19 @@
 from __future__ import annotations
 
 import re
+import string
 from difflib import SequenceMatcher
+from collections import Counter
 from typing import Iterable
+
+try:
+    from fuzzywuzzy import fuzz
+except ImportError:  # pragma: no cover - setup installs the official dependency
+    fuzz = None
+try:
+    from rouge import Rouge
+except ImportError:  # pragma: no cover - setup installs the official dependency
+    Rouge = None
 
 
 _BOX_RE = re.compile(r"\\boxed\s*\{")
@@ -102,10 +113,11 @@ def math_exact_match(prediction: str, references: Iterable[str]) -> float:
 
 
 def normalize_qa(text: str) -> str:
-    x = text.lower().replace("_", " ")
-    x = _PUNCT.sub(" ", x)
-    x = _ARTICLES.sub(" ", x)
-    return " ".join(x.split())
+    # This is the exact English normalization used by THUDM/LongBench.
+    text = text.lower()
+    text = "".join(ch for ch in text if ch not in set(string.punctuation))
+    text = re.sub(r"\b(a|an|the)\b", " ", text)
+    return " ".join(text.split())
 
 
 def qa_f1(prediction: str, reference: str) -> float:
@@ -129,7 +141,20 @@ def qa_f1(prediction: str, reference: str) -> float:
 
 
 def best_qa_f1(prediction: str, references: Iterable[str]) -> float:
-    return max((qa_f1(prediction, x) for x in references), default=0.0)
+    return max((_official_qa_f1(prediction, x) for x in references), default=0.0)
+
+
+def _official_qa_f1(prediction: str, reference: str) -> float:
+    """THUDM/LongBench metrics.py::qa_f1_score, kept byte-for-byte in spirit."""
+    prediction_tokens = normalize_qa(prediction).split()
+    reference_tokens = normalize_qa(reference).split()
+    common = Counter(prediction_tokens) & Counter(reference_tokens)
+    num_same = sum(common.values())
+    if num_same == 0:
+        return 0.0
+    precision = num_same / len(prediction_tokens)
+    recall = num_same / len(reference_tokens)
+    return 2 * precision * recall / (precision + recall)
 
 
 def rouge_l(prediction: str, reference: str) -> float:
@@ -154,7 +179,17 @@ def rouge_l(prediction: str, reference: str) -> float:
 
 
 def best_rouge_l(prediction: str, references: Iterable[str]) -> float:
-    return max((rouge_l(prediction, x) for x in references), default=0.0)
+    return max((_official_rouge(prediction, x) for x in references), default=0.0)
+
+
+def _official_rouge(prediction: str, reference: str) -> float:
+    """THUDM/LongBench metrics.py::rouge_score."""
+    if Rouge is None:
+        return rouge_l(prediction, reference)
+    try:
+        return float(Rouge().get_scores([prediction], [reference], avg=True)["rouge-l"]["f"])
+    except Exception:
+        return 0.0
 
 
 def edit_similarity(prediction: str, reference: str) -> float:
@@ -162,7 +197,17 @@ def edit_similarity(prediction: str, reference: str) -> float:
 
 
 def best_edit_similarity(prediction: str, references: Iterable[str]) -> float:
-    return max((edit_similarity(prediction, x) for x in references), default=0.0)
+    return max((_official_code_sim(prediction, x) for x in references), default=0.0)
+
+
+def _official_code_sim(prediction: str, reference: str) -> float:
+    """THUDM/LongBench metrics.py::code_sim_score."""
+    for line in prediction.lstrip("\n").split("\n"):
+        if "`" not in line and "#" not in line and "//" not in line:
+            if fuzz is not None:
+                return fuzz.ratio(line, reference) / 100.0
+            return SequenceMatcher(None, line, reference).ratio()
+    return 0.0
 
 
 def score_prediction(benchmark: str, prediction: str, references: list[str]) -> float:

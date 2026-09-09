@@ -42,7 +42,9 @@ new one) for a clean run.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import statistics
 import sys
 import time
@@ -78,6 +80,7 @@ VARIANTS: dict[str, tuple[str, bool]] = {
 }
 
 DEFAULT_LONGBENCH_TASKS = ["2wikimqa", "qmsum", "repobench-p"]
+DEFAULT_MODEL_REVISION = "0661abf5f9f0ee338970d091052a26c8efa51974"
 
 
 def build_generator(cfg: ExperimentConfig, model, tokenizer):
@@ -129,6 +132,19 @@ def _done_keys(path: Path) -> set[tuple[str, str, str]]:
     return done
 
 
+def _examples_fingerprint(examples: list) -> str:
+    digest = hashlib.sha256()
+    for example in examples:
+        payload = {
+            "id": str(example.example_id),
+            "prompt": example.prompt,
+            "references": example.references,
+        }
+        digest.update(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8"))
+        digest.update(b"\n")
+    return digest.hexdigest()
+
+
 def run_pass(
     *,
     variant: str,
@@ -165,7 +181,7 @@ def run_pass(
             max_input = cfg.max_cache_tokens - cfg.generation.max_new_tokens
             input_ids = encode_prompt(
                 tokenizer, example.prompt, max_input_tokens=max_input,
-                use_chat_template=True, device=device,
+                use_chat_template=benchmark not in {"lcc", "repobench-p"}, device=device,
             )
             t0 = time.time()
             # A single example failing (a transient kernel/driver hiccup on a
@@ -202,6 +218,9 @@ def run_pass(
                 "benchmark": benchmark,
                 "id": example.example_id,
                 "prompt_tokens": int(input_ids.shape[1]),
+                "prediction": prediction,
+                "references": example.references,
+                "metadata": example.metadata,
                 "score": score,
                 "wall_s": wall_s,
                 "runtime": result.metrics,
@@ -308,6 +327,7 @@ def main() -> None:
                    help="quality+speed pass only; skip the separate coverage pass")
     p.add_argument("--device", default="cuda:0")
     p.add_argument("--model", default="Efficient-Large-Model/Fast_dLLM_v2_7B")
+    p.add_argument("--revision", default=DEFAULT_MODEL_REVISION)
     p.add_argument("--output-root", default="results/suite_run")
     p.add_argument("--smoke", action="store_true", help="--gsm8k-n 1 --longbench-n 1, one task")
     args = p.parse_args()
@@ -333,11 +353,67 @@ def main() -> None:
     print(f"coverage pass   : {'skipped' if args.skip_coverage else 'enabled'}")
     print(f"output_root     : {output_root}", flush=True)
 
-    model, tokenizer = load_fast_dllm(args.model, dtype=torch.bfloat16, device=args.device)
+    model, tokenizer = load_fast_dllm(
+        args.model,
+        dtype=torch.bfloat16,
+        device=args.device,
+        revision=args.revision,
+    )
 
     benchmarks: dict[str, list] = {"gsm8k": load_benchmark("gsm8k", tokenizer=tokenizer, limit=args.gsm8k_n, split="test")}
     for task in longbench_tasks:
         benchmarks[task] = load_benchmark(task, tokenizer=tokenizer, limit=args.longbench_n, split="test")
+
+    manifest = {
+        "schema_version": 1,
+        "model": {
+            "id": args.model,
+            "revision": args.revision,
+            "dtype": "bf16",
+        },
+        "datasets": {
+            "gsm8k": {
+                "revision": os.environ.get("GSM8K_REVISION"),
+                "split": "test",
+                "num_examples": len(benchmarks["gsm8k"]),
+                "example_ids": [str(x.example_id) for x in benchmarks["gsm8k"]],
+                "fingerprint": _examples_fingerprint(benchmarks["gsm8k"]),
+            },
+            **{
+                task: {
+                    "repo": "zai-org/LongBench",
+                    "revision": os.environ.get("LONG_BENCH_REVISION"),
+                    "split": "test",
+                    "num_examples": len(benchmarks[task]),
+                    "example_ids": [str(x.example_id) for x in benchmarks[task]],
+                    "fingerprint": _examples_fingerprint(benchmarks[task]),
+                }
+                for task in longbench_tasks
+            },
+        },
+        "settings": {
+            "gsm8k_n": args.gsm8k_n,
+            "longbench_n": args.longbench_n,
+            "longbench_tasks": longbench_tasks,
+            "variants": variants,
+            "topk_pct": args.topk_pct,
+            "math_topk": args.math_topk,
+            "coverage_pass": not args.skip_coverage,
+        },
+    }
+    manifest_path = output_root / "manifest.json"
+    if manifest_path.exists():
+        previous_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if previous_manifest != manifest:
+            raise SystemExit(
+                f"{manifest_path} belongs to a different run; use a new --output-root "
+                "or keep model, dataset, counts, variants, and budget unchanged"
+            )
+    else:
+        manifest_path.write_text(
+            json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
 
     t_start = time.time()
     for variant in variants:

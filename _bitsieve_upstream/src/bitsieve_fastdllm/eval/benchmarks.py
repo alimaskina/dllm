@@ -38,20 +38,34 @@ def _take(dataset: Iterable, limit: int | None):
         yield idx, row
 
 
-def _load_hf(name: str, config: str | None, split: str):
+def _load_hf(
+    name: str,
+    config: str | None,
+    split: str,
+    *,
+    revision: str | None = None,
+):
     try:
         from datasets import load_dataset
     except ImportError as exc:
         raise RuntimeError("install the project dependencies to use benchmark datasets") from exc
 
 
+    kwargs = {"split": split}
+    if revision:
+        kwargs["revision"] = revision
     if config is None:
-        return load_dataset(name, split=split)
-    return load_dataset(name, config, split=split)
+        return load_dataset(name, **kwargs)
+    return load_dataset(name, config, **kwargs)
 
 
 def load_gsm8k(limit: int | None = None, split: str = "test") -> list[BenchmarkExample]:
-    ds = _load_hf("openai/gsm8k", "main", split)
+    ds = _load_hf(
+        "openai/gsm8k",
+        "main",
+        split,
+        revision=os.environ.get("GSM8K_REVISION"),
+    )
     out = []
     for idx, row in _take(ds, limit):
         answer = str(row["answer"])
@@ -88,17 +102,28 @@ def load_math500(limit: int | None = None, split: str = "test") -> list[Benchmar
 
 
 def _longbench_prompt(task: str, context: str, question: str) -> str:
+    if task in {"hotpotqa", "2wikimqa", "musique"}:
+        return (
+            "Answer the question based on the given passages. Only give me the answer and do not "
+            "output any other words.\n\n"
+            "The following are given passages.\n"
+            f"{context}\n\n"
+            "Answer the question based on the given passages. Only give me the answer and do not "
+            "output any other words.\n\n"
+            f"Question: {question}\nAnswer:"
+        )
     if task == "qmsum":
         return (
-            "Read the meeting transcript and answer the query with a concise, faithful summary. "
-            "Do not add facts not supported by the transcript.\n\n"
-            f"Transcript:\n{context}\n\nQuery: {question}\n\nAnswer:"
+            "You are given a meeting transcript and a query containing a question or instruction. "
+            "Answer the query in one or more sentences.\n\n"
+            f"Transcript:\n{context}\n\n"
+            "Now, answer the query based on the above meeting transcript in one or more sentences.\n\n"
+            f"Query: {question}\nAnswer:"
         )
     if task in {"repobench-p", "lcc"}:
         return (
-            "Complete the code at the end of the following repository context. Return only the code "
-            "continuation, without Markdown fences.\n\n"
-            f"Repository context:\n{context}\n\nCode prefix:\n{question}"
+            "Please complete the code given below.\n"
+            f"{context}{question}Next line of code:"
         )
     return (
         "Answer the question using only the supplied context. Keep the answer concise; when the "
@@ -242,6 +267,27 @@ MAX_NEW_TOKENS = {
     "math500": 2048,
     "math-500": 2048,
     "niah": 64,
+    "narrativeqa": 128,
+    "qasper": 128,
+    "multifieldqa_en": 64,
+    "multifieldqa_zh": 64,
+    "hotpotqa": 32,
+    "2wikimqa": 32,
+    "musique": 32,
+    "dureader": 128,
+    "gov_report": 512,
+    "qmsum": 512,
+    "multi_news": 512,
+    "vcsum": 512,
+    "trec": 64,
+    "triviaqa": 32,
+    "samsum": 128,
+    "lsht": 64,
+    "passage_count": 32,
+    "passage_retrieval_en": 32,
+    "passage_retrieval_zh": 32,
+    "lcc": 64,
+    "repobench-p": 64,
 }
 
 
