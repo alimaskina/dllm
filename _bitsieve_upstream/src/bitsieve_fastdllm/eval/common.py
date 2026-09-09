@@ -33,6 +33,17 @@ def load_fast_dllm(
     except ImportError as exc:
         raise RuntimeError("Transformers is required; install this project in its evaluation env") from exc
 
+    # torch.cuda.current_device() stays 0 until something sets it - creating
+    # tensors on cuda:N (N != 0) via device= or .to() does NOT move it. Every
+    # packed/selector kernel launch in kernels/ops.py then runs against
+    # device 0's context while the tensors it is handed live on device N,
+    # which Triton reports as "Pointer argument (at 0) cannot be accessed from
+    # Triton (cpu tensor?)" - a deterministic crash on every call, not a CPU
+    # tensor at all. Only avoided previously by restricting visibility with
+    # CUDA_VISIBLE_DEVICES so the requested index was always 0.
+    if device not in ("auto", "cpu") and torch.cuda.is_available():
+        torch.cuda.set_device(device)
+
     tokenizer = AutoTokenizer.from_pretrained(
         model_id, trust_remote_code=True, revision=revision
     )
