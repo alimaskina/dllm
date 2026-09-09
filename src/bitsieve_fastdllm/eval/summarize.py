@@ -166,6 +166,19 @@ def _summarize_group(key: tuple[Any, ...], rows: list[dict[str, Any]]) -> dict[s
                 ]
             ),
             "median_compression_ratio": _median(_floats(rows, "cache_compression_ratio")),
+            # Was the sparse path actually taken? A fixed top-k budget is a
+            # no-op until the prefix outgrows it, so a "sparse" config can score
+            # identically to its dense counterpart. Surfaced here so that never
+            # passes unnoticed.
+            "mean_sparse_block_fraction": _mean(_floats(rows, "sparse_block_fraction")),
+            "mean_coverage_mass": _mean(
+                [
+                    float(cov["mass_mean"])
+                    for row in rows
+                    for cov in [_value(row, "coverage")]
+                    if isinstance(cov, dict) and cov.get("mass_mean") is not None
+                ]
+            ),
             "median_operation_ms": "",
             "median_reported_p10_ms": "",
             "median_reported_p90_ms": "",
@@ -206,6 +219,8 @@ def _summarize_group(key: tuple[Any, ...], rows: list[dict[str, Any]]) -> dict[s
             "median_peak_reserved_bytes": "",
             "median_cache_bytes": "",
             "median_compression_ratio": "",
+            "mean_sparse_block_fraction": "",
+            "mean_coverage_mass": "",
             "median_operation_ms": _median(_floats(rows, "median_ms")),
             "median_reported_p10_ms": _median(_floats(rows, "p10_ms")),
             "median_reported_p90_ms": _median(_floats(rows, "p90_ms")),
@@ -242,6 +257,8 @@ def _summarize_group(key: tuple[Any, ...], rows: list[dict[str, Any]]) -> dict[s
         "median_peak_reserved_bytes": _median(_floats(rows, "peak_cuda_reserved_bytes")),
         "median_cache_bytes": _median(cache_values),
         "median_compression_ratio": _median(_floats(rows, "cache_compression_ratio")),
+        "mean_sparse_block_fraction": _mean(_floats(rows, "sparse_block_fraction")),
+        "mean_coverage_mass": "",
         "median_operation_ms": "",
         "median_reported_p10_ms": "",
         "median_reported_p90_ms": "",

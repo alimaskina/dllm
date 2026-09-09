@@ -10,7 +10,7 @@ from tqdm import tqdm
 from ..config import ExperimentConfig
 from ..runtime.generator import BitSieveGenerator
 from ..runtime.official_generator import OfficialDenseGenerator
-from .benchmarks import load_benchmark
+from .benchmarks import load_benchmark, max_new_tokens_for
 from .common import encode_prompt, load_fast_dllm, parse_dtype
 from .metrics import score_prediction
 from .resume import load_resume_rows, rewrite_existing_rows
@@ -57,10 +57,17 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
     cfg = ExperimentConfig.load(args.config)
-    if args.max_new_tokens is not None or args.max_cache_tokens is not None:
+    # The per-benchmark budget wins over the config default unless the caller
+    # names one explicitly, so a config written for 512-token summarization
+    # cannot silently truncate a 2048-token math chain of thought.
+    resolved_max_new = (
+        args.max_new_tokens
+        if args.max_new_tokens is not None
+        else max_new_tokens_for(args.benchmark)
+    )
+    if resolved_max_new != cfg.generation.max_new_tokens or args.max_cache_tokens is not None:
         raw = cfg.to_dict()
-        if args.max_new_tokens is not None:
-            raw["generation"]["max_new_tokens"] = args.max_new_tokens
+        raw["generation"]["max_new_tokens"] = resolved_max_new
         if args.max_cache_tokens is not None:
             raw["max_cache_tokens"] = args.max_cache_tokens
         cfg = ExperimentConfig.from_dict(raw)

@@ -1,4 +1,4 @@
-name: dense_kivi4_k4v4_r32
+name: dense_kivi4_k4v4_r0
 engine: bitsieve
 semantic: dense
 backend: triton
@@ -17,7 +17,7 @@ quant:
   v_bits: 4
   key_token_group: 32
   value_channel_group: 32
-  residual_tokens: 32
+  residual_tokens: 0
   param_dtype: float16
 selector:
   mode: uniform

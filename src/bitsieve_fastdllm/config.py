@@ -167,6 +167,17 @@ class ExperimentConfig:
     compact_format: CompactFormat = "bf16"
     seed: int = 1234
     collect_diagnostics: bool = False
+    # Score each selection against the TRUE fp16 attention it was meant to
+    # approximate. Keeps a shadow fp16 key cache and recomputes the reference
+    # ranking from ALL masked block queries, independent of the query subset or
+    # key precision the config under test actually used - so a starved or
+    # quantized selector cannot grade its own homework. Diagnostic only:
+    # costs memory and time, so it is off by default and never on in
+    # performance or memory runs.
+    coverage_diagnostics: bool = False
+    # Query rows per chunk when recomputing the fp16 reference (caps the
+    # transient [rows x prefix] logit tensor on long prefixes).
+    coverage_query_chunk: int = 32
     profile_layers: bool = False
     dense_kernel_variant: KernelVariant = "blocked"
     selector_kernel_variant: KernelVariant = "blocked"
@@ -203,6 +214,13 @@ class ExperimentConfig:
             raise ValueError("requantized compact cache requires the BitSieve engine")
         if self.max_cache_tokens < self.generation.block_size:
             raise ValueError("max_cache_tokens is smaller than one generation block")
+        if self.coverage_query_chunk <= 0:
+            raise ValueError("coverage_query_chunk must be positive")
+        if self.coverage_diagnostics and self.semantic == "dense":
+            raise ValueError(
+                "coverage_diagnostics needs a selector to score; it is meaningless "
+                "for the dense baseline"
+            )
         if self.semantic == "dense" and self.async_selector:
 
             self.async_selector = False

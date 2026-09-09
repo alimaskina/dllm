@@ -1,8 +1,8 @@
-name: proposed_a_k4v4_k512
+name: dense_kivi2_k2v2_r0
 engine: bitsieve
-semantic: A
+semantic: dense
 backend: triton
-async_selector: true
+async_selector: false
 max_cache_tokens: 32768
 compact_dtype: bfloat16
 compact_format: bf16
@@ -13,8 +13,8 @@ selector_kernel_variant: blocked
 selector_logits_dtype: float16
 validate_attention_masks: false
 quant:
-  k_bits: 4
-  v_bits: 4
+  k_bits: 2
+  v_bits: 2
   key_token_group: 32
   value_channel_group: 32
   residual_tokens: 0

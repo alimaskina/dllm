@@ -23,24 +23,32 @@ import threading
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT / 'src') not in sys.path:
+    sys.path.insert(0, str(ROOT / 'src'))
+from bitsieve_fastdllm.eval.benchmarks import max_new_tokens_for  # noqa: E402
+
 METHODS = (
     'official_dense_bf16',
-    'dense_kivi4_k4v4_r32',
-    'dense_kivi2_k2v2_r32',
+    'dense_kivi4_k4v4_r0',
+    'dense_kivi2_k2v2_r0',
     'mage_bf16_all_a_k512',
     'herald_middle_bf16_a',
     'proposed_a_k4v4_k512',
     'proposed_a_k2v2_k512',
+    'proposed_a_k4v4_p5',
+    'proposed_a_k2v2_p5',
 )
 LABELS = {
     'official_dense_bf16': 'Dense BF16',
-    'dense_kivi4_k4v4_r32': 'KIVI-style K4/V4',
-    'dense_kivi2_k2v2_r32': 'KIVI-style K2/V2',
+    'dense_kivi4_k4v4_r0': 'KIVI-style K4/V4',
+    'dense_kivi2_k2v2_r0': 'KIVI-style K2/V2',
     'mage_bf16_all_a_k512': 'MAGE BF16, k512',
     'herald_middle_bf16_a': 'HERALD-middle proxy, k512',
     'herald_middle1_bf16_proxy_semantic_a': 'HERALD-middle proxy, k512',
     'proposed_a_k4v4_k512': 'Proposed A K4/V4, k512',
     'proposed_a_k2v2_k512': 'Proposed A K2/V2, k512',
+    'proposed_a_k4v4_p5': 'Proposed A K4/V4, 5% budget',
+    'proposed_a_k2v2_p5': 'Proposed A K2/V2, 5% budget',
 }
 BENCHMARKS = (
     'gsm8k', 'math500', 'hotpotqa', 'narrativeqa', 'qasper', 'qmsum',
@@ -170,9 +178,7 @@ def make_jobs(args):
         else:
             points = [(None, context, batch) for context in args.contexts for batch in args.batch_sizes]
         for benchmark, context, batch in points:
-            new_tokens = args.max_new_tokens or (
-                {'math500': 1024, 'niah': 64}.get(benchmark, 512) if benchmark else 128
-            )
+            new_tokens = args.max_new_tokens or max_new_tokens_for(benchmark)
             capacity = args.max_cache_tokens
             if context is not None and args.capacity == 'workload':
                 capacity = math.ceil((context + new_tokens) / block) * block

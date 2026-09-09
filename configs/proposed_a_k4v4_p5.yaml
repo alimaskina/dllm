@@ -1,4 +1,4 @@
-name: proposed_a_k4v4_k512
+name: proposed_a_k4v4_p5
 engine: bitsieve
 semantic: A
 backend: triton
@@ -23,7 +23,7 @@ selector:
   mode: uniform
   uniform_queries: 5
   topk: 512
-  topk_percent: null
+  topk_percent: 5.0
   domain: prefix
   score: softmax
   dense_prefix_layers: 0

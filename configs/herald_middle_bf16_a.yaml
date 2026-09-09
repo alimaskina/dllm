@@ -16,7 +16,7 @@ selector:
   topk: 512
   domain: prefix
   score: softmax
-  dense_prefix_layers: 2
+  dense_prefix_layers: 0
   sort_indices: true
 generation:
   block_size: 32

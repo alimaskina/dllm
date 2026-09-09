@@ -98,14 +98,15 @@ class BitSieveGenerator:
         self,
         input_ids: torch.Tensor,
         cache: PackedKVCache,
-    ) -> tuple[torch.Tensor, dict[str, float]]:
+    ) -> tuple[torch.Tensor, dict[str, float], dict[int, torch.Tensor]]:
         bsz, prompt_len = input_ids.shape
         if bsz != cache.batch_size:
             raise ValueError("batch size mismatch")
         block = self.config.generation.block_size
         metrics = {"prefill_ms": 0.0, "prefill_pack_ms": 0.0}
+        prefill_keys: dict[int, torch.Tensor] = {}
         if prompt_len <= block:
-            return input_ids, metrics
+            return input_ids, metrics, prefill_keys
 
         prefix_len = (prompt_len // block) * block
         set_bitsieve_session(self.model, None)
@@ -128,12 +129,23 @@ class BitSieveGenerator:
             cache.load_dynamic_cache(dynamic_cache)
         metrics["prefill_pack_ms"] = timer_pack.milliseconds()
 
+        # Snapshot the prefill's exact keys before the fp16 cache is dropped -
+        # they are the reference the packed selection gets scored against.
+        # Keys only (attention weights do not depend on V), and only when
+        # coverage scoring is on, so a normal run pays nothing.
+        if self.config.coverage_diagnostics:
+            for layer_idx in range(self.num_layers):
+                try:
+                    key, _ = dynamic_cache[layer_idx]
+                except Exception:
+                    key = dynamic_cache.key_cache[layer_idx]
+                prefill_keys[layer_idx] = key[..., :prefix_len, :].detach().clone()
 
         if prompt_len % block == 0:
             next_token = output.logits[:, -1:, :].argmax(dim=-1)
             input_ids = torch.cat([input_ids, next_token], dim=1)
         del dynamic_cache, output
-        return input_ids, metrics
+        return input_ids, metrics, prefill_keys
 
     @torch.inference_mode()
     def generate(self, input_ids: torch.Tensor) -> GenerationResult:
@@ -151,7 +163,7 @@ class BitSieveGenerator:
         original_input = input_ids.to(self.device)
         original_length = original_input.shape[1]
         cache = self._new_cache(original_input.shape[0])
-        work_ids, prefill_metrics = self._prefill(original_input, cache)
+        work_ids, prefill_metrics, prefill_keys = self._prefill(original_input, cache)
         session = BitSieveSession(
             cache,
             self.config,
@@ -160,6 +172,9 @@ class BitSieveGenerator:
             head_dim=self.head_dim,
             compute_dtype=self.compact_dtype,
         )
+        for layer_idx, key in prefill_keys.items():
+            session.seed_fp16_key_shadow(layer_idx, key)
+        prefill_keys.clear()
         set_bitsieve_session(self.model, session)
 
         cfg = self.config.generation
@@ -318,6 +333,12 @@ class BitSieveGenerator:
         ]
         block_ms = [x.milliseconds(synchronize=False) for x in block_times]
         memory = cache.logical_nbytes()
+        # The gathered compact caches are resident alongside the packed cache
+        # for the whole block, so the honest denominator for a compression
+        # claim includes them. Reporting only `packed_cache` overstates the
+        # ratio, badly so at short prefixes.
+        compact_bytes = session.compact_nbytes()
+        resident_bytes = int(memory["total"]) + compact_bytes
         dense_equivalent = (
             self.num_layers
             * cache.batch_size
@@ -327,6 +348,13 @@ class BitSieveGenerator:
             * 2
             * torch.tensor([], dtype=self.compute_dtype).element_size()
         )
+        counters = dict(trace.counters)
+        sparse_blocks = float(counters.get("blocks_sparse", 0.0))
+        bypass_blocks = float(counters.get("blocks_dense_bypass", 0.0))
+        selectable = sparse_blocks + bypass_blocks
+        sparse_layer_steps = float(counters.get("layer_steps_sparse", 0.0))
+        dense_layer_steps = float(counters.get("layer_steps_dense", 0.0))
+        total_layer_steps = sparse_layer_steps + dense_layer_steps
         metrics: dict[str, Any] = {
             **prefill_metrics,
             "decode_ms": decode_ms,
@@ -341,10 +369,25 @@ class BitSieveGenerator:
             "time_per_output_block_ms": block_ms,
             "mean_tpob_ms": sum(block_ms) / len(block_ms) if block_ms else None,
             "packed_cache": memory,
+            "compact_cache_bytes": compact_bytes,
+            "resident_cache_bytes": resident_bytes,
             "dense_cache_equivalent_bytes": int(dense_equivalent),
             "cache_compression_ratio": (
+                dense_equivalent / resident_bytes if resident_bytes else None
+            ),
+            "packed_only_compression_ratio": (
                 dense_equivalent / memory["total"] if memory["total"] else None
             ),
+            # Did the sparse path actually run? A fixed top-k budget cannot
+            # bite until the prefix outgrows it, so these must be read before
+            # any sparse-vs-dense quality claim.
+            "blocks_sparse": int(sparse_blocks),
+            "blocks_dense_bypass": int(bypass_blocks),
+            "sparse_block_fraction": (sparse_blocks / selectable if selectable else None),
+            "sparse_layer_step_fraction": (
+                sparse_layer_steps / total_layer_steps if total_layer_steps else None
+            ),
+            "coverage": trace.coverage_summary(),
             "cache_tokens": cache.length,
             "stop_found": stop_found,
             "semantic": self.config.semantic,

@@ -15,7 +15,7 @@ from ..kernels.ops import (
     selector_topk,
 )
 from ..reference import sdpa_compact
-from .trace import RunTrace, RuntimeTimer, SelectionRecord
+from .trace import CoverageRecord, RunTrace, RuntimeTimer, SelectionRecord
 
 
 @dataclass(slots=True)
@@ -60,6 +60,11 @@ class BitSieveSession:
         self.commit_current = False
         self._step0_finished = False
         self._states: dict[int, CompactLayerState] = {}
+        # Shadow fp16 keys, only when scoring coverage. Keys alone are enough:
+        # attention weights depend on Q and K, not V. Seeded from the prefill
+        # cache and extended at every block commit, so it mirrors exactly what
+        # the packed cache holds.
+        self._fp16_key_shadow: dict[int, torch.Tensor] = {}
         self._selection_stream: torch.cuda.Stream | None = None
         if cache.device.type == "cuda" and config.async_selector and config.semantic == "A":
 
@@ -91,6 +96,24 @@ class BitSieveSession:
             state.pending_refs = None
             state.packed_view = None
         self.trace.add_counter("blocks", 1)
+
+        # Whether the selector can bite at all this block. With a fixed top-k
+        # budget it cannot until the prefix outgrows k: selecting 512 of 400
+        # entries IS dense attention, so such a block must not be reported as
+        # sparse. Counted here so a run can never claim a sparse path it never
+        # took.
+        if self.config.semantic == "dense":
+            self.trace.add_counter("blocks_dense_engine", 1)
+        else:
+            budget = self.config.selector.effective_topk(self.old_cache_len)
+            engages = (
+                self.old_cache_len > 0
+                and bool(self.query_indices)
+                and budget < self.old_cache_len
+            )
+            self.trace.add_counter(
+                "blocks_sparse" if engages else "blocks_dense_bypass", 1
+            )
 
     def prepare_forward(
         self,
@@ -200,6 +223,123 @@ class BitSieveSession:
             head_dim=d,
         )
 
+    # ---- honest coverage scoring (diagnostic path only) -------------------
+
+    def seed_fp16_key_shadow(self, layer_idx: int, key: torch.Tensor) -> None:
+        """Record the prefill's fp16 keys as the coverage reference."""
+        if not self.config.coverage_diagnostics:
+            return
+        self._fp16_key_shadow[layer_idx] = key.detach().clone()
+
+    def _extend_fp16_key_shadow(self, layer_idx: int, key: torch.Tensor) -> None:
+        if not self.config.coverage_diagnostics:
+            return
+        prev = self._fp16_key_shadow.get(layer_idx)
+        cur = key.detach()
+        self._fp16_key_shadow[layer_idx] = (
+            cur.clone() if prev is None else torch.cat([prev, cur], dim=2)
+        )
+
+    @torch.no_grad()
+    def _reference_importance(self, layer_idx: int, query: torch.Tensor) -> torch.Tensor | None:
+        """Per-(batch, kv-head) attention mass over the prefix under exact fp16
+        keys, aggregated over EVERY masked query in the block.
+
+        This is deliberately independent of `selector.mode` and of the cache's
+        bit width: it is the target the selection is trying to hit, so it must
+        not inherit the candidate's handicaps. Returns [B, Hkv, N].
+        """
+        shadow = self._fp16_key_shadow.get(layer_idx)
+        if shadow is None:
+            return None
+        n = self.old_cache_len
+        if n <= 0 or shadow.shape[2] < n:
+            return None
+        key = shadow[:, :, :n, :]
+        rows = self.masked_positions or list(range(query.shape[2]))
+        if not rows:
+            return None
+
+        b, hq, _, d = query.shape
+        hkv = int(key.shape[1])
+        if hq % hkv:
+            return None
+        g = hq // hkv
+        idx = torch.as_tensor(rows, device=query.device, dtype=torch.long)
+        q = query.reshape(b, hkv, g, query.shape[2], d).index_select(3, idx)
+        q = q.reshape(b, hkv, g * idx.numel(), d).float()
+        k32 = key.float()
+        scale = float(self.head_dim**-0.5)
+
+        acc = torch.zeros(b, hkv, n, device=query.device, dtype=torch.float32)
+        chunk = max(1, int(self.config.coverage_query_chunk))
+        total = q.shape[2]
+        for start in range(0, total, chunk):
+            qc = q[:, :, start : start + chunk, :]
+            logits = torch.matmul(qc, k32.transpose(-1, -2)) * scale
+            acc += torch.softmax(logits, dim=-1).sum(dim=2)
+        return acc / float(total)
+
+    @torch.no_grad()
+    def _record_coverage(
+        self,
+        layer_idx: int,
+        query: torch.Tensor,
+        indices: torch.Tensor,
+        selected_k: int,
+    ) -> None:
+        ref = self._reference_importance(layer_idx, query)
+        if ref is None:
+            return
+        k = min(int(selected_k), ref.shape[-1])
+        if k <= 0:
+            return
+        ref_vals, ref_idx = torch.topk(ref, k, dim=-1)
+        sel = indices.to(torch.long)
+        # Mass captured, normalised by the best achievable mass at this budget.
+        best = ref_vals.sum(dim=-1).clamp_min(1e-12)
+        got = ref.gather(-1, sel).sum(dim=-1)
+        mass = (got / best).flatten().tolist()
+        # Index overlap against the same reference top-k.
+        mark = torch.zeros_like(ref, dtype=torch.bool)
+        mark.scatter_(-1, ref_idx, True)
+        overlap = (mark.gather(-1, sel).sum(dim=-1).float() / float(k)).flatten().tolist()
+        self.trace.coverage.append(
+            CoverageRecord(
+                block=self.block_index,
+                layer=layer_idx,
+                old_cache_len=self.old_cache_len,
+                selected_k=k,
+                selector_queries=len(self.query_indices),
+                mass=[round(float(x), 5) for x in mass],
+                overlap=[round(float(x), 5) for x in overlap],
+            )
+        )
+
+    def compact_nbytes(self) -> int:
+        """Bytes held by the gathered per-layer compact caches.
+
+        These live outside PackedKVCache but are resident for the whole block,
+        so a memory claim that counts only the packed cache understates the
+        footprint - especially at short prefixes, where the compact buffers can
+        outweigh what they were gathered from.
+        """
+        total = 0
+        for state in self._states.values():
+            total += state.key.numel() * state.key.element_size()
+            total += state.value.numel() * state.value.element_size()
+            view = state.packed_view
+            if view is None:
+                continue
+            for t in (
+                view.k_q, view.k_scale, view.k_zero,
+                view.v_q, view.v_scale, view.v_zero,
+                view.k_fp, view.v_fp, view.k_residual, view.v_residual,
+            ):
+                if t is not None:
+                    total += t.numel() * t.element_size()
+        return int(total)
+
     def _select_and_gather(
         self,
         layer_idx: int,
@@ -257,6 +397,8 @@ class BitSieveSession:
             )
         state.indices = selected.indices
         state.selected_k = k
+        if self.config.coverage_diagnostics:
+            self._record_coverage(layer_idx, query, selected.indices, k)
         if self.config.compact_format == "requantized":
             with self.timer.region(
                 "requantize_compact",
@@ -414,6 +556,9 @@ class BitSieveSession:
         current_value: torch.Tensor,
     ) -> torch.Tensor:
         dense = self._dense_required(layer_idx)
+        self.trace.add_counter(
+            "layer_steps_dense" if dense else "layer_steps_sparse", 1
+        )
         if dense:
             state = self._states.get(layer_idx)
             if state is not None:
@@ -457,6 +602,7 @@ class BitSieveSession:
             current_key.detach(),
             current_value.detach(),
         )
+        self._extend_fp16_key_shadow(layer_idx, current_key)
 
     def end_block(self) -> None:
         self.finish_step0()

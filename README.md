@@ -41,14 +41,57 @@ bash scripts/setup.sh --env bitsieve --cache-root /path/to/bitsieve-cache
 | Config name | Persistent K/V | Selector | Sparse budget |
 |---|---|---|---:|
 | `official_dense_bf16` | 16-bit native cache | None | Full prefix |
-| `dense_kivi4_k4v4_r32` | Packed 4/4-bit, residual 32 | None | Full prefix |
-| `dense_kivi2_k2v2_r32` | Packed 2/2-bit, residual 32 | None | Full prefix |
+| `dense_kivi4_k4v4_r0` | Packed 4/4-bit, no residual | None | Full prefix |
+| `dense_kivi2_k2v2_r0` | Packed 2/2-bit, no residual | None | Full prefix |
 | `mage_bf16_all_a_k512` | 16-bit cache | All available masked positions | 512 |
 | `herald_middle_bf16_a` | 16-bit cache | One central masked position | 512 |
-| `proposed_a_k4v4_k512` | Packed 4/4-bit, residual 32 | Uniform-5 | 512 |
-| `proposed_a_k2v2_k512` | Packed 2/2-bit, residual 32 | Uniform-5 | 512 |
+| `proposed_a_k4v4_k512` | Packed 4/4-bit, no residual | Uniform-5 | 512 |
+| `proposed_a_k2v2_k512` | Packed 2/2-bit, no residual | Uniform-5 | 512 |
+| `proposed_a_k4v4_p5` | Packed 4/4-bit, no residual | Uniform-5 | 5% of prefix |
+| `proposed_a_k2v2_p5` | Packed 2/2-bit, no residual | Uniform-5 | 5% of prefix |
 
 These are MAGE-like and HERALD-middle-proxy baselines, not the original full implementations. Configs can be added/modified in `configs/` folder.
+
+### Nothing is held in full precision
+
+Every quantized config uses `residual_tokens: 0`: the whole prefix is packed, so
+no part of the cache sits in bf16 and the memory numbers need no footnote. Every
+selector config uses `dense_prefix_layers: 0`, so no layer is exempted from
+selection. Both were non-zero in an earlier revision, which meant the reported
+compression and the selector's measured cost each excluded a piece of the model.
+
+### A fixed budget does not always engage
+
+`effective_topk` is `min(topk, prefix_len)`, so a `k512` config attends densely
+until the prefix passes 512 entries - selecting 512 of 400 *is* dense attention.
+On short-prompt math the prefix often never gets there: one GSM8K example with a
+114-token prompt finishes with a 416-token cache, so `proposed_a_k4v4_k512`
+runs exactly like `dense_kivi4_k4v4_r0` and measures nothing about selection.
+
+Two things follow. Every run now reports `blocks_sparse`,
+`blocks_dense_bypass`, `sparse_block_fraction`, and `sparse_layer_step_fraction`,
+and the summary tables carry `mean_sparse_block_fraction` - a config that never
+took the sparse path cannot be read as evidence about the sparse path. And the
+`_p5` configs size the budget as a percentage of the live prefix, so selection
+engages from the first block regardless of prompt length; prefer them whenever
+the claim is about the selector rather than about a specific k.
+
+### Honest coverage
+
+`coverage_diagnostics: true` scores each selection against the attention it is
+meant to approximate: the reference top-k is always computed from **exact
+bf16/fp16 keys ranked by every masked query in the block**, independent of the
+query subset (`selector.mode`) and of the key precision the config under test
+uses. A starved or quantized selector therefore cannot grade its own homework -
+which it would if the reference reused its own scores. Reported as
+`coverage.mass_mean` (share of the reference mass captured, normalised by what
+the best selection at that budget captures, so 1.0 means "as good as possible
+here") and `coverage.overlap_mean` (`|selected ∩ reference top-k| / k`).
+Dense-bypassed layers are excluded rather than counted as a free 1.0.
+
+This keeps a shadow fp16 key cache and recomputes reference attention, so it
+costs memory and time: it is off by default and must stay off for performance
+and memory runs. The packed kernels are untouched by it.
 
 ## Quality evaluation
 
@@ -57,12 +100,12 @@ Each worker processes one request at a time; multiple GPUs can run independent j
 ```bash
 python scripts/run_experiments.py quality \
   --gpus 1,4 \
-  --configs official_dense_bf16,dense_kivi4_k4v4_r32,dense_kivi2_k2v2_r32,mage_bf16_all_a_k512,herald_middle_bf16_a,proposed_a_k4v4_k512,proposed_a_k2v2_k512 \
+  --configs official_dense_bf16,dense_kivi4_k4v4_r0,dense_kivi2_k2v2_r0,mage_bf16_all_a_k512,herald_middle_bf16_a,proposed_a_k4v4_k512,proposed_a_k2v2_k512,proposed_a_k4v4_p5,proposed_a_k2v2_p5 \
   --benchmarks gsm8k,hotpotqa,narrativeqa,qasper,qmsum,lcc,repobench-p,math500,2wikimqa,musique \
   --output-root results/quality_main
 ```
 
-The runner sets output budgets in memory: 1,024 tokens for MATH-500, 64 for NIAH, and 512 for the other datasets. `--max-new-tokens` overrides that choice for every requested benchmark. `--max-cache-tokens` defaults to 32,768.
+The runner sets output budgets in memory: 2,048 tokens for GSM8K and MATH-500 (a math answer truncated mid-chain never emits its `\boxed{...}`, and the grader then falls back to the last number in the text, scoring by accident), 64 for NIAH, and 512 for the other datasets. The same table is used by a direct `python -m bitsieve_fastdllm.eval.quality` call, so a config default cannot silently shorten it. `--max-new-tokens` overrides that choice for every requested benchmark. `--max-cache-tokens` defaults to 32,768.
 
 Supported dataset names are `gsm8k`, `math500`, `hotpotqa`, `narrativeqa`, `qasper`, `qmsum`, `lcc`, `repobench-p`, `triviaqa`, `2wikimqa`, `musique`, and `niah`. LongBench tasks refer to the LongBench subsets, not the original full standalone datasets.
 
@@ -73,7 +116,7 @@ Each `(method, context, batch)` runs in a new process. Stop-token termination is
 ```bash
 python scripts/run_experiments.py performance \
   --gpus 1,4 \
-  --configs official_dense_bf16,dense_kivi4_k4v4_r32,dense_kivi2_k2v2_r32,mage_bf16_all_a_k512,herald_middle_bf16_a,proposed_a_k4v4_k512,proposed_a_k2v2_k512 \
+  --configs official_dense_bf16,dense_kivi4_k4v4_r0,dense_kivi2_k2v2_r0,mage_bf16_all_a_k512,herald_middle_bf16_a,proposed_a_k4v4_k512,proposed_a_k2v2_k512,proposed_a_k4v4_p5,proposed_a_k2v2_p5 \
   --contexts 512,2048,8192,16384,28672 \
   --batch-sizes 1,4,8,16 \
   --max-new-tokens 128 \
@@ -94,7 +137,7 @@ The `memory` action uses workload-sized cache capacity by default:
 ```bash
 python scripts/run_experiments.py memory \
   --gpus 1,4 \
-  --configs official_dense_bf16,dense_kivi4_k4v4_r32,dense_kivi2_k2v2_r32,mage_bf16_all_a_k512,herald_middle_bf16_a,proposed_a_k4v4_k512,proposed_a_k2v2_k512 \
+  --configs official_dense_bf16,dense_kivi4_k4v4_r0,dense_kivi2_k2v2_r0,mage_bf16_all_a_k512,herald_middle_bf16_a,proposed_a_k4v4_k512,proposed_a_k2v2_k512,proposed_a_k4v4_p5,proposed_a_k2v2_p5 \
   --contexts 28672 \
   --batch-sizes 1,4,8,16,32 \
   --max-new-tokens 128 \

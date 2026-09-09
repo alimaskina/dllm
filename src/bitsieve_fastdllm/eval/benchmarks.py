@@ -230,6 +230,28 @@ def build_niah(
     return out
 
 
+# Per-benchmark output budgets, in one place so the multi-GPU runner and a
+# direct `python -m bitsieve_fastdllm.eval.quality` invocation cannot disagree.
+# Math needs room for a full chain of thought: a truncated CoT never emits its
+# \boxed{...}, and the grader then falls back to "last number in the text",
+# which scores by accident rather than by reasoning.
+MATH_BENCHMARKS = frozenset({"gsm8k", "math500", "math-500"})
+DEFAULT_MAX_NEW_TOKENS = 512
+MAX_NEW_TOKENS = {
+    "gsm8k": 2048,
+    "math500": 2048,
+    "math-500": 2048,
+    "niah": 64,
+}
+
+
+def max_new_tokens_for(benchmark: str | None) -> int:
+    """Output budget for a benchmark; 128 for the synthetic performance points."""
+    if not benchmark:
+        return 128
+    return MAX_NEW_TOKENS.get(benchmark.lower(), DEFAULT_MAX_NEW_TOKENS)
+
+
 def load_benchmark(
     name: str,
     *,

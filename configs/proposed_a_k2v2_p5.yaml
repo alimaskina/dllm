@@ -1,8 +1,8 @@
-name: dense_kivi2_k2v2_r32
+name: proposed_a_k2v2_p5
 engine: bitsieve
-semantic: dense
+semantic: A
 backend: triton
-async_selector: false
+async_selector: true
 max_cache_tokens: 32768
 compact_dtype: bfloat16
 compact_format: bf16
@@ -17,13 +17,13 @@ quant:
   v_bits: 2
   key_token_group: 32
   value_channel_group: 32
-  residual_tokens: 32
+  residual_tokens: 0
   param_dtype: float16
 selector:
   mode: uniform
   uniform_queries: 5
   topk: 512
-  topk_percent: null
+  topk_percent: 5.0
   domain: prefix
   score: softmax
   dense_prefix_layers: 0
