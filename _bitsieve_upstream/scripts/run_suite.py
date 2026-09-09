@@ -92,6 +92,9 @@ def load_config(stem: str, *, topk_pct: float, coverage: bool) -> ExperimentConf
 
 
 def _done_keys(path: Path) -> set[tuple[str, str, str]]:
+    """Rows to skip on resume. A failed row is deliberately NOT counted as
+    done - a transient hiccup (shared-GPU noise, one-off kernel/driver error)
+    should be retried on the next run rather than permanently marked skipped."""
     if not path.exists():
         return set()
     done = set()
@@ -99,6 +102,8 @@ def _done_keys(path: Path) -> set[tuple[str, str, str]]:
         if not line.strip():
             continue
         row = json.loads(line)
+        if row.get("runtime") is None:
+            continue
         done.add((row["variant"], row["pass"], row["benchmark"], str(row["id"])))
     return done
 
@@ -142,7 +147,31 @@ def run_pass(
                 use_chat_template=True, device=device,
             )
             t0 = time.time()
-            result = generator.generate(input_ids)
+            # A single example failing (a transient kernel/driver hiccup on a
+            # shared GPU, an OOM on one unusually long prompt) must not lose
+            # the whole suite's results. The failure is recorded - not
+            # silently skipped - so it is visible in the JSONL and excluded
+            # from mean_score rather than counted as 0 or as a pass.
+            try:
+                result = generator.generate(input_ids)
+            except Exception as exc:  # noqa: BLE001
+                wall_s = time.time() - t0
+                print(
+                    f"    [{i}/{len(pending)}] id={example.example_id} FAILED after "
+                    f"{wall_s:.1f}s: {type(exc).__name__}: {exc}",
+                    flush=True,
+                )
+                row = {
+                    "variant": variant, "pass": pass_name, "benchmark": benchmark,
+                    "id": example.example_id, "prompt_tokens": int(input_ids.shape[1]),
+                    "score": None, "wall_s": wall_s, "runtime": None,
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+                handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+                handle.flush()
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                continue
             wall_s = time.time() - t0
             prediction = result.texts[0]
             score = score_prediction(benchmark, prediction, example.references)
@@ -183,20 +212,23 @@ def summarize(output_root: Path) -> None:
         vals = [v for v in values if v is not None]
         return statistics.median(vals) if vals else None
 
-    print(f"\n{'variant':<20} {'pass':<9} {'benchmark':<14} {'n':>3} {'score':>7} "
+    print(f"\n{'variant':<20} {'pass':<9} {'benchmark':<14} {'n':>3} {'fail':>4} {'score':>7} "
           f"{'sparse_frac':>11} {'cov_mass':>9} {'cov_ovl':>8} {'tok/s':>7} {'tpob_ms':>8}")
     summary_rows = []
     for (variant, pass_name, benchmark), rs in sorted(groups.items()):
-        scores = [r["score"] for r in rs]
-        sparse_frac = med([r["runtime"].get("sparse_block_fraction") for r in rs])
-        cov = [r["runtime"].get("coverage") for r in rs if r["runtime"].get("coverage")]
+        ok_rows = [r for r in rs if r.get("runtime") is not None]
+        n_fail = len(rs) - len(ok_rows)
+        scores = [r["score"] for r in ok_rows if r.get("score") is not None]
+        sparse_frac = med([r["runtime"].get("sparse_block_fraction") for r in ok_rows])
+        cov = [r["runtime"].get("coverage") for r in ok_rows if r["runtime"].get("coverage")]
         cov_mass = med([c["mass_mean"] for c in cov]) if cov else None
         cov_ovl = med([c["overlap_mean"] for c in cov]) if cov else None
-        tps = med([r["runtime"].get("tokens_per_second") for r in rs])
-        tpob = med([r["runtime"].get("mean_tpob_ms") for r in rs])
+        tps = med([r["runtime"].get("tokens_per_second") for r in ok_rows])
+        tpob = med([r["runtime"].get("mean_tpob_ms") for r in ok_rows])
         line = {
             "variant": variant, "pass": pass_name, "benchmark": benchmark, "n": len(rs),
-            "mean_score": round(sum(scores) / len(scores), 4),
+            "n_failed": n_fail,
+            "mean_score": round(sum(scores) / len(scores), 4) if scores else None,
             "median_sparse_block_fraction": sparse_frac,
             "median_coverage_mass": cov_mass,
             "median_coverage_overlap": cov_ovl,
@@ -204,9 +236,10 @@ def summarize(output_root: Path) -> None:
             "median_tpob_ms": tpob,
         }
         summary_rows.append(line)
+        score_str = "" if line["mean_score"] is None else f"{line['mean_score']:.3f}"
         print(
-            f"{variant:<20} {pass_name:<9} {benchmark:<14} {len(rs):>3} "
-            f"{line['mean_score']:>7.3f} "
+            f"{variant:<20} {pass_name:<9} {benchmark:<14} {len(rs):>3} {n_fail:>4} "
+            f"{score_str:>7} "
             f"{('' if sparse_frac is None else f'{sparse_frac:.2f}'):>11} "
             f"{('' if cov_mass is None else f'{cov_mass:.3f}'):>9} "
             f"{('' if cov_ovl is None else f'{cov_ovl:.3f}'):>8} "
@@ -227,6 +260,13 @@ def summarize(output_root: Path) -> None:
         for r in warn:
             print(f"    {r['variant']} on {r['benchmark']}: "
                   f"sparse_block_fraction={r['median_sparse_block_fraction']:.2f}")
+
+    failed = [r for r in summary_rows if r["n_failed"] > 0]
+    if failed:
+        print("\n/!\\ some examples failed (re-run the same command to retry them):")
+        for r in failed:
+            print(f"    {r['variant']}/{r['pass']} on {r['benchmark']}: {r['n_failed']}/{r['n']} failed")
+
     print(f"\nSaved -> {output_root / 'summary.json'}")
 
 
