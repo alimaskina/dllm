@@ -60,6 +60,14 @@ selector config uses `dense_prefix_layers: 0`, so no layer is exempted from
 selection. Both were non-zero in an earlier revision, which meant the reported
 compression and the selector's measured cost each excluded a piece of the model.
 
+Neither costs speed. Against the earlier settings at an identical budget, under
+the fixed schedule used for work-normalised timing, time per output block is
+2.1% lower and the resident cache 12.4% smaller; the selector kernel alone is
+7-15% faster, because the former bf16 tail moves out of a `torch.matmul`
+side-pass into the packed Triton kernel. `tests/test_residual0_kernels.py` runs
+with `BITSIEVE_CUDA_STRICT=1`, so an unavailable fast path raises instead of
+silently falling back to the slow reference.
+
 ### A fixed budget does not always engage
 
 `effective_topk` is `min(topk, prefix_len)`, so a `k512` config attends densely
