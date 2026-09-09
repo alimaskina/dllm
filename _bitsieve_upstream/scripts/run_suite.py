@@ -8,12 +8,15 @@ Runs GSM8K and a spread of LongBench tasks through:
   sparse_fp16_middle    BF16 cache, ONE center query ranks the top-k  (HERALD-proxy)
   sparse_k4v4_all       KIVI K4/V4 cache, ALL masked queries rank the top-k
 
-All three selector configs use a percent-of-prefix budget (5% by default), not
-a fixed k - a fixed k silently runs dense on short prompts (see
-docs/methodology.md, "A fixed budget does not always engage"), which would
-make this comparison meaningless on GSM8K's short prompts. `sparse_block_fraction`
-is checked and printed per row specifically to catch that regression if a
-config is ever changed back to a fixed k.
+All three selector configs use a percent-of-prefix budget (5% by default) on
+LongBench. GSM8K/MATH-500 use a FIXED budget instead (64 tokens by default):
+their prompts are short enough (~100-300 tokens) that 5% of the prefix is a
+handful of tokens, too little of the problem statement to reason about - a
+quality collapse that has nothing to do with the method being compared, not a
+real finding (see load_config()'s docstring). Either way, `sparse_block_fraction`
+is checked and printed per row to catch the OTHER failure mode a fixed k risks
+- silently running dense once the prefix shrinks below it (see
+docs/methodology.md, "A fixed budget does not always engage").
 
 Quality/speed and coverage are measured in SEPARATE passes for every selector
 variant: coverage_diagnostics keeps a shadow fp16 key cache and costs real
@@ -55,6 +58,7 @@ if str(ROOT / "src") not in sys.path:
 from bitsieve_fastdllm.config import ExperimentConfig  # noqa: E402
 from bitsieve_fastdllm.eval.benchmarks import (  # noqa: E402
     LONG_BENCH_CONFIGS,
+    MATH_BENCHMARKS,
     load_benchmark,
     max_new_tokens_for,
 )
@@ -82,10 +86,27 @@ def build_generator(cfg: ExperimentConfig, model, tokenizer):
     return BitSieveGenerator(model, tokenizer, cfg)
 
 
-def load_config(stem: str, *, topk_pct: float, coverage: bool) -> ExperimentConfig:
+def load_config(
+    stem: str, *, benchmark: str, topk_pct: float, math_topk: int, coverage: bool
+) -> ExperimentConfig:
+    """A percent-of-prefix budget makes sense for LongBench's 5-20k-token
+    contexts, but the SAME percentage applied to GSM8K/MATH-500's ~100-300
+    token prompts collapses to a handful of tokens (5% of 100 is 5) - too
+    little of the problem statement survives for the model to reason about,
+    which reads as a quality collapse that has nothing to do with the method
+    being compared. Math benchmarks get a fixed topk instead (matching the
+    budget validated in earlier sparse-KV work on this same model family);
+    LongBench keeps the percent budget. Either way the budget stays well
+    under the live prefix length once past the first block or two, so the
+    selector still actually engages (sparse_block_fraction is still checked).
+    """
     raw = ExperimentConfig.load(SUITE_CONFIG_DIR / f"{stem}.yaml").to_dict()
     if raw["selector"].get("topk_percent") is not None:
-        raw["selector"]["topk_percent"] = topk_pct
+        if benchmark in MATH_BENCHMARKS:
+            raw["selector"]["topk_percent"] = None
+            raw["selector"]["topk"] = math_topk
+        else:
+            raw["selector"]["topk_percent"] = topk_pct
     raw["coverage_diagnostics"] = coverage and raw["semantic"] != "dense"
     raw["name"] = f"{raw['name']}{'_covpass' if coverage else ''}"
     return ExperimentConfig.from_dict(raw)
@@ -278,7 +299,11 @@ def main() -> None:
     p.add_argument("--longbench-n", type=int, default=5, help="examples per LongBench task")
     p.add_argument("--variants", default=",".join(VARIANTS),
                    help=f"comma list from: {', '.join(VARIANTS)}")
-    p.add_argument("--topk-pct", type=float, default=5.0)
+    p.add_argument("--topk-pct", type=float, default=5.0,
+                    help="LongBench selector budget, as a percent of the live prefix")
+    p.add_argument("--math-topk", type=int, default=64,
+                    help="GSM8K/MATH-500 selector budget, a FIXED count (see load_config's "
+                         "docstring for why math needs this instead of a percent)")
     p.add_argument("--skip-coverage", action="store_true",
                    help="quality+speed pass only; skip the separate coverage pass")
     p.add_argument("--device", default="cuda:0")
@@ -321,8 +346,11 @@ def main() -> None:
         if has_selector and not args.skip_coverage:
             passes.append(("coverage", True))
         for pass_name, coverage in passes:
-            cfg = load_config(stem, topk_pct=args.topk_pct, coverage=coverage)
             for benchmark, examples in benchmarks.items():
+                cfg = load_config(
+                    stem, benchmark=benchmark, topk_pct=args.topk_pct,
+                    math_topk=args.math_topk, coverage=coverage,
+                )
                 out_path = output_root / f"{variant}.jsonl"
                 run_pass(
                     variant=variant, pass_name=pass_name, cfg=cfg,
