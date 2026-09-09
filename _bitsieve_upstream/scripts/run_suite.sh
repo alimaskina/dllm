@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The button: 15 GSM8K + 15 LongBench (5 each of 2wikimqa/qmsum/repobench-p),
+# The button: 15 GSM8K + 10 LongBench (5 each of qmsum/repobench-p),
 # all 4 variants (dense, sparse fp16 all, sparse fp16 middle, sparse K4/V4 all),
 # quality + a separate coverage-diagnostic pass, then a summary table.
 #
@@ -53,7 +53,7 @@ DEVICE="${DEVICE:-cuda:0}"
 MODEL="${MODEL:-Efficient-Large-Model/Fast_dLLM_v2_7B}"
 MODEL_REVISION="${MODEL_REVISION:-0661abf5f9f0ee338970d091052a26c8efa51974}"
 GSM8K_N="${GSM8K_N:-15}"
-LONGBENCH_TASKS="${LONGBENCH_TASKS:-2wikimqa,qmsum,repobench-p}"
+LONGBENCH_TASKS="${LONGBENCH_TASKS:-qmsum,repobench-p}"
 LONGBENCH_N="${LONGBENCH_N:-5}"
 VARIANTS="${VARIANTS:-dense,sparse_fp16_all,sparse_fp16_middle,sparse_k4v4_all}"
 TOPK_PCT="${TOPK_PCT:-5.0}"

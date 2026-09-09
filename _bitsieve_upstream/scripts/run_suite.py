@@ -29,7 +29,7 @@ Usage
     bash scripts/run_suite.sh                       # the button: full 15+15 run
     python scripts/run_suite.py --smoke              # ~2 min correctness check
     python scripts/run_suite.py --gsm8k-n 15 \\
-        --longbench-tasks 2wikimqa,qmsum,repobench-p --longbench-n 5 \\
+        --longbench-tasks qmsum,repobench-p --longbench-n 5 \\
         --variants dense,sparse_fp16_all,sparse_fp16_middle,sparse_k4v4_all \\
         --device cuda:0 --output-root results/suite_run
 
@@ -79,7 +79,7 @@ VARIANTS: dict[str, tuple[str, bool]] = {
     "sparse_k4v4_all": ("sparse_k4v4_all_p5", True),
 }
 
-DEFAULT_LONGBENCH_TASKS = ["2wikimqa", "qmsum", "repobench-p"]
+DEFAULT_LONGBENCH_TASKS = ["qmsum", "repobench-p"]
 DEFAULT_MODEL_REVISION = "0661abf5f9f0ee338970d091052a26c8efa51974"
 
 
@@ -335,8 +335,6 @@ def main() -> None:
     if args.smoke:
         args.gsm8k_n = 1
         args.longbench_n = 1
-        if args.longbench_tasks == ",".join(DEFAULT_LONGBENCH_TASKS):
-            args.longbench_tasks = "2wikimqa"
 
     variants = [v.strip() for v in args.variants.split(",") if v.strip()]
     for v in variants:

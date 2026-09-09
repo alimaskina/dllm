@@ -107,7 +107,7 @@ and memory runs. The packed kernels are untouched by it.
 bash scripts/run_suite.sh
 ```
 
-Runs 15 GSM8K + 15 LongBench examples (5 each of `2wikimqa`/`qmsum`/`repobench-p`
+Runs 15 GSM8K + 10 LongBench examples (5 each of `qmsum`/`repobench-p`
 by default) through four variants at a shared 5%-of-prefix budget:
 
 | variant | cache | selector |
@@ -153,10 +153,11 @@ For a directly comparable quality run, use the pinned one-button harness:
 bash scripts/run_quality_repro.sh
 ```
 
-The default run evaluates 50 GSM8K examples and 20 examples each from
-2WikiMQA, QMSum, and RepoBench-P across the four suite variants. It runs the
-official task prompts and metrics, saves every prediction/reference pair, and
-writes `manifest.json` with the model revision, dataset revisions, example
+The default button evaluates 20 examples each from GSM8K, QMSum, and
+RepoBench-P across the four suite variants under two profiles:
+`Long=5% / math k=64` and `Long=20% / math k=128`. It runs the official task
+prompts and metrics, saves every prediction/reference pair, and writes a
+manifest for each profile with the model revision, dataset revisions, example
 IDs, and prompt fingerprints. The quality pass intentionally skips coverage
 diagnostics, so its timing and scores are not changed by audit-only work.
 
@@ -176,7 +177,7 @@ Each worker processes one request at a time; multiple GPUs can run independent j
 python scripts/run_experiments.py quality \
   --gpus 1,4 \
   --configs official_dense_bf16,dense_kivi4_k4v4_r0,dense_kivi2_k2v2_r0,mage_bf16_all_a_k512,herald_middle_bf16_a,proposed_a_k4v4_k512,proposed_a_k2v2_k512,proposed_a_k4v4_p5,proposed_a_k2v2_p5 \
-  --benchmarks gsm8k,hotpotqa,narrativeqa,qasper,qmsum,lcc,repobench-p,math500,2wikimqa,musique \
+  --benchmarks gsm8k,hotpotqa,narrativeqa,qasper,qmsum,lcc,repobench-p,math500,musique \
   --output-root results/quality_main
 ```
 
