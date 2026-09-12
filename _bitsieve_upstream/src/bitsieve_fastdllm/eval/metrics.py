@@ -263,21 +263,22 @@ def best_classification_score(
     return max((classification_score(prediction, x, all_classes) for x in references), default=0.0)
 
 
-# Task -> official THUDM/LongBench metric family. English tasks only - the Chinese
-# LongBench tasks (dureader, vcsum, lsht, multifieldqa_zh, passage_retrieval_zh) use a
-# jieba-segmented variant of qa_f1/rouge/retrieval that this project has no use for, since
-# every prompt and every generation here is English.
+# Task -> official THUDM/LongBench metric family. English tasks plus lsht: the other
+# Chinese LongBench tasks (dureader, vcsum, multifieldqa_zh, passage_retrieval_zh) use a
+# jieba-segmented variant of qa_f1/rouge/retrieval that this project has no use for, but
+# lsht's official metric is classification_score - substring matching against all_classes,
+# with no segmentation anywhere in it - so it runs at full official fidelity.
 _LONGBENCH_QA_F1 = {"narrativeqa", "qasper", "multifieldqa_en", "hotpotqa", "2wikimqa", "musique", "triviaqa"}
 _LONGBENCH_ROUGE = {"gov_report", "qmsum", "multi_news", "samsum"}
 _LONGBENCH_CODE_SIM = {"repobench-p", "repobench_p", "lcc"}
-_LONGBENCH_CLASSIFICATION = {"trec"}
+_LONGBENCH_CLASSIFICATION = {"trec", "lsht"}
 _LONGBENCH_COUNT = {"passage_count"}
 _LONGBENCH_RETRIEVAL = {"passage_retrieval_en"}
 # THUDM/LongBench's own scorer() takes only the first line of the prediction for these
-# four tasks before scoring (github.com/THUDM/LongBench eval.py) - trec/triviaqa/samsum
-# ask for a short direct answer, so anything after the first line is reasoning the
-# official protocol was never designed to be scored on.
-_LONGBENCH_FIRST_LINE_ONLY = {"trec", "triviaqa", "samsum"}
+# four tasks before scoring (github.com/THUDM/LongBench eval.py) - they ask for a short
+# direct answer, so anything after the first line is reasoning the official protocol was
+# never designed to be scored on. lsht is in that list upstream too.
+_LONGBENCH_FIRST_LINE_ONLY = {"trec", "triviaqa", "samsum", "lsht"}
 
 
 

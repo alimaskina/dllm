@@ -35,10 +35,22 @@ LONG_BENCH_CONFIGS = {
     "lcc": "lcc",
     "2wikimqa": "2wikimqa",
     "musique": "musique",
+    # The one Chinese task wired in. The others (dureader, vcsum, multifieldqa_zh,
+    # passage_retrieval_zh) are scored with jieba-segmented variants of qa_f1/rouge/
+    # retrieval that this project has no dependency on, but lsht's official metric is
+    # classification_score, which is plain substring matching against all_classes and
+    # needs no segmentation at all - so it can be run at full official fidelity.
+    #
+    # It is here because it is the Chinese twin of trec, and trec is the only task whose
+    # metric separates the selectors: on trec the single-middle-query selector answers
+    # with the right meaning in the wrong vocabulary ("Golf course" for "Other location"),
+    # because the label set is defined by few-shot demonstrations spread through the
+    # prompt and one query cannot know to retain them. lsht has the same shape (24 closed
+    # classes, few-shot, exact-match scoring), so it is an independent test of that
+    # explanation rather than a second draw from the same task.
+    "lsht": "lsht",
 }
-# Deliberately not wired in: the Chinese LongBench tasks (dureader, vcsum, lsht,
-# multifieldqa_zh, passage_retrieval_zh) - every prompt and generation in this project is
-# English, and scoring them needs jieba segmentation this project does not depend on.
+# Still not wired in: dureader, vcsum, multifieldqa_zh, passage_retrieval_zh - see above.
 
 # THUDM/LongBench's pred.py skips the chat template on exactly these tasks:
 #   if dataset not in ["trec","triviaqa","samsum","lsht","lcc","repobench-p"]:
@@ -227,6 +239,8 @@ _LONGBENCH_OFFICIAL_PROMPTS: dict[str, str] = {
         "You are given several news passages. Write a one-page summary of all news. \n\n"
         "News:\n{context}\n\nNow, write a one-page summary of all the news.\n\nSummary:"
     ),
+    # dataset2prompt.json, verbatim.
+    "lsht": "请判断给定新闻的类别，下面是一些例子。\n\n{context}\n{input}",
     "trec": (
         "Please determine the type of the question below. Here are some examples of "
         "questions.\n\n{context}\n{input}"
