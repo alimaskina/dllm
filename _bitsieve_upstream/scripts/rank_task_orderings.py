@@ -225,6 +225,19 @@ def paired_diff(a: dict[str, float], b: dict[str, float]) -> tuple[float, float,
     return statistics.fmean(diffs), sd / math.sqrt(len(diffs)), len(diffs)
 
 
+def n_differing(a: dict[str, float], b: dict[str, float]) -> tuple[int, int]:
+    """(examples where the two arms scored differently, examples compared).
+
+    On a discrete metric at a small n, a headline gap can be one flipped
+    example: lsht at n=20 showed `mage-herald` -0.050, which was a single
+    example of 20 with the other 19 tied. trec at the same n showed +0.250 from
+    5 differing examples, all 5 the same way. The means look like results of the
+    same kind and are not, so the count belongs next to them.
+    """
+    common = sorted(set(a) & set(b))
+    return sum(1 for k in common if a[k] != b[k]), len(common)
+
+
 # |t| above this counts as a real separation rather than noise. 2.0 is ~95% for a
 # two-sided paired t-test at these n.
 T_THRESHOLD = 2.0
@@ -348,6 +361,15 @@ def main() -> int:
         record["length_deltas"] = dl
         record["score_deltas"] = ds
         record["coverage"] = load_task_coverage(task_dir)
+        record["differing"] = {
+            label: n_differing(scores.get(x, {}), scores.get(y, {}))
+            for label, x, y in (
+                ("dense-mage", DENSE, MAGE),
+                ("k4v4-mage", QUANT, MAGE),
+                ("mage-herald", MAGE, HERALD),
+            )
+            if scores.get(x) and scores.get(y)
+        }
         results.append(record)
 
     if not results:
@@ -380,6 +402,15 @@ def main() -> int:
                 if m[DENSE] < lo * 0.5 or m[DENSE] > hi * 1.5:
                     band_cell += " !"
         print(f"{r['task']:<{width}}{n:>4}  {dense_cell}{cells}{band_cell}  {r['verdict']}")
+        counts = r.get("differing") or {}
+        if counts:
+            # Flagged when a comparison rests on very few examples: on a discrete
+            # metric that is where a mean turns into one flipped row.
+            parts = []
+            for label, (nd, tot) in counts.items():
+                mark = " !" if 0 < nd <= 2 else ""
+                parts.append(f"{label} {nd}/{tot}{mark}")
+            print(f"{'':<{width}}{'':>4}  differing examples: " + ",  ".join(parts))
     covered = [r for r in results if r.get("coverage")]
     if covered:
         print(
@@ -414,6 +445,10 @@ def main() -> int:
             "\nselectors are genuinely equivalent at that budget, and no n fixes that."
         )
 
+    print(
+        "\n'!' on a differing-examples count marks a comparison resting on <=2 examples - on a "
+        "\ndiscrete metric that is a mean built from one or two flipped rows, not an effect."
+    )
     print(
         "\npublished 7B = min-max over the 7B-class models in THUDM/LongBench's own results "
         "table\n(different models, so this is a ballpark check; '!' marks our dense score far "
