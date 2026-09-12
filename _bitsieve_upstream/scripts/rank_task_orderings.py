@@ -165,6 +165,44 @@ def load_task_scores(task_dir: Path) -> dict[str, dict[str, float]]:
     return scores
 
 
+def load_task_coverage(task_dir: Path) -> dict[str, tuple[float, float, int]]:
+    """variant -> (mean coverage mass, mean index overlap, n), coverage pass only.
+
+    Coverage is measured against an independent fp16 all-masked-query reference,
+    so it says how much of the attention mass a selector actually kept - which is
+    the quantity the method is about. The score is a downstream proxy for it and a
+    lossy one: a selector can drop 5% of the mass and still produce the same
+    answer. When a task is `flat` in score, coverage is what says whether that is
+    because the selectors really are equivalent at this budget or because the
+    metric cannot see a difference that is there.
+
+    Absent unless the run was made with COVERAGE=1 (run_task_selection.sh).
+    """
+    out: dict[str, list[tuple[float, float]]] = {}
+    for path in sorted(task_dir.glob("*.jsonl")):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            if row.get("pass") != "coverage":
+                continue
+            cov = (row.get("runtime") or {}).get("coverage")
+            if not cov or cov.get("mass_mean") is None:
+                continue
+            out.setdefault(row["variant"], []).append(
+                (float(cov["mass_mean"]), float(cov.get("overlap_mean") or "nan"))
+            )
+    return {
+        v: (
+            statistics.fmean(m for m, _ in rows),
+            statistics.fmean(o for _, o in rows),
+            len(rows),
+        )
+        for v, rows in out.items()
+        if rows
+    }
+
+
 def sem(values: list[float]) -> float:
     if len(values) < 2:
         return float("inf")
@@ -309,6 +347,7 @@ def main() -> int:
         dl, ds = length_deltas(load_task_predictions(task_dir))
         record["length_deltas"] = dl
         record["score_deltas"] = ds
+        record["coverage"] = load_task_coverage(task_dir)
         results.append(record)
 
     if not results:
@@ -341,6 +380,40 @@ def main() -> int:
                 if m[DENSE] < lo * 0.5 or m[DENSE] > hi * 1.5:
                     band_cell += " !"
         print(f"{r['task']:<{width}}{n:>4}  {dense_cell}{cells}{band_cell}  {r['verdict']}")
+    covered = [r for r in results if r.get("coverage")]
+    if covered:
+        print(
+            f"\n{'coverage mass vs fp16 reference':<{width}}{'n':>4}  "
+            f"{'mage':>9}{'k4v4':>9}{'herald':>9}   what it says"
+        )
+        print("-" * (width + 70))
+        for r in sorted(covered, key=lambda x: x["task"]):
+            cov = r["coverage"]
+            n = max(v[2] for v in cov.values())
+            cells = "".join(
+                f"{cov[v][0]:>9.4f}" if v in cov else f"{'--':>9}"
+                for v in (MAGE, QUANT, HERALD)
+            )
+            # The diagnosis a flat score cannot give on its own: is herald keeping
+            # the same mass as the all-query selector, or is the metric blind to a
+            # gap that is there?
+            if MAGE in cov and HERALD in cov:
+                gap = cov[MAGE][0] - cov[HERALD][0]
+                if gap < 0.01:
+                    says = f"herald keeps the same mass (gap {gap:+.4f}) - budget too loose to differ"
+                elif r["verdict"] == "flat":
+                    says = f"herald drops {gap:.4f} of the mass but the metric cannot see it"
+                else:
+                    says = f"herald drops {gap:.4f} of the mass"
+            else:
+                says = ""
+            print(f"{r['task']:<{width}}{n:>4}  {cells}   {says}")
+        print(
+            "\nCoverage is the quantity the method is about; the score is a lossy proxy for it. "
+            "\nA task that is flat in score AND flat in coverage is not under-sampled - the "
+            "\nselectors are genuinely equivalent at that budget, and no n fixes that."
+        )
+
     print(
         "\npublished 7B = min-max over the 7B-class models in THUDM/LongBench's own results "
         "table\n(different models, so this is a ballpark check; '!' marks our dense score far "
