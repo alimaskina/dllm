@@ -374,6 +374,39 @@ def _longbench_archive_path() -> Path:
     )
 
 
+def _interleave_length_buckets(rows: list[dict]) -> list[dict]:
+    """Reorder LongBench-E rows so any prefix is balanced across length buckets.
+
+    The _e files are laid out bucket-major - 100 rows of 0-4k, then 100 of 4-8k,
+    then 100 of 8k+ - so taking the first N rows, as every other LongBench task
+    does, yields nothing but short contexts and the length stratification that is
+    the whole point of LongBench-E is silently lost. (Measured: the first 24 rows
+    of hotpotqa_e and trec_e are 24/24 in the 0-4k bucket.)
+
+    Round-robin interleaving fixes that while keeping two properties the rest of
+    the pipeline relies on: the order is deterministic, and any prefix is a prefix
+    of every longer one, so `--longbench-n` can be raised on an existing run
+    without invalidating the rows already computed.
+
+    Rows whose bucket cannot be determined keep their relative order and go last,
+    rather than being dropped.
+    """
+    buckets: dict[str, list[dict]] = {name: [] for _, _, name in LONGBENCH_E_BUCKETS}
+    unknown: list[dict] = []
+    for row in rows:
+        length = row.get("length")
+        name = length_bucket(length) if isinstance(length, int) else None
+        (buckets[name] if name in buckets else unknown).append(row)
+
+    ordered: list[dict] = []
+    ordered_buckets = [buckets[name] for _, _, name in LONGBENCH_E_BUCKETS]
+    for index in range(max((len(b) for b in ordered_buckets), default=0)):
+        for bucket in ordered_buckets:
+            if index < len(bucket):
+                ordered.append(bucket[index])
+    return ordered + unknown
+
+
 def load_longbench(
     task: str,
     limit: int | None = None,
@@ -400,28 +433,32 @@ def load_longbench(
             ) from exc
 
         with raw:
-            for idx, line in enumerate(raw):
-                if limit is not None and idx >= limit:
-                    break
-                row = json.loads(line.decode("utf-8"))
-                refs = row.get("answers", row.get("answer", []))
-                if isinstance(refs, str):
-                    refs = [refs]
-                prompt = _longbench_prompt(
-                    config, str(row.get("context", "")), str(row.get("input", ""))
-                )
-                out.append(
-                    BenchmarkExample(
-                        str(row.get("_id", idx)),
-                        prompt,
-                        [str(x) for x in refs],
-                        {
-                            "task": config,
-                            "length": row.get("length"),
-                            "all_classes": row.get("all_classes"),
-                        },
-                    )
-                )
+            rows = [json.loads(line.decode("utf-8")) for line in raw]
+
+    if task.endswith("_e"):
+        rows = _interleave_length_buckets(rows)
+
+    for idx, row in enumerate(rows):
+        if limit is not None and idx >= limit:
+            break
+        refs = row.get("answers", row.get("answer", []))
+        if isinstance(refs, str):
+            refs = [refs]
+        prompt = _longbench_prompt(
+            config, str(row.get("context", "")), str(row.get("input", ""))
+        )
+        out.append(
+            BenchmarkExample(
+                str(row.get("_id", idx)),
+                prompt,
+                [str(x) for x in refs],
+                {
+                    "task": config,
+                    "length": row.get("length"),
+                    "all_classes": row.get("all_classes"),
+                },
+            )
+        )
     return out
 
 

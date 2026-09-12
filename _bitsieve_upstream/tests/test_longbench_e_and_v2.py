@@ -82,3 +82,54 @@ def test_longbench_v2_accuracy_uses_the_official_extraction(prediction, expected
 
 def test_longbench_v2_budget_is_not_the_summarization_default():
     assert max_new_tokens_for("longbench_v2") == 128
+
+
+def test_e_tasks_are_sampled_across_length_buckets_not_prefix():
+    """The _e files are bucket-major, so a raw prefix is all short contexts.
+
+    This is the bug the interleave exists for: before it, the first 24 rows of
+    hotpotqa_e were 24/24 in the 0-4k bucket and the length stratification that
+    is the entire point of LongBench-E never reached the model.
+    """
+    from collections import Counter
+
+    from bitsieve_fastdllm.eval.benchmarks import load_longbench
+
+    for task in ("hotpotqa_e", "trec_e"):
+        counts = Counter(
+            length_bucket(e.metadata["length"]) for e in load_longbench(task, 24)
+        )
+        assert counts == {"0-4k": 8, "4-8k": 8, "8k+": 8}, (task, counts)
+
+
+def test_e_task_order_is_prefix_stable_so_a_run_can_be_deepened():
+    # run_suite.py's manifest guard allows raising --longbench-n only when the
+    # old example ids are a prefix of the new ones.
+    from bitsieve_fastdllm.eval.benchmarks import load_longbench
+
+    short = [e.example_id for e in load_longbench("hotpotqa_e", 24)]
+    long = [e.example_id for e in load_longbench("hotpotqa_e", 60)]
+    assert long[: len(short)] == short
+
+
+def test_interleaving_does_not_touch_v1_tasks():
+    # v1 files are not bucket-major and upstream consumes them in file order.
+    from bitsieve_fastdllm.eval.benchmarks import load_longbench
+
+    ids = [e.example_id for e in load_longbench("hotpotqa", 5)]
+    assert ids == [e.example_id for e in load_longbench("hotpotqa", 20)][:5]
+
+
+def test_rows_with_no_usable_length_are_kept_last_not_dropped():
+    from bitsieve_fastdllm.eval.benchmarks import _interleave_length_buckets
+
+    rows = [
+        {"_id": "short", "length": 100},
+        {"_id": "nolen"},
+        {"_id": "mid", "length": 5000},
+        {"_id": "bad", "length": "8000"},
+        {"_id": "long", "length": 20000},
+    ]
+    out = [r["_id"] for r in _interleave_length_buckets(rows)]
+    assert out[:3] == ["short", "mid", "long"]
+    assert sorted(out[3:]) == ["bad", "nolen"]
