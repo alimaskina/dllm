@@ -40,6 +40,28 @@ LONG_BENCH_CONFIGS = {
 # multifieldqa_zh, passage_retrieval_zh) - every prompt and generation in this project is
 # English, and scoring them needs jieba segmentation this project does not depend on.
 
+# THUDM/LongBench's pred.py skips the chat template on exactly these tasks:
+#   if dataset not in ["trec","triviaqa","samsum","lsht","lcc","repobench-p"]:
+#       prompt = build_chat(...)   # "chat models are better off without build prompts here"
+# They are few-shot or raw-completion formats: the prompt ends mid-pattern ("...\nType:")
+# and the model is meant to continue it. Wrapping that in a chat turn makes the model
+# answer conversationally instead - it re-states the question and puts the answer on a
+# second line - and since LongBench's scorer keeps only the FIRST line for
+# trec/triviaqa/samsum, the answer is then thrown away and the task scores near zero.
+# (Measured before this was honoured: trec scored 0.22 against a 0.52-0.79 published
+# band, with predictions like 'Question: ...\nType: Other location' whose correct answer
+# sat on the discarded second line. lcc/repobench-p were already exempted by hand in
+# run_suite.py; this moves that rule to one place and extends it to the three tasks it
+# was missing.)
+NO_CHAT_TEMPLATE_TASKS = frozenset(
+    {"trec", "triviaqa", "samsum", "lsht", "lcc", "repobench-p", "repobench_p"}
+)
+
+
+def uses_chat_template(benchmark: str) -> bool:
+    """Whether this benchmark's prompt should be wrapped in the model's chat template."""
+    return benchmark.lower() not in NO_CHAT_TEMPLATE_TASKS
+
 
 def _take(dataset: Iterable, limit: int | None):
     for idx, row in enumerate(dataset):

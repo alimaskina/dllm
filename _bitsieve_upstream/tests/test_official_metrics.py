@@ -1,6 +1,10 @@
 import pytest
 
-from bitsieve_fastdllm.eval.benchmarks import LONG_BENCH_CONFIGS, _longbench_prompt
+from bitsieve_fastdllm.eval.benchmarks import (
+    LONG_BENCH_CONFIGS,
+    _longbench_prompt,
+    uses_chat_template,
+)
 from bitsieve_fastdllm.eval.metrics import score_prediction
 
 
@@ -58,3 +62,14 @@ def test_every_wired_longbench_task_has_an_official_prompt_template():
         # Raises KeyError if a task is wired into LONG_BENCH_CONFIGS without a matching
         # entry in _LONGBENCH_OFFICIAL_PROMPTS - see that dict's docstring.
         assert _longbench_prompt(task, "context", "question")
+
+
+def test_few_shot_tasks_skip_the_chat_template():
+    # THUDM/LongBench's pred.py: `if dataset not in [...]: prompt = build_chat(...)`.
+    # These prompts end mid-pattern and the model is meant to continue them; wrapped in
+    # a chat turn the model answers conversationally and the scorer's first-line-only
+    # rule then discards the answer.
+    for task in ("trec", "triviaqa", "samsum", "lcc", "repobench-p"):
+        assert not uses_chat_template(task), task
+    for task in ("narrativeqa", "qasper", "hotpotqa", "2wikimqa", "gov_report", "qmsum"):
+        assert uses_chat_template(task), task

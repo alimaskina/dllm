@@ -63,6 +63,7 @@ from bitsieve_fastdllm.eval.benchmarks import (  # noqa: E402
     MATH_BENCHMARKS,
     load_benchmark,
     max_new_tokens_for,
+    uses_chat_template,
 )
 from bitsieve_fastdllm.eval.common import encode_prompt, load_fast_dllm  # noqa: E402
 from bitsieve_fastdllm.eval.metrics import score_prediction  # noqa: E402
@@ -181,7 +182,9 @@ def run_pass(
             max_input = cfg.max_cache_tokens - cfg.generation.max_new_tokens
             input_ids = encode_prompt(
                 tokenizer, example.prompt, max_input_tokens=max_input,
-                use_chat_template=benchmark not in {"lcc", "repobench-p"}, device=device,
+                # LongBench leaves the few-shot/completion tasks unwrapped; this was
+                # hand-coded for the two code tasks and missed trec/triviaqa/samsum.
+                use_chat_template=uses_chat_template(benchmark), device=device,
             )
             t0 = time.time()
             # A single example failing (a transient kernel/driver hiccup on a

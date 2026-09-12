@@ -10,7 +10,7 @@ from tqdm import tqdm
 from ..config import ExperimentConfig
 from ..runtime.generator import BitSieveGenerator
 from ..runtime.official_generator import OfficialDenseGenerator
-from .benchmarks import load_benchmark, max_new_tokens_for
+from .benchmarks import load_benchmark, max_new_tokens_for, uses_chat_template
 from .common import encode_prompt, load_fast_dllm, parse_dtype
 from .metrics import score_prediction
 from .resume import load_resume_rows, rewrite_existing_rows
@@ -141,7 +141,11 @@ def main(argv: list[str] | None = None) -> None:
                 tokenizer,
                 example.prompt,
                 max_input_tokens=max_input,
-                use_chat_template=not args.plain_prompt,
+                # --plain-prompt forces it off; otherwise LongBench's own rule
+                # decides (see NO_CHAT_TEMPLATE_TASKS).
+                use_chat_template=(
+                    not args.plain_prompt and uses_chat_template(args.benchmark)
+                ),
                 device=next(model.parameters()).device,
             )
             result = generator.generate(input_ids)
