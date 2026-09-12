@@ -42,6 +42,17 @@ class CoverageRecord:
     relative to what I* itself captures (so 1.0 means "as good as the best
     possible selection at this budget", not "all the mass in the prefix").
     `overlap` is |selected n I*| / k.
+
+    `mass` alone cannot explain a quality drop, and read quickly it actively
+    misleads: on hotpotqa at a fixed 128-entry budget the all-query selector
+    scores mass 1.0000 while losing 0.09 of the task score, because it picks
+    the best available 128 entries and the mass it needed was never in reach of
+    128 entries. `mass_abs` and `ceiling_abs` split those two losses apart -
+    both are shares of the FULL prefix attention mass, so:
+
+        ceiling_abs      - what the budget allows at best (budget-limited loss)
+        mass_abs         - what this selector actually kept
+        mass_abs/ceiling - == `mass`, the part the selector is responsible for
     """
 
     block: int
@@ -51,6 +62,8 @@ class CoverageRecord:
     selector_queries: int
     mass: list[float]
     overlap: list[float]
+    mass_abs: list[float] = field(default_factory=list)
+    ceiling_abs: list[float] = field(default_factory=list)
 
 
 @dataclass(slots=True)
@@ -73,13 +86,23 @@ class RunTrace:
         overlap = [v for rec in self.coverage for v in rec.overlap]
         if not mass:
             return None
-        return {
+        summary: dict[str, float | int] = {
             "cells": len(mass),
             "mass_mean": sum(mass) / len(mass),
             "mass_min": min(mass),
             "overlap_mean": sum(overlap) / len(overlap),
             "overlap_min": min(overlap),
         }
+        # Absent from traces written before these were recorded, so keep the
+        # summary readable rather than reporting zeros as if measured.
+        mass_abs = [v for rec in self.coverage for v in rec.mass_abs]
+        ceiling_abs = [v for rec in self.coverage for v in rec.ceiling_abs]
+        if mass_abs:
+            summary["mass_abs_mean"] = sum(mass_abs) / len(mass_abs)
+            summary["mass_abs_min"] = min(mass_abs)
+        if ceiling_abs:
+            summary["ceiling_abs_mean"] = sum(ceiling_abs) / len(ceiling_abs)
+        return summary
 
     def to_dict(self) -> dict:
         return {

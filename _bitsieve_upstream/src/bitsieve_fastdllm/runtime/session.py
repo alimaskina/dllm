@@ -296,9 +296,15 @@ class BitSieveSession:
             return
         ref_vals, ref_idx = torch.topk(ref, k, dim=-1)
         sel = indices.to(torch.long)
-        # Mass captured, normalised by the best achievable mass at this budget.
-        best = ref_vals.sum(dim=-1).clamp_min(1e-12)
-        got = ref.gather(-1, sel).sum(dim=-1)
+        # `ref` is a mean of softmax rows, so it sums to 1 over the prefix and
+        # `got`/`best` are already shares of the FULL attention mass. Recording
+        # both absolutes separates the loss the budget forces on any selector
+        # from the loss this particular selector adds: a selector can be optimal
+        # (mass 1.0) while the budget still costs most of the mass.
+        best_abs = ref_vals.sum(dim=-1)
+        got_abs = ref.gather(-1, sel).sum(dim=-1)
+        best = best_abs.clamp_min(1e-12)
+        got = got_abs
         mass = (got / best).flatten().tolist()
         # Index overlap against the same reference top-k.
         mark = torch.zeros_like(ref, dtype=torch.bool)
@@ -313,6 +319,8 @@ class BitSieveSession:
                 selector_queries=len(self.query_indices),
                 mass=[round(float(x), 5) for x in mass],
                 overlap=[round(float(x), 5) for x in overlap],
+                mass_abs=[round(float(x), 5) for x in got_abs.flatten().tolist()],
+                ceiling_abs=[round(float(x), 5) for x in best_abs.flatten().tolist()],
             )
         )
 
