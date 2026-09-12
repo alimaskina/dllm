@@ -168,11 +168,16 @@ def _manifest_extension_error(previous: dict, current: dict) -> str | None:
         old, new = prev_settings.pop(key, None), cur_settings.pop(key, None)
         if old is not None and new is not None and new < old:
             return f"{key} shrank from {old} to {new}; the finished rows cover more examples"
-    if prev_settings != cur_settings:
-        differing = sorted(
-            k for k in set(prev_settings) | set(cur_settings)
-            if prev_settings.get(k) != cur_settings.get(k)
-        )
+    # Compared key-by-key with .get() rather than by dict equality, so a setting
+    # ADDED since the earlier run (absent there, None here) is not reported as a
+    # difference. Dict equality flagged exactly that and then printed an empty
+    # list of differences, because the diff below already treated the two as
+    # equal - it rejected runs that were in fact identical.
+    differing = sorted(
+        k for k in set(prev_settings) | set(cur_settings)
+        if prev_settings.get(k) != cur_settings.get(k)
+    )
+    if differing:
         return "settings differ: " + ", ".join(
             f"{k}: {prev_settings.get(k)!r} != {cur_settings.get(k)!r}" for k in differing
         )

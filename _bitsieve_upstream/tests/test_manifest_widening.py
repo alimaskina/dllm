@@ -39,6 +39,7 @@ def _manifest(*, n=20, ids=None, topk_pct=5.0, model="m", revision=None):
             "longbench_tasks": ["qasper"],
             "variants": ["dense"],
             "topk_pct": topk_pct,
+            "longbench_topk": None,
             "math_topk": 64,
             "coverage_pass": False,
         },
@@ -106,3 +107,31 @@ def test_changed_dataset_revision_is_rejected():
     current = _manifest()
     current["datasets"]["qasper"]["revision"] = "v2"
     assert "revision differs" in err(_manifest(), current)
+
+
+def test_a_setting_added_since_the_earlier_run_is_not_a_difference():
+    """A manifest written before a flag existed must still be extendable.
+
+    --longbench-topk was added to the manifest after several runs had been
+    written. Their manifests have no such key; new ones carry it as None. Dict
+    equality called that a different run and then printed an EMPTY list of
+    differences - because the diff itself, using .get(), correctly saw none.
+    Two tasks failed mid-sweep on this.
+    """
+    previous = _manifest()
+    del previous["settings"]["longbench_topk"]
+    current = _manifest()
+    assert current["settings"]["longbench_topk"] is None
+    assert err(previous, current) is None
+    # ... and widening on top of it still works.
+    assert err(previous, _manifest(n=60)) is None
+
+
+def test_a_setting_added_with_a_REAL_value_is_still_a_difference():
+    # The flag being absent before and set now means the budget actually
+    # changed; that must still be refused.
+    previous = _manifest()
+    del previous["settings"]["longbench_topk"]
+    current = _manifest()
+    current["settings"]["longbench_topk"] = 128
+    assert "settings differ" in err(previous, current)
