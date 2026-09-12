@@ -14,10 +14,16 @@ Two ways a task fails:
               but the task cannot distinguish the methods, so it carries no
               evidence either way.
 
-"Noise" here is the standard error of the per-example score mean, so the verdict
-scales with n and with how spread the per-example scores are, instead of using a
-fixed threshold that would be far too strict on a 0/1 metric and far too loose on
-a smooth one.
+Every variant runs the SAME examples, so comparisons are paired: the verdict is a
+paired t-statistic on the per-example differences, which removes between-example
+difficulty variance (that variance dominates - on narrativeqa the unpaired SE of a
+variant mean is ~0.05 against ~0.03 for the paired difference). A fixed score
+threshold is not used; it would be far too strict on a 0/1 metric and far too loose
+on a smooth one.
+
+The report also prints a pooled terseness check, because the k4v4-vs-mage pair is
+close to a null (those two differ only by quantizing the cache) and on QA-F1 tasks
+a perturbation that merely shortens the answer raises precision, and so the score.
 
     python scripts/rank_task_orderings.py results/task_selection_20260912_120000
 """
@@ -55,6 +61,90 @@ def published_band(task: str, published: dict[str, dict[str, float]]) -> tuple[f
         return None
     vals = [v / 100.0 for k, v in row.items() if k != "GPT-3.5-Turbo-16k"]
     return (min(vals), max(vals)) if vals else None
+
+
+def load_task_predictions(task_dir: Path) -> dict[str, dict[str, tuple[float, int]]]:
+    """variant -> {example_id: (score, prediction length in words)}."""
+    out: dict[str, dict[str, tuple[float, int]]] = {}
+    for path in sorted(task_dir.glob("*.jsonl")):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            if row.get("pass") != "quality" or row.get("score") is None:
+                continue
+            pred = row.get("prediction")
+            if pred is None:
+                continue
+            out.setdefault(row["variant"], {})[str(row["id"])] = (
+                float(row["score"]), len(pred.split())
+            )
+    return out
+
+
+def length_deltas(preds: dict[str, dict[str, tuple[float, int]]]) -> tuple[list[int], list[float]]:
+    """Does this task's metric pay for terseness? Measured on the k4v4-vs-mage pair.
+
+    Those two variants differ only by quantizing the cache, and empirically leave ~60%
+    of answers byte-identical, so any score difference between them is close to a pure
+    null: it is not the method doing better, it is the metric reacting to a perturbed
+    answer. Correlating that difference with the change in answer LENGTH therefore
+    isolates the artifact, with no arbitrary threshold and no confound from a variant
+    genuinely losing information.
+
+    Strongly NEGATIVE = shorter answers score higher, so any degradation that trims a
+    trailing clause reads as an improvement. That is how an approximation ends up
+    "beating" dense on a QA-F1 task, and it is the property that decides whether a task
+    can be trusted to rank the variants.
+
+    (Correlating against dense instead would conflate this with the honest direction -
+    a sparse variant that drops information answers shorter AND scores worse, giving a
+    positive correlation that hides the artifact.)
+    """
+    a, b = preds.get(QUANT), preds.get(MAGE)
+    if not a or not b:
+        return [], []
+    dl: list[int] = []
+    ds: list[float] = []
+    for key in set(a) & set(b):
+        d_score = a[key][0] - b[key][0]
+        if abs(d_score) < 1e-9:
+            continue
+        ds.append(d_score)
+        dl.append(a[key][1] - b[key][1])
+    return dl, ds
+
+
+def report_length_bias(results: list[dict]) -> None:
+    """Print the terseness check POOLED over tasks.
+
+    Deliberately not a per-task column: at n=20 a task has only ~7-10 examples where
+    k4v4 and mage differ at all, and a single large content flip swings the correlation
+    from -0.6 to +0.7. Pooled, it is answering a question about the metric family rather
+    than about one task, which is what it is actually evidence for.
+    """
+    dl: list[int] = []
+    ds: list[float] = []
+    for r in results:
+        dl.extend(r.get("length_deltas", []))
+        ds.extend(r.get("score_deltas", []))
+    if len(ds) < 8:
+        return
+    mx, my = statistics.fmean(dl), statistics.fmean(ds)
+    num = sum((x - mx) * (y - my) for x, y in zip(dl, ds))
+    den = math.sqrt(sum((x - mx) ** 2 for x in dl) * sum((y - my) ** 2 for y in ds))
+    corr = num / den if den else float("nan")
+    shorter_and_better = sum(1 for x, y in zip(dl, ds) if x < 0 and y > 0)
+    better = sum(1 for y in ds if y > 0)
+    print(
+        f"\nterseness check (pooled, n={len(ds)} examples where k4v4 and mage differ):"
+        f"\n  corr(length change, score change) = {corr:+.2f}"
+        f"\n  k4v4 scored higher on {better}/{len(ds)}; {shorter_and_better} of those came with a"
+        f" SHORTER answer"
+        f"\n  k4v4 differs from mage only by quantizing the cache, so this pair is close to a"
+        f"\n  null - a negative correlation here means the metric pays for terseness, which is"
+        f"\n  how a degraded variant ends up 'beating' a better one on QA-F1."
+    )
 
 
 def load_task_scores(task_dir: Path) -> dict[str, dict[str, float]]:
@@ -215,7 +305,11 @@ def main() -> int:
         scores = load_task_scores(task_dir)
         if not scores:
             continue
-        results.append(analyse(task_dir.name, scores))
+        record = analyse(task_dir.name, scores)
+        dl, ds = length_deltas(load_task_predictions(task_dir))
+        record["length_deltas"] = dl
+        record["score_deltas"] = ds
+        results.append(record)
 
     if not results:
         raise SystemExit("no quality-pass rows found")
@@ -252,6 +346,7 @@ def main() -> int:
         "table\n(different models, so this is a ballpark check; '!' marks our dense score far "
         "outside it)"
     )
+    report_length_bias(results)
 
     for verdict, header in (
         ("ok", "USABLE - metric puts the variants in the predicted order"),
