@@ -1,0 +1,24 @@
+{
+  "_source": "THUDM/LongBench README.md, 'Evaluation Result on Each Dataset' (zero-shot, %)",
+  "_url": "https://github.com/THUDM/LongBench/blob/main/LongBench/README.md",
+  "_note": "Reference points for sanity-checking OUR dense numbers. These are different models (and none of them is a diffusion LM), so the test is 'same ballpark / same task difficulty ordering', never 'must match'. A task where every published model clusters near zero (passage_count) or near ceiling (triviaqa) has little room to separate anything, which matters when picking tasks that can show a method difference.",
+  "_models_are_7b_class": ["Llama2-7B-chat-4k", "LongChat-v1.5-7B-32k", "XGen-7B-8k", "InternLM-7B-8k", "ChatGLM2-6B-32k", "Vicuna-v1.5-7B-16k", "ChatGLM3-6B-32k"],
+  "scores": {
+    "narrativeqa":          {"Llama2-7B-chat-4k": 18.7, "LongChat-v1.5-7B-32k": 16.9, "XGen-7B-8k": 18.0, "InternLM-7B-8k": 12.1, "ChatGLM2-6B-32k": 21.1, "Vicuna-v1.5-7B-16k": 19.4, "ChatGLM3-6B-32k": 26.0, "GPT-3.5-Turbo-16k": 23.6},
+    "qasper":               {"Llama2-7B-chat-4k": 19.2, "LongChat-v1.5-7B-32k": 27.7, "XGen-7B-8k": 18.1, "InternLM-7B-8k": 16.7, "ChatGLM2-6B-32k": 31.5, "Vicuna-v1.5-7B-16k": 26.1, "ChatGLM3-6B-32k": 43.3, "GPT-3.5-Turbo-16k": 43.3},
+    "multifieldqa_en":      {"Llama2-7B-chat-4k": 36.8, "LongChat-v1.5-7B-32k": 41.4, "XGen-7B-8k": 37.7, "InternLM-7B-8k": 23.4, "ChatGLM2-6B-32k": 46.2, "Vicuna-v1.5-7B-16k": 38.5, "ChatGLM3-6B-32k": 51.7, "GPT-3.5-Turbo-16k": 52.3},
+    "hotpotqa":             {"Llama2-7B-chat-4k": 25.4, "LongChat-v1.5-7B-32k": 31.5, "XGen-7B-8k": 29.7, "InternLM-7B-8k": 28.7, "ChatGLM2-6B-32k": 45.1, "Vicuna-v1.5-7B-16k": 25.3, "ChatGLM3-6B-32k": 54.4, "GPT-3.5-Turbo-16k": 51.6},
+    "2wikimqa":             {"Llama2-7B-chat-4k": 32.8, "LongChat-v1.5-7B-32k": 20.6, "XGen-7B-8k": 21.1, "InternLM-7B-8k": 22.8, "ChatGLM2-6B-32k": 34.0, "Vicuna-v1.5-7B-16k": 20.8, "ChatGLM3-6B-32k": 44.9, "GPT-3.5-Turbo-16k": 37.7},
+    "musique":              {"Llama2-7B-chat-4k": 9.4, "LongChat-v1.5-7B-32k": 9.7, "XGen-7B-8k": 10.3, "InternLM-7B-8k": 9.0, "ChatGLM2-6B-32k": 21.9, "Vicuna-v1.5-7B-16k": 9.8, "ChatGLM3-6B-32k": 40.4, "GPT-3.5-Turbo-16k": 26.9},
+    "gov_report":           {"Llama2-7B-chat-4k": 27.3, "LongChat-v1.5-7B-32k": 30.8, "XGen-7B-8k": 27.3, "InternLM-7B-8k": 9.7, "ChatGLM2-6B-32k": 32.4, "Vicuna-v1.5-7B-16k": 27.9, "ChatGLM3-6B-32k": 36.8, "GPT-3.5-Turbo-16k": 29.5},
+    "qmsum":                {"Llama2-7B-chat-4k": 20.8, "LongChat-v1.5-7B-32k": 22.7, "XGen-7B-8k": 20.5, "InternLM-7B-8k": 15.9, "ChatGLM2-6B-32k": 24.0, "Vicuna-v1.5-7B-16k": 22.8, "ChatGLM3-6B-32k": 23.9, "GPT-3.5-Turbo-16k": 23.4},
+    "multi_news":           {"Llama2-7B-chat-4k": 25.8, "LongChat-v1.5-7B-32k": 26.4, "XGen-7B-8k": 26.2, "InternLM-7B-8k": 22.8, "ChatGLM2-6B-32k": 26.5, "Vicuna-v1.5-7B-16k": 27.2, "ChatGLM3-6B-32k": 27.9, "GPT-3.5-Turbo-16k": 26.7},
+    "trec":                 {"Llama2-7B-chat-4k": 61.5, "LongChat-v1.5-7B-32k": 63.5, "XGen-7B-8k": 65.5, "InternLM-7B-8k": 52.0, "ChatGLM2-6B-32k": 62.5, "Vicuna-v1.5-7B-16k": 71.5, "ChatGLM3-6B-32k": 79.0, "GPT-3.5-Turbo-16k": 68.0},
+    "triviaqa":             {"Llama2-7B-chat-4k": 77.8, "LongChat-v1.5-7B-32k": 82.3, "XGen-7B-8k": 77.8, "InternLM-7B-8k": 77.8, "ChatGLM2-6B-32k": 78.7, "Vicuna-v1.5-7B-16k": 86.2, "ChatGLM3-6B-32k": 87.1, "GPT-3.5-Turbo-16k": 91.4},
+    "samsum":               {"Llama2-7B-chat-4k": 40.7, "LongChat-v1.5-7B-32k": 34.2, "XGen-7B-8k": 25.3, "InternLM-7B-8k": 21.2, "ChatGLM2-6B-32k": 36.3, "Vicuna-v1.5-7B-16k": 40.8, "ChatGLM3-6B-32k": 38.2, "GPT-3.5-Turbo-16k": 41.7},
+    "passage_count":        {"Llama2-7B-chat-4k": 2.1, "LongChat-v1.5-7B-32k": 1.0, "XGen-7B-8k": 2.1, "InternLM-7B-8k": 3.0, "ChatGLM2-6B-32k": 1.5, "Vicuna-v1.5-7B-16k": 6.5, "ChatGLM3-6B-32k": 2.0, "GPT-3.5-Turbo-16k": 4.5},
+    "passage_retrieval_en": {"Llama2-7B-chat-4k": 9.8, "LongChat-v1.5-7B-32k": 30.5, "XGen-7B-8k": 8.5, "InternLM-7B-8k": 6.0, "ChatGLM2-6B-32k": 77.0, "Vicuna-v1.5-7B-16k": 4.5, "ChatGLM3-6B-32k": 99.0, "GPT-3.5-Turbo-16k": 71.0},
+    "lcc":                  {"Llama2-7B-chat-4k": 52.4, "LongChat-v1.5-7B-32k": 53.0, "XGen-7B-8k": 38.6, "InternLM-7B-8k": 44.1, "ChatGLM2-6B-32k": 55.6, "Vicuna-v1.5-7B-16k": 51.0, "ChatGLM3-6B-32k": 57.66, "GPT-3.5-Turbo-16k": 54.7},
+    "repobench-p":          {"Llama2-7B-chat-4k": 43.8, "LongChat-v1.5-7B-32k": 55.3, "XGen-7B-8k": 38.6, "InternLM-7B-8k": 28.8, "ChatGLM2-6B-32k": 49.9, "Vicuna-v1.5-7B-16k": 43.5, "ChatGLM3-6B-32k": 54.76, "GPT-3.5-Turbo-16k": 53.6}
+  }
+}
