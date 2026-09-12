@@ -14,8 +14,13 @@
 # suite loops variant-major, so a single big invocation would leave every task
 # half-measured until the very end. Costs one model load per task (~1 min).
 #
-# Quality pass only: this is about score ordering, not selector fidelity, and
-# the coverage pass would roughly double the runtime for no bearing on it.
+# Quality pass only by default: the screen is about score ordering, not selector
+# fidelity, and the coverage pass roughly doubles the runtime. Set COVERAGE=1 to
+# turn it on - worth it when the budget is tight enough that coverage mass is
+# expected to actually separate the selectors.
+#
+# EXTRA_ARGS is passed through to run_suite.py, e.g.
+#   EXTRA_ARGS="--longbench-topk 128" to swap the percent budget for a fixed one.
 set -Eeuo pipefail
 
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -27,11 +32,18 @@ N="${N:-20}"
 TOPK_PCT="${TOPK_PCT:-5.0}"
 VARIANTS="${VARIANTS:-dense,sparse_fp16_all,sparse_fp16_middle,sparse_k4v4_all}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-results/task_selection_$(date +%Y%m%d_%H%M%S)}"
+COVERAGE="${COVERAGE:-0}"
+EXTRA_ARGS="${EXTRA_ARGS:-}"
+if [[ "$COVERAGE" == "1" ]]; then COVERAGE_FLAG=(); else COVERAGE_FLAG=(--skip-coverage); fi
+# Unquoted on purpose: EXTRA_ARGS is a caller-supplied flag list, not one word.
+# shellcheck disable=SC2206
+EXTRA_ARGV=($EXTRA_ARGS)
 # Every English task wired into LONG_BENCH_CONFIGS.
 TASKS="${TASKS:-narrativeqa,qasper,multifieldqa_en,hotpotqa,2wikimqa,musique,gov_report,qmsum,multi_news,trec,triviaqa,samsum,passage_count,passage_retrieval_en,lcc,repobench-p}"
 
 echo "=== LongBench task selection screen ==="
-echo "device=$DEVICE  n_per_task=$N  topk_pct=$TOPK_PCT"
+echo "device=$DEVICE  n_per_task=$N  topk_pct=$TOPK_PCT  coverage=$COVERAGE"
+[[ -n "$EXTRA_ARGS" ]] && echo "extra_args=$EXTRA_ARGS"
 echo "variants=$VARIANTS"
 echo "output_root=$OUTPUT_ROOT"
 echo "tasks=$TASKS"
@@ -49,7 +61,8 @@ for task in "${TASK_LIST[@]}"; do
         --longbench-n "$N" \
         --variants "$VARIANTS" \
         --topk-pct "$TOPK_PCT" \
-        --skip-coverage \
+        "${COVERAGE_FLAG[@]}" \
+        ${EXTRA_ARGV[@]+"${EXTRA_ARGV[@]}"} \
         --output-root "$OUTPUT_ROOT/$task" \
         || echo "!! $task failed, continuing"
 done
