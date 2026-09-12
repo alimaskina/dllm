@@ -133,6 +133,57 @@ def _done_keys(path: Path) -> set[tuple[str, str, str]]:
     return done
 
 
+def _manifest_extension_error(previous: dict, current: dict) -> str | None:
+    """Return None when `current` only *widens* the run `previous` recorded.
+
+    Deepening a task - rerunning the same tasks with a larger --longbench-n to
+    tighten a confidence interval - is safe and routine: `_take` slices a
+    deterministic prefix of the split, so the old example ids are a prefix of
+    the new ones and every finished row still describes the same example under
+    the same settings. Comparing manifests for exact equality rejected that
+    along with the cases the guard exists for (a different model, a different
+    budget, a re-sliced dataset), so this spells out the difference. Anything
+    that is not a pure widening still returns a message and aborts the run.
+    """
+    if previous.get("schema_version") != current.get("schema_version"):
+        return "schema_version differs"
+    if previous.get("model") != current.get("model"):
+        return f"model differs: {previous.get('model')!r} != {current.get('model')!r}"
+
+    prev_settings = dict(previous.get("settings") or {})
+    cur_settings = dict(current.get("settings") or {})
+    for key in ("gsm8k_n", "longbench_n"):
+        old, new = prev_settings.pop(key, None), cur_settings.pop(key, None)
+        if old is not None and new is not None and new < old:
+            return f"{key} shrank from {old} to {new}; the finished rows cover more examples"
+    if prev_settings != cur_settings:
+        differing = sorted(
+            k for k in set(prev_settings) | set(cur_settings)
+            if prev_settings.get(k) != cur_settings.get(k)
+        )
+        return "settings differ: " + ", ".join(
+            f"{k}: {prev_settings.get(k)!r} != {cur_settings.get(k)!r}" for k in differing
+        )
+
+    prev_ds = previous.get("datasets") or {}
+    cur_ds = current.get("datasets") or {}
+    missing = sorted(set(prev_ds) - set(cur_ds))
+    if missing:
+        return f"datasets dropped since the previous run: {', '.join(missing)}"
+    for name, old in prev_ds.items():
+        new = cur_ds[name]
+        for key in ("repo", "revision", "split"):
+            if old.get(key) != new.get(key):
+                return f"{name}.{key} differs: {old.get(key)!r} != {new.get(key)!r}"
+        old_ids, new_ids = old.get("example_ids") or [], new.get("example_ids") or []
+        if new_ids[: len(old_ids)] != old_ids:
+            return (
+                f"{name} was re-sliced: the previous {len(old_ids)} example ids are not a "
+                f"prefix of the current {len(new_ids)}"
+            )
+    return None
+
+
 def _examples_fingerprint(examples: list) -> str:
     digest = hashlib.sha256()
     for example in examples:
@@ -408,16 +459,24 @@ def main() -> None:
     manifest_path = output_root / "manifest.json"
     if manifest_path.exists():
         previous_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        if previous_manifest != manifest:
+        reason = _manifest_extension_error(previous_manifest, manifest)
+        if reason is not None:
             raise SystemExit(
-                f"{manifest_path} belongs to a different run; use a new --output-root "
-                "or keep model, dataset, counts, variants, and budget unchanged"
+                f"{manifest_path} belongs to a different run ({reason}); use a new "
+                "--output-root, or keep model, dataset, variants and budget unchanged and "
+                "only raise the example counts"
             )
-    else:
-        manifest_path.write_text(
-            json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
-            encoding="utf-8",
-        )
+        previous_n = (previous_manifest.get("settings") or {}).get("longbench_n")
+        if previous_n != manifest["settings"]["longbench_n"]:
+            print(
+                f"  extending the existing run in {output_root}: longbench_n "
+                f"{previous_n} -> {manifest['settings']['longbench_n']}",
+                flush=True,
+            )
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
 
     t_start = time.time()
     for variant in variants:
