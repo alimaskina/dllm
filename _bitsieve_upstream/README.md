@@ -145,6 +145,10 @@ message before attempting to load the model if it does not hold.
 
 ## Quality evaluation
 
+To reproduce the headline table at the **official 200-example split** (this repository ships
+60-example runs), follow [docs/RUN_OFFICIAL_200.md](docs/RUN_OFFICIAL_200.md). It resumes from the
+committed results rather than recomputing them, and costs ~5 GPU-hours.
+
 ### Independent quality check
 
 For a directly comparable quality run, use the pinned one-button harness:
