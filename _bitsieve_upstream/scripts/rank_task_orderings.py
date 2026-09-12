@@ -57,9 +57,13 @@ def published_band(task: str, published: dict[str, dict[str, float]]) -> tuple[f
     return (min(vals), max(vals)) if vals else None
 
 
-def load_task_scores(task_dir: Path) -> dict[str, list[float]]:
-    """variant -> list of per-example scores, from the quality pass only."""
-    scores: dict[str, list[float]] = {}
+def load_task_scores(task_dir: Path) -> dict[str, dict[str, float]]:
+    """variant -> {example_id: score}, quality pass only.
+
+    Keyed by example rather than appended to a list because every variant runs the
+    SAME examples, which makes the variant comparison a paired one - see paired_diff.
+    """
+    scores: dict[str, dict[str, float]] = {}
     for path in sorted(task_dir.glob("*.jsonl")):
         for line in path.read_text(encoding="utf-8").splitlines():
             if not line.strip():
@@ -67,7 +71,7 @@ def load_task_scores(task_dir: Path) -> dict[str, list[float]]:
             row = json.loads(line)
             if row.get("pass") != "quality" or row.get("score") is None:
                 continue
-            scores.setdefault(row["variant"], []).append(float(row["score"]))
+            scores.setdefault(row["variant"], {})[str(row["id"])] = float(row["score"])
     return scores
 
 
@@ -77,48 +81,101 @@ def sem(values: list[float]) -> float:
     return statistics.stdev(values) / math.sqrt(len(values))
 
 
-def analyse(task: str, scores: dict[str, list[float]]) -> dict:
+def paired_diff(a: dict[str, float], b: dict[str, float]) -> tuple[float, float, int]:
+    """(mean difference a-b, its standard error, n) over the examples both ran.
+
+    All variants see identical examples, so pairing removes between-example
+    difficulty variance - which dominates here. On narrativeqa the unpaired SE of
+    each variant's mean is ~0.05 while the SE of the paired difference is ~0.03,
+    so the unpaired test would call a real gap 'noise' far more often.
+    """
+    common = sorted(set(a) & set(b))
+    if len(common) < 2:
+        return 0.0, float("inf"), len(common)
+    diffs = [a[k] - b[k] for k in common]
+    sd = statistics.stdev(diffs)
+    return statistics.fmean(diffs), sd / math.sqrt(len(diffs)), len(diffs)
+
+
+# |t| above this counts as a real separation rather than noise. 2.0 is ~95% for a
+# two-sided paired t-test at these n.
+T_THRESHOLD = 2.0
+
+
+def analyse(task: str, scores: dict[str, dict[str, float]]) -> dict:
     present = [v for v in ORDER if scores.get(v)]
     missing = [v for v in ORDER if v not in present]
-    means = {v: statistics.fmean(scores[v]) for v in present}
-    sems = {v: sem(scores[v]) for v in present}
+    means = {v: statistics.fmean(scores[v].values()) for v in present}
+    sems = {v: sem(list(scores[v].values())) for v in present}
     n = {v: len(scores[v]) for v in present}
 
-    def separated(a: str, b: str) -> bool:
-        """Is a's mean above b's by more than the combined standard error?"""
-        if a not in means or b not in means:
-            return False
-        gap = means[a] - means[b]
-        noise = math.sqrt(sems[a] ** 2 + sems[b] ** 2)
-        return gap > noise
+    def compare(a: str, b: str) -> tuple[float, float, float]:
+        """(paired mean diff a-b, se, t). t>0 means a scores above b."""
+        if a not in scores or b not in scores:
+            return 0.0, float("inf"), 0.0
+        diff, se, _ = paired_diff(scores[a], scores[b])
+        return diff, se, (diff / se if se and math.isfinite(se) else 0.0)
 
     notes: list[str] = []
     verdict = "ok"
 
-    # Inversion: any sparse variant above dense by more than noise.
-    inversions = [v for v in (MAGE, QUANT, HERALD) if separated(v, DENSE)]
+    # Unequal example counts mean at least one variant is still running (or failed
+    # partway). Comparing a 20-example mean against a 1-example mean produces
+    # confident-looking nonsense, so say so instead of ranking it.
+    if missing or (n and max(n.values()) != min(n.values())):
+        counts = ", ".join(f"{v}={n.get(v, 0)}" for v in ORDER)
+        return {
+            "task": task,
+            "verdict": "incomplete",
+            "means": means,
+            "sems": sems,
+            "n": n,
+            "missing": missing,
+            "notes": [f"variants have unequal example counts ({counts})"],
+            "paired": {},
+        }
+
+    # Inversion: a sparse variant scores above dense by more than noise.
+    inversions = []
+    for v in (MAGE, QUANT, HERALD):
+        diff, _se, t = compare(v, DENSE)
+        if t > T_THRESHOLD:
+            inversions.append((v, diff, t))
     if inversions:
         verdict = "inverted"
-        for v in inversions:
-            notes.append(f"{v} > dense by {means[v] - means[DENSE]:+.3f}")
+        for v, diff, t in inversions:
+            notes.append(f"{v} > dense by {diff:+.3f} (t={t:+.1f})")
 
-    # Does the metric separate the good selectors from the starved one at all?
-    herald_gap_mage = means.get(MAGE, 0.0) - means.get(HERALD, 0.0)
-    herald_gap_quant = means.get(QUANT, 0.0) - means.get(HERALD, 0.0)
-    discriminates = separated(MAGE, HERALD) or separated(QUANT, HERALD)
+    # Can the metric tell the all-query selectors from the single-query one at all?
+    mage_gap, _, mage_t = compare(MAGE, HERALD)
+    quant_gap, _, quant_t = compare(QUANT, HERALD)
+    discriminates = mage_t > T_THRESHOLD or quant_t > T_THRESHOLD
 
     if verdict == "ok" and not discriminates:
-        # Everything within noise of everything else -> no evidence either way.
-        spread = max(means.values()) - min(means.values()) if means else 0.0
         verdict = "flat"
-        notes.append(f"no variant separated from another (spread {spread:.3f})")
+        notes.append(
+            f"herald not separated from the all-query selectors "
+            f"(mage-herald {mage_gap:+.3f}, t={mage_t:+.1f}; "
+            f"k4v4-herald {quant_gap:+.3f}, t={quant_t:+.1f})"
+        )
+        # How many examples WOULD resolve it? Useful for deciding whether a task is
+        # hopeless or merely under-sampled at this n.
+        for label, diff, t in (("mage-herald", mage_gap, mage_t), ("k4v4-herald", quant_gap, quant_t)):
+            if t and abs(diff) > 1e-9:
+                have = max(n.values())
+                need = have * (T_THRESHOLD / abs(t)) ** 2
+                notes.append(f"    {label} would need n~{need:.0f} at this effect size")
 
     if verdict == "ok":
-        notes.append(f"herald below the all-query selectors by {min(herald_gap_mage, herald_gap_quant):+.3f}")
-        if separated(MAGE, QUANT) or separated(QUANT, MAGE):
-            notes.append(f"k4v4 vs mage separated ({means[QUANT] - means[MAGE]:+.3f}) - quantization visible here")
+        notes.append(
+            f"herald below the all-query selectors (mage {mage_gap:+.3f} t={mage_t:+.1f}, "
+            f"k4v4 {quant_gap:+.3f} t={quant_t:+.1f})"
+        )
+        qm_gap, _, qm_t = compare(QUANT, MAGE)
+        if abs(qm_t) > T_THRESHOLD:
+            notes.append(f"k4v4 vs mage separated ({qm_gap:+.3f}, t={qm_t:+.1f}) - quantization visible here")
         else:
-            notes.append("k4v4 ~ mage (quantization within noise, as predicted)")
+            notes.append(f"k4v4 ~ mage ({qm_gap:+.3f}, t={qm_t:+.1f}) - quantization within noise, as predicted")
 
     return {
         "task": task,
@@ -128,6 +185,14 @@ def analyse(task: str, scores: dict[str, list[float]]) -> dict:
         "n": n,
         "missing": missing,
         "notes": notes,
+        "paired": {
+            "mage_vs_dense": compare(MAGE, DENSE),
+            "k4v4_vs_dense": compare(QUANT, DENSE),
+            "herald_vs_dense": compare(HERALD, DENSE),
+            "mage_vs_herald": compare(MAGE, HERALD),
+            "k4v4_vs_herald": compare(QUANT, HERALD),
+            "k4v4_vs_mage": compare(QUANT, MAGE),
+        },
     }
 
 
@@ -191,7 +256,8 @@ def main() -> int:
     for verdict, header in (
         ("ok", "USABLE - metric puts the variants in the predicted order"),
         ("inverted", "DROP - a weaker variant scores above dense by more than noise"),
-        ("flat", "NO SIGNAL - every variant within noise of every other"),
+        ("flat", "NO SIGNAL - herald not separated from the all-query selectors"),
+        ("incomplete", "NOT YET COMPARABLE - still running or partially failed"),
     ):
         group = [r for r in results if r["verdict"] == verdict]
         if not group:
