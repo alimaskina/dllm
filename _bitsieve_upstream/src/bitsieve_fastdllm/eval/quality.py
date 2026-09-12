@@ -148,7 +148,10 @@ def main(argv: list[str] | None = None) -> None:
             prediction = result.texts[0]
             metrics = result.metrics
             trace = result.trace
-            score = score_prediction(args.benchmark, prediction, example.references)
+            score = score_prediction(
+                args.benchmark, prediction, example.references,
+                all_classes=example.metadata.get("all_classes"),
+            )
             total += score
             row = {
                 "id": example.example_id,

@@ -210,14 +210,105 @@ def _official_code_sim(prediction: str, reference: str) -> float:
     return 0.0
 
 
-def score_prediction(benchmark: str, prediction: str, references: list[str]) -> float:
+def count_score(prediction: str, reference: str) -> float:
+    """THUDM/LongBench metrics.py::count_score (passage_count)."""
+    numbers = re.findall(r"\d+", prediction)
+    if not numbers:
+        return 0.0
+    right = sum(1 for n in numbers if str(n) == str(reference))
+    return right / len(numbers)
+
+
+def best_count_score(prediction: str, references: Iterable[str]) -> float:
+    return max((count_score(prediction, x) for x in references), default=0.0)
+
+
+def retrieval_score(prediction: str, reference: str) -> float:
+    """THUDM/LongBench metrics.py::retrieval_score (passage_retrieval_en). `reference`
+    is the gold string itself (e.g. "Paragraph 15"), not a paraphrase - the official
+    metric extracts the digits from IT too, not just from the prediction."""
+    matches = re.findall(r"Paragraph (\d+)", reference)
+    if not matches:
+        return 0.0
+    gold_id = matches[0]
+    numbers = re.findall(r"\d+", prediction)
+    if not numbers:
+        return 0.0
+    right = sum(1 for n in numbers if str(n) == gold_id)
+    return right / len(numbers)
+
+
+def best_retrieval_score(prediction: str, references: Iterable[str]) -> float:
+    return max((retrieval_score(prediction, x) for x in references), default=0.0)
+
+
+def classification_score(prediction: str, reference: str, all_classes: list[str] | None) -> float:
+    """THUDM/LongBench metrics.py::classification_score (trec). Needs the task's full
+    label set (`all_classes`, carried in BenchmarkExample.metadata) - unlike every other
+    LongBench metric here, it is not a function of (prediction, reference) alone."""
+    if not all_classes:
+        return 0.0
+    em_match_list = [c for c in all_classes if c in prediction]
+    for match_term in list(em_match_list):
+        if match_term in reference and match_term != reference:
+            em_match_list.remove(match_term)
+    if reference in em_match_list:
+        return 1.0 / len(em_match_list)
+    return 0.0
+
+
+def best_classification_score(
+    prediction: str, references: Iterable[str], all_classes: list[str] | None
+) -> float:
+    return max((classification_score(prediction, x, all_classes) for x in references), default=0.0)
+
+
+# Task -> official THUDM/LongBench metric family. English tasks only - the Chinese
+# LongBench tasks (dureader, vcsum, lsht, multifieldqa_zh, passage_retrieval_zh) use a
+# jieba-segmented variant of qa_f1/rouge/retrieval that this project has no use for, since
+# every prompt and every generation here is English.
+_LONGBENCH_QA_F1 = {"narrativeqa", "qasper", "multifieldqa_en", "hotpotqa", "2wikimqa", "musique", "triviaqa"}
+_LONGBENCH_ROUGE = {"gov_report", "qmsum", "multi_news", "samsum"}
+_LONGBENCH_CODE_SIM = {"repobench-p", "repobench_p", "lcc"}
+_LONGBENCH_CLASSIFICATION = {"trec"}
+_LONGBENCH_COUNT = {"passage_count"}
+_LONGBENCH_RETRIEVAL = {"passage_retrieval_en"}
+# THUDM/LongBench's own scorer() takes only the first line of the prediction for these
+# four tasks before scoring (github.com/THUDM/LongBench eval.py) - trec/triviaqa/samsum
+# ask for a short direct answer, so anything after the first line is reasoning the
+# official protocol was never designed to be scored on.
+_LONGBENCH_FIRST_LINE_ONLY = {"trec", "triviaqa", "samsum"}
+
+
+def score_prediction(
+    benchmark: str,
+    prediction: str,
+    references: list[str],
+    *,
+    all_classes: list[str] | None = None,
+) -> float:
     name = benchmark.lower()
     if name in {"gsm8k", "math500", "math-500"}:
         return math_exact_match(prediction, references)
-    if name in {"qmsum", "narrativeqa"}:
-        return best_rouge_l(prediction, references)
-    if name in {"repobench-p", "repobench_p", "lcc"}:
-        return best_edit_similarity(prediction, references)
     if name == "niah":
         return float(any(normalize_qa(ref) in normalize_qa(prediction) for ref in references))
+
+    if name in _LONGBENCH_FIRST_LINE_ONLY:
+        prediction = prediction.lstrip("\n").split("\n")[0]
+    if name in _LONGBENCH_ROUGE:
+        return best_rouge_l(prediction, references)
+    if name in _LONGBENCH_CODE_SIM:
+        return best_edit_similarity(prediction, references)
+    if name in _LONGBENCH_CLASSIFICATION:
+        return best_classification_score(prediction, references, all_classes)
+    if name in _LONGBENCH_COUNT:
+        return best_count_score(prediction, references)
+    if name in _LONGBENCH_RETRIEVAL:
+        return best_retrieval_score(prediction, references)
+    if name in _LONGBENCH_QA_F1:
+        return best_qa_f1(prediction, references)
+    # An unlisted task (not gsm8k/math/niah and not in the official LongBench dispatch
+    # above) falls back to QA F1 rather than silently defaulting to a metric family that
+    # was never validated against it - qa_f1 is the most common LongBench metric, but a
+    # NEW task should be added to one of the sets above instead of relying on this.
     return best_qa_f1(prediction, references)

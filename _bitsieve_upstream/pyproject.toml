@@ -35,3 +35,10 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+# So `pytest tests/` works from a checkout without an editable install - the eval env
+# for this project is a conda env with the pinned transformers, not necessarily one
+# where this package itself has been pip-installed.
+pythonpath = ["src"]
+testpaths = ["tests"]

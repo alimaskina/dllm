@@ -211,7 +211,10 @@ def run_pass(
                 continue
             wall_s = time.time() - t0
             prediction = result.texts[0]
-            score = score_prediction(benchmark, prediction, example.references)
+            score = score_prediction(
+                benchmark, prediction, example.references,
+                all_classes=example.metadata.get("all_classes"),
+            )
             row = {
                 "variant": variant,
                 "pass": pass_name,

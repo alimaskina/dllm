@@ -21,7 +21,14 @@ LONG_BENCH_CONFIGS = {
     "hotpotqa": "hotpotqa",
     "narrativeqa": "narrativeqa",
     "qasper": "qasper",
+    "multifieldqa_en": "multifieldqa_en",
     "qmsum": "qmsum",
+    "gov_report": "gov_report",
+    "multi_news": "multi_news",
+    "trec": "trec",
+    "samsum": "samsum",
+    "passage_count": "passage_count",
+    "passage_retrieval_en": "passage_retrieval_en",
     "repobench-p": "repobench-p",
     "repobench_p": "repobench-p",
     "triviaqa": "triviaqa",
@@ -29,6 +36,9 @@ LONG_BENCH_CONFIGS = {
     "2wikimqa": "2wikimqa",
     "musique": "musique",
 }
+# Deliberately not wired in: the Chinese LongBench tasks (dureader, vcsum, lsht,
+# multifieldqa_zh, passage_retrieval_zh) - every prompt and generation in this project is
+# English, and scoring them needs jieba segmentation this project does not depend on.
 
 
 def _take(dataset: Iterable, limit: int | None):
@@ -101,34 +111,108 @@ def load_math500(limit: int | None = None, split: str = "test") -> list[Benchmar
     return out
 
 
+# Verbatim from THUDM/LongBench/LongBench/config/dataset2prompt.json (English tasks only -
+# see the comment by LONG_BENCH_CONFIGS for why the Chinese tasks are excluded). Kept as
+# raw {context}/{input} templates rather than an f-string per task, so a diff against the
+# upstream JSON stays trivial.
+_LONGBENCH_OFFICIAL_PROMPTS: dict[str, str] = {
+    "narrativeqa": (
+        "You are given a story, which can be either a novel or a movie script, and a question. "
+        "Answer the question asconcisely as you can, using a single phrase if possible. Do not "
+        "provide any explanation.\n\nStory: {context}\n\nNow, answer the question based on the "
+        "story asconcisely as you can, using a single phrase if possible. Do not provide any "
+        "explanation.\n\nQuestion: {input}\n\nAnswer:"
+    ),
+    "qasper": (
+        "You are given a scientific article and a question. Answer the question as concisely as "
+        "you can, using a single phrase or sentence if possible. If the question cannot be "
+        "answered based on the information in the article, write \"unanswerable\". If the "
+        "question is a yes/no question, answer \"yes\", \"no\", or \"unanswerable\". Do not "
+        "provide any explanation.\n\nArticle: {context}\n\n Answer the question based on the "
+        "above article as concisely as you can, using a single phrase or sentence if possible. "
+        "If the question cannot be answered based on the information in the article, write "
+        "\"unanswerable\". If the question is a yes/no question, answer \"yes\", \"no\", or "
+        "\"unanswerable\". Do not provide any explanation.\n\nQuestion: {input}\n\nAnswer:"
+    ),
+    "multifieldqa_en": (
+        "Read the following text and answer briefly.\n\n{context}\n\nNow, answer the following "
+        "question based on the above text, only give me the answer and do not output any other "
+        "words.\n\nQuestion: {input}\nAnswer:"
+    ),
+    "hotpotqa": (
+        "Answer the question based on the given passages. Only give me the answer and do not "
+        "output any other words.\n\nThe following are given passages.\n{context}\n\nAnswer the "
+        "question based on the given passages. Only give me the answer and do not output any "
+        "other words.\n\nQuestion: {input}\nAnswer:"
+    ),
+    "2wikimqa": (
+        "Answer the question based on the given passages. Only give me the answer and do not "
+        "output any other words.\n\nThe following are given passages.\n{context}\n\nAnswer the "
+        "question based on the given passages. Only give me the answer and do not output any "
+        "other words.\n\nQuestion: {input}\nAnswer:"
+    ),
+    "musique": (
+        "Answer the question based on the given passages. Only give me the answer and do not "
+        "output any other words.\n\nThe following are given passages.\n{context}\n\nAnswer the "
+        "question based on the given passages. Only give me the answer and do not output any "
+        "other words.\n\nQuestion: {input}\nAnswer:"
+    ),
+    "gov_report": (
+        "You are given a report by a government agency. Write a one-page summary of the "
+        "report.\n\nReport:\n{context}\n\nNow, write a one-page summary of the report.\n\nSummary:"
+    ),
+    "qmsum": (
+        "You are given a meeting transcript and a query containing a question or instruction. "
+        "Answer the query in one or more sentences.\n\nTranscript:\n{context}\n\nNow, answer the "
+        "query based on the above meeting transcript in one or more sentences.\n\nQuery: {input}\n"
+        "Answer:"
+    ),
+    "multi_news": (
+        "You are given several news passages. Write a one-page summary of all news. \n\n"
+        "News:\n{context}\n\nNow, write a one-page summary of all the news.\n\nSummary:"
+    ),
+    "trec": (
+        "Please determine the type of the question below. Here are some examples of "
+        "questions.\n\n{context}\n{input}"
+    ),
+    "triviaqa": (
+        "Answer the question based on the given passage. Only give me the answer and do not "
+        "output any other words. The following are some examples.\n\n{context}\n\n{input}"
+    ),
+    "samsum": (
+        "Summarize the dialogue into a few short sentences. The following are some "
+        "examples.\n\n{context}\n\n{input}"
+    ),
+    "passage_count": (
+        "There are some paragraphs below sourced from Wikipedia. Some of them may be "
+        "duplicates. Please carefully read these paragraphs and determine how many unique "
+        "paragraphs there are after removing duplicates. In other words, how many "
+        "non-repeating paragraphs are there in total?\n\n{context}\n\nPlease enter the final "
+        "count of unique paragraphs after removing duplicates. The output format should only "
+        "contain the number, such as 1, 2, 3, and so on.\n\nThe final answer is: "
+    ),
+    "passage_retrieval_en": (
+        "Here are 30 paragraphs from Wikipedia, along with an abstract. Please determine "
+        "which paragraph the abstract is from.\n\n{context}\n\nThe following is an "
+        "abstract.\n\n{input}\n\nPlease enter the number of the paragraph that the abstract is "
+        "from. The answer format must be like \"Paragraph 1\", \"Paragraph 2\", etc.\n\nThe "
+        "answer is: "
+    ),
+    "lcc": "Please complete the code given below. \n{context}Next line of code:\n",
+    "repobench-p": "Please complete the code given below. \n{context}{input}Next line of code:\n",
+}
+
+
 def _longbench_prompt(task: str, context: str, question: str) -> str:
-    if task in {"hotpotqa", "2wikimqa", "musique"}:
-        return (
-            "Answer the question based on the given passages. Only give me the answer and do not "
-            "output any other words.\n\n"
-            "The following are given passages.\n"
-            f"{context}\n\n"
-            "Answer the question based on the given passages. Only give me the answer and do not "
-            "output any other words.\n\n"
-            f"Question: {question}\nAnswer:"
-        )
-    if task == "qmsum":
-        return (
-            "You are given a meeting transcript and a query containing a question or instruction. "
-            "Answer the query in one or more sentences.\n\n"
-            f"Transcript:\n{context}\n\n"
-            "Now, answer the query based on the above meeting transcript in one or more sentences.\n\n"
-            f"Query: {question}\nAnswer:"
-        )
-    if task in {"repobench-p", "lcc"}:
-        return (
-            "Please complete the code given below.\n"
-            f"{context}{question}Next line of code:"
-        )
-    return (
-        "Answer the question using only the supplied context. Keep the answer concise; when the "
-        "context does not contain the answer, say so.\n\n"
-        f"Context:\n{context}\n\nQuestion: {question}\n\nAnswer:"
+    template = _LONGBENCH_OFFICIAL_PROMPTS.get(task)
+    if template is not None:
+        return template.format(context=context, input=question)
+    # Only reachable for a task added to LONG_BENCH_CONFIGS without an official template
+    # above - not a normal code path, so fail loudly rather than silently scoring a task
+    # against a prompt nobody chose.
+    raise KeyError(
+        f"no official LongBench prompt template for {task!r} - add one to "
+        "_LONGBENCH_OFFICIAL_PROMPTS before wiring it into LONG_BENCH_CONFIGS"
     )
 
 
