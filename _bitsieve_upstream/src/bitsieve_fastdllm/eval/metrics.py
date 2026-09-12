@@ -280,6 +280,28 @@ _LONGBENCH_RETRIEVAL = {"passage_retrieval_en"}
 _LONGBENCH_FIRST_LINE_ONLY = {"trec", "triviaqa", "samsum"}
 
 
+
+_LBV2_PAREN = re.compile(r"The correct answer is \(([A-D])\)")
+_LBV2_BARE = re.compile(r"The correct answer is ([A-D])")
+
+
+def longbench_v2_choice(prediction: str) -> str | None:
+    """THUDM/LongBench pred.py::extract_answer - the A-D letter, or None."""
+    text = prediction.replace("*", "")
+    match = _LBV2_PAREN.search(text) or _LBV2_BARE.search(text)
+    return match.group(1) if match else None
+
+
+def longbench_v2_accuracy(prediction: str, references: Iterable[str]) -> float:
+    """1.0 when the extracted letter matches the gold letter. Discrete by construction:
+    unlike the v1 F1/ROUGE families, no rewording or trimming of the answer can move it,
+    so a variant cannot gain score by degrading into terser output."""
+    choice = longbench_v2_choice(prediction)
+    if choice is None:
+        return 0.0
+    return float(any(choice == str(r).strip().upper() for r in references))
+
+
 def score_prediction(
     benchmark: str,
     prediction: str,
@@ -287,9 +309,15 @@ def score_prediction(
     *,
     all_classes: list[str] | None = None,
 ) -> float:
+    # LongBench-E tasks ('<task>_e') are the same task resampled by context length -
+    # same prompt, same metric.
     name = benchmark.lower()
+    if name.endswith("_e"):
+        name = name[:-2]
     if name in {"gsm8k", "math500", "math-500"}:
         return math_exact_match(prediction, references)
+    if name in {"longbench_v2", "longbench-v2", "lbv2"}:
+        return longbench_v2_accuracy(prediction, references)
     if name == "niah":
         return float(any(normalize_qa(ref) in normalize_qa(prediction) for ref in references))
 

@@ -60,7 +60,41 @@ NO_CHAT_TEMPLATE_TASKS = frozenset(
 
 def uses_chat_template(benchmark: str) -> bool:
     """Whether this benchmark's prompt should be wrapped in the model's chat template."""
-    return benchmark.lower() not in NO_CHAT_TEMPLATE_TASKS
+    return base_task(benchmark) not in NO_CHAT_TEMPLATE_TASKS
+
+
+# LongBench-E: the same tasks, resampled so 0-4k / 4-8k / 8k+ contexts are evenly
+# represented, and scored PER BUCKET rather than pooled. For a KV-cache selector this is
+# the more informative cut - the claim is that dropping cache entries costs more as the
+# prefix grows, and a single pooled average cannot show that. Same prompts, same metrics,
+# same archive; only the data file and the reporting differ.
+LONGBENCH_E_TASKS = (
+    "2wikimqa", "gov_report", "hotpotqa", "lcc", "multi_news", "multifieldqa_en",
+    "passage_count", "passage_retrieval_en", "qasper", "repobench-p", "samsum",
+    "trec", "triviaqa",
+)
+LONGBENCH_E_BUCKETS = ((0, 4000, "0-4k"), (4000, 8000, "4-8k"), (8000, 10**9, "8k+"))
+
+# _e shares its base task's prompt, metric, budget and chat-template rule; only the
+# data file differs, so base_task() maps back for every one of those lookups.
+for _task in LONGBENCH_E_TASKS:
+    LONG_BENCH_CONFIGS[f"{_task}_e"] = f"{_task}_e"
+
+
+def base_task(benchmark: str) -> str:
+    """LongBench-E task name -> the base task whose prompt/metric/budget it reuses."""
+    name = benchmark.lower()
+    return name[:-2] if name.endswith("_e") else name
+
+
+def length_bucket(length: int | None) -> str | None:
+    """LongBench-E context bucket for a raw `length` field, or None if unknown."""
+    if length is None:
+        return None
+    for lo, hi, label in LONGBENCH_E_BUCKETS:
+        if lo <= length < hi:
+            return label
+    return None
 
 
 def _take(dataset: Iterable, limit: int | None):
@@ -226,7 +260,7 @@ _LONGBENCH_OFFICIAL_PROMPTS: dict[str, str] = {
 
 
 def _longbench_prompt(task: str, context: str, question: str) -> str:
-    template = _LONGBENCH_OFFICIAL_PROMPTS.get(task)
+    template = _LONGBENCH_OFFICIAL_PROMPTS.get(base_task(task))
     if template is not None:
         return template.format(context=context, input=question)
     # Only reachable for a task added to LONG_BENCH_CONFIGS without an official template
@@ -236,6 +270,79 @@ def _longbench_prompt(task: str, context: str, question: str) -> str:
         f"no official LongBench prompt template for {task!r} - add one to "
         "_LONGBENCH_OFFICIAL_PROMPTS before wiring it into LONG_BENCH_CONFIGS"
     )
+
+
+# LongBench v2 (2024): 503 multiple-choice questions over 8k-2M word contexts. The
+# metric is accuracy on a single A-D letter, which is discrete by construction - it
+# cannot be moved by an answer getting a word shorter, unlike the v1 F1/ROUGE families.
+# Prompt is prompts/0shot.txt from THUDM/LongBench, verbatim.
+LONGBENCH_V2_PROMPT = (
+    "Please read the following text and answer the question below.\n"
+    "\n"
+    "<text>\n"
+    "{context}\n"
+    "</text>\n"
+    "\n"
+    "What is the correct answer to this question: {question}\n"
+    "Choices:\n"
+    "(A) {choice_A}\n"
+    "(B) {choice_B}\n"
+    "(C) {choice_C}\n"
+    "(D) {choice_D}\n"
+    "\n"
+    'Format your response as follows: "The correct answer is (insert answer here)".'
+)
+
+
+def load_longbench_v2(
+    limit: int | None = None,
+    split: str = "train",
+    *,
+    length: str | None = None,
+) -> list[BenchmarkExample]:
+    """LongBench v2, optionally restricted to one of its length tiers.
+
+    `length="short"` is worth considering for a 32k-context model: the tiers are
+    short/medium/long by ORIGINAL context, whose median is ~417k characters, so medium
+    and long are truncated to a fraction of themselves before the model sees them. The
+    variant comparison stays valid either way (every variant gets the identical
+    truncated prompt), but only the short tier measures the task as its authors meant it.
+    """
+    ds = _load_hf(
+        "THUDM/LongBench-v2",
+        None,
+        split,
+        revision=os.environ.get("LONGBENCH_V2_REVISION"),
+    )
+    out: list[BenchmarkExample] = []
+    for idx, row in enumerate(ds):
+        if length is not None and row.get("length") != length:
+            continue
+        if limit is not None and len(out) >= limit:
+            break
+        prompt = LONGBENCH_V2_PROMPT.format(
+            context=row["context"],
+            question=row["question"],
+            choice_A=row["choice_A"],
+            choice_B=row["choice_B"],
+            choice_C=row["choice_C"],
+            choice_D=row["choice_D"],
+        )
+        out.append(
+            BenchmarkExample(
+                str(row.get("_id", idx)),
+                prompt,
+                [str(row["answer"]).strip().upper()],
+                {
+                    "task": "longbench_v2",
+                    "length_tier": row.get("length"),
+                    "difficulty": row.get("difficulty"),
+                    "domain": row.get("domain"),
+                    "context_chars": len(row["context"]),
+                },
+            )
+        )
+    return out
 
 
 def _longbench_archive_path() -> Path:
@@ -373,6 +480,7 @@ MAX_NEW_TOKENS = {
     "math500": 2048,
     "math-500": 2048,
     "niah": 64,
+    "longbench_v2": 128,
     "narrativeqa": 128,
     "qasper": 128,
     "multifieldqa_en": 64,
@@ -401,7 +509,7 @@ def max_new_tokens_for(benchmark: str | None) -> int:
     """Output budget for a benchmark; 128 for the synthetic performance points."""
     if not benchmark:
         return 128
-    return MAX_NEW_TOKENS.get(benchmark.lower(), DEFAULT_MAX_NEW_TOKENS)
+    return MAX_NEW_TOKENS.get(base_task(benchmark), DEFAULT_MAX_NEW_TOKENS)
 
 
 def load_benchmark(
@@ -421,6 +529,10 @@ def load_benchmark(
         return load_math500(limit, split)
     if key in LONG_BENCH_CONFIGS:
         return load_longbench(key, limit, split)
+    if key in {"longbench_v2", "longbench-v2", "lbv2"}:
+        return load_longbench_v2(
+            limit, split="train", length=os.environ.get("LONGBENCH_V2_LENGTH") or None
+        )
     if key == "niah":
         if tokenizer is None:
             raise ValueError("tokenizer is required for NIAH")
