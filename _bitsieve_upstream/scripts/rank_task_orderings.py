@@ -236,6 +236,28 @@ def paired_diff(a: dict[str, float], b: dict[str, float]) -> tuple[float, float,
     return statistics.fmean(diffs), sd / math.sqrt(len(diffs)), len(diffs)
 
 
+def sign_test(a: dict[str, float], b: dict[str, float]) -> tuple[int, int, float]:
+    """(wins for a, wins for b, two-sided p) over the examples where they differ.
+
+    More trustworthy than the t-statistic on a 0/1 metric, where the differences
+    take three values and the normal approximation behind t has little to stand
+    on. It also states the thing a reader actually wants: how lopsided the
+    disagreements were. On trec at n=56 the two arms disagree 7 times and all 7
+    go the same way - p=0.016 with no distributional assumption at all - while
+    the mean halved (+0.250 -> +0.125) as n grew, which makes the mean the more
+    fragile summary of the two.
+    """
+    common = sorted(set(a) & set(b))
+    wins = sum(1 for k in common if a[k] > b[k])
+    losses = sum(1 for k in common if a[k] < b[k])
+    n = wins + losses
+    if n == 0:
+        return 0, 0, float("nan")
+    # Exact two-sided binomial tail at p=0.5.
+    tail = sum(math.comb(n, i) for i in range(min(wins, losses) + 1)) / 2 ** n
+    return wins, losses, min(1.0, 2 * tail)
+
+
 def n_differing(a: dict[str, float], b: dict[str, float]) -> tuple[int, int]:
     """(examples where the two arms scored differently, examples compared).
 
@@ -372,6 +394,15 @@ def main() -> int:
         record["length_deltas"] = dl
         record["score_deltas"] = ds
         record["coverage"] = load_task_coverage(task_dir)
+        record["signs"] = {
+            label: sign_test(scores.get(x, {}), scores.get(y, {}))
+            for label, x, y in (
+                ("dense-mage", DENSE, MAGE),
+                ("k4v4-mage", QUANT, MAGE),
+                ("mage-herald", MAGE, HERALD),
+            )
+            if scores.get(x) and scores.get(y)
+        }
         record["differing"] = {
             label: n_differing(scores.get(x, {}), scores.get(y, {}))
             for label, x, y in (
@@ -422,6 +453,15 @@ def main() -> int:
                 mark = " !" if 0 < nd <= 2 else ""
                 parts.append(f"{label} {nd}/{tot}{mark}")
             print(f"{'':<{width}}{'':>4}  differing examples: " + ",  ".join(parts))
+            signs = r.get("signs") or {}
+            if signs:
+                parts = [
+                    f"{label} {w}:{l}" + ("" if p != p else f" p={p:.3f}")
+                    for label, (w, l, p) in signs.items()
+                    if w + l
+                ]
+                if parts:
+                    print(f"{'':<{width}}{'':>4}  sign test (wins:losses): " + ",  ".join(parts))
     covered = [r for r in results if r.get("coverage")]
     if covered:
         print(

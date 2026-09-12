@@ -8,6 +8,8 @@ means look like results of the same kind and are not.
 import importlib.util
 from pathlib import Path
 
+import pytest
+
 _spec = importlib.util.spec_from_file_location(
     "rank", Path(__file__).resolve().parents[1] / "scripts" / "rank_task_orderings.py"
 )
@@ -97,3 +99,47 @@ def test_coverage_ceiling_is_none_for_older_runs():
         )
         cov = rank.load_task_coverage(d)
     assert cov["sparse_fp16_all"][3] is None
+
+
+def test_sign_test_counts_wins_and_losses_not_ties():
+    a = {"1": 1.0, "2": 0.0, "3": 1.0, "4": 1.0}
+    b = {"1": 0.0, "2": 1.0, "3": 1.0, "4": 0.0}
+    wins, losses, p = rank.sign_test(a, b)
+    assert (wins, losses) == (2, 1)
+    assert 0.0 < p <= 1.0
+
+
+def test_a_clean_sweep_is_significant_and_a_split_is_not():
+    # trec's shape: seven disagreements, all one way.
+    sweep_a = {str(i): (1.0 if i < 7 else 0.0) for i in range(60)}
+    sweep_b = {str(i): 0.0 for i in range(60)}
+    wins, losses, p = rank.sign_test(sweep_a, sweep_b)
+    assert (wins, losses) == (7, 0)
+    assert p == pytest.approx(2 / 2 ** 7, abs=1e-9)   # 0.015625
+    # dense-mage's shape on the same task: three disagreements, near-even.
+    split_a = {"1": 1.0, "2": 1.0, "3": 0.0}
+    split_b = {"1": 0.0, "2": 0.0, "3": 1.0}
+    assert rank.sign_test(split_a, split_b) == (2, 1, 1.0)
+
+
+def test_all_ties_report_no_p_value_rather_than_a_fake_one():
+    a = {"1": 0.5, "2": 0.5}
+    wins, losses, p = rank.sign_test(a, dict(a))
+    assert (wins, losses) == (0, 0)
+    assert p != p   # NaN: nothing was compared, so there is no p to report
+
+
+def test_sign_test_is_robust_where_the_mean_is_not():
+    """The mean on trec halved from +0.250 to +0.125 as n went 20 -> 56.
+
+    The sign test's summary - every disagreement went the same way - held
+    throughout, which is why it belongs beside the mean.
+    """
+    small_a = {str(i): (1.0 if i < 5 else 0.0) for i in range(20)}
+    small_b = {str(i): 0.0 for i in range(20)}
+    big_a = {str(i): (1.0 if i < 7 else 0.0) for i in range(56)}
+    big_b = {str(i): 0.0 for i in range(56)}
+    assert rank.paired_diff(small_a, small_b)[0] == pytest.approx(0.25)
+    assert rank.paired_diff(big_a, big_b)[0] == pytest.approx(0.125)
+    assert rank.sign_test(small_a, small_b)[:2] == (5, 0)
+    assert rank.sign_test(big_a, big_b)[:2] == (7, 0)
