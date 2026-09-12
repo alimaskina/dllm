@@ -58,7 +58,30 @@ If the machine has no internet, download `data.zip` elsewhere and set
 
 ---
 
-## The commands
+## The command
+
+If you already have the repository and a working environment, this is the whole procedure:
+
+```bash
+git pull
+bash scripts/run_official_200.sh
+```
+
+It checks the environment and the GPUs, refuses to start if the committed results are missing
+(which would mean recomputing six GPU-hours), splits the three tasks across whatever GPUs it
+finds, detaches so an ssh drop cannot kill it, waits, verifies that every arm actually reached
+200 examples, prints the report and packs everything to send back into one tarball. It names the
+log to follow and exits immediately.
+
+Re-running it after a failure or an interruption is safe and is the intended fix: finished
+examples are kept, so only the missing work is redone.
+
+Knobs, none required: `GPUS=0,1` to pick GPUs, `PYTHON=...` for a specific interpreter,
+`DETACH=0` to stay in the foreground.
+
+The rest of this document is what that script does, for anyone who wants to drive it by hand.
+
+### By hand
 
 Two GPUs (recommended — total wall time is set by `gov_report`):
 
