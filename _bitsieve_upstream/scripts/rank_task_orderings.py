@@ -190,13 +190,24 @@ def load_task_coverage(task_dir: Path) -> dict[str, tuple[float, float, int]]:
             if not cov or cov.get("mass_mean") is None:
                 continue
             out.setdefault(row["variant"], []).append(
-                (float(cov["mass_mean"]), float(cov.get("overlap_mean") or "nan"))
+                (
+                    float(cov["mass_mean"]),
+                    float(cov.get("overlap_mean") or "nan"),
+                    cov.get("ceiling_abs_mean"),
+                )
             )
     return {
         v: (
-            statistics.fmean(m for m, _ in rows),
-            statistics.fmean(o for _, o in rows),
+            statistics.fmean(m for m, _, _ in rows),
+            statistics.fmean(o for _, o, _ in rows),
             len(rows),
+            # Share of the FULL prefix mass that fits in the budget at all.
+            # Absent from runs made before the field was recorded.
+            (
+                statistics.fmean(c for _, _, c in rows if c is not None)
+                if any(c is not None for _, _, c in rows)
+                else None
+            ),
         )
         for v, rows in out.items()
         if rows
@@ -421,6 +432,8 @@ def main() -> int:
         for r in sorted(covered, key=lambda x: x["task"]):
             cov = r["coverage"]
             n = max(v[2] for v in cov.values())
+            ceilings = [v[3] for v in cov.values() if v[3] is not None]
+            ceiling = statistics.fmean(ceilings) if ceilings else None
             cells = "".join(
                 f"{cov[v][0]:>9.4f}" if v in cov else f"{'--':>9}"
                 for v in (MAGE, QUANT, HERALD)
@@ -439,6 +452,14 @@ def main() -> int:
             else:
                 says = ""
             print(f"{r['task']:<{width}}{n:>4}  {cells}   {says}")
+            if ceiling is not None:
+                # The figures above are shares of what the budget can reach, not
+                # of the prefix. Without this line "1.0000" reads as "nothing
+                # lost" when a quarter of the mass may be out of reach entirely.
+                print(
+                    f"{'':<{width}}{'':>4}  budget ceiling {ceiling:.3f} of the prefix mass "
+                    f"- {1 - ceiling:.1%} is unreachable at this budget, by any selector"
+                )
         print(
             "\nCoverage is the quantity the method is about; the score is a lossy proxy for it. "
             "\nA task that is flat in score AND flat in coverage is not under-sampled - the "

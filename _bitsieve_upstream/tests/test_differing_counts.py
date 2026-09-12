@@ -47,3 +47,53 @@ def test_the_lsht_and_trec_cases_are_distinguishable():
     # Both means are large; only the counts separate a result from a coin flip.
     assert abs(rank.paired_diff(lsht_m, lsht_h)[0]) == 0.05
     assert abs(rank.paired_diff(trec_m, trec_h)[0]) == 0.25
+
+
+def test_coverage_loader_surfaces_the_budget_ceiling():
+    """The relative figure alone reads as "nothing lost" when most of it is.
+
+    On gov_report at a fixed 128-entry budget the all-query selector reports
+    mass 1.0000 - it took essentially everything reachable - while only 73% of
+    the prefix attention mass is reachable at that budget at all. Reporting the
+    ceiling separates the loss the budget forces on every selector from the loss
+    a particular selector adds.
+    """
+    import json
+    from pathlib import Path
+    from tempfile import TemporaryDirectory
+
+    with TemporaryDirectory() as tmp:
+        d = Path(tmp)
+        rows = [
+            {"variant": "sparse_fp16_all", "pass": "coverage",
+             "runtime": {"coverage": {"mass_mean": 0.9999, "overlap_mean": 0.99,
+                                      "ceiling_abs_mean": 0.733}}},
+            # An older row with no ceiling recorded must not poison the mean.
+            {"variant": "sparse_fp16_all", "pass": "coverage",
+             "runtime": {"coverage": {"mass_mean": 0.9997, "overlap_mean": 0.98}}},
+        ]
+        (d / "sparse_fp16_all.jsonl").write_text(
+            "".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8"
+        )
+        cov = rank.load_task_coverage(d)
+    mass, overlap, n, ceiling = cov["sparse_fp16_all"]
+    assert n == 2
+    assert abs(mass - 0.9998) < 1e-9
+    assert ceiling == 0.733
+
+
+def test_coverage_ceiling_is_none_for_older_runs():
+    import json
+    from pathlib import Path
+    from tempfile import TemporaryDirectory
+
+    with TemporaryDirectory() as tmp:
+        d = Path(tmp)
+        (d / "sparse_fp16_all.jsonl").write_text(
+            json.dumps({"variant": "sparse_fp16_all", "pass": "coverage",
+                        "runtime": {"coverage": {"mass_mean": 0.95,
+                                                 "overlap_mean": 0.9}}}) + "\n",
+            encoding="utf-8",
+        )
+        cov = rank.load_task_coverage(d)
+    assert cov["sparse_fp16_all"][3] is None
