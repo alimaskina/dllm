@@ -91,7 +91,8 @@ def build_generator(cfg: ExperimentConfig, model, tokenizer):
 
 
 def load_config(
-    stem: str, *, benchmark: str, topk_pct: float, math_topk: int, coverage: bool
+    stem: str, *, benchmark: str, topk_pct: float, math_topk: int, coverage: bool,
+    longbench_topk: int | None = None,
 ) -> ExperimentConfig:
     """A percent-of-prefix budget makes sense for LongBench's 5-20k-token
     contexts, but the SAME percentage applied to GSM8K/MATH-500's ~100-300
@@ -103,12 +104,23 @@ def load_config(
     LongBench keeps the percent budget. Either way the budget stays well
     under the live prefix length once past the first block or two, so the
     selector still actually engages (sparse_block_fraction is still checked).
+
+    `longbench_topk` swaps LongBench onto a fixed budget too. A percentage is
+    the wrong axis for comparing selectors: 5% of a 20k prefix is 1000 tokens,
+    which is more than enough for any selector to reproduce nearly all the
+    attention mass, so every variant scores the same and the comparison is
+    vacuous. The KV-cache literature (H2O, SnapKV, PyramidKV) fixes the cache
+    at 128/256/512 entries regardless of prefix length precisely because that
+    is the regime where which entries you keep starts to matter.
     """
     raw = ExperimentConfig.load(SUITE_CONFIG_DIR / f"{stem}.yaml").to_dict()
     if raw["selector"].get("topk_percent") is not None:
         if benchmark in MATH_BENCHMARKS:
             raw["selector"]["topk_percent"] = None
             raw["selector"]["topk"] = math_topk
+        elif longbench_topk is not None:
+            raw["selector"]["topk_percent"] = None
+            raw["selector"]["topk"] = longbench_topk
         else:
             raw["selector"]["topk_percent"] = topk_pct
     raw["coverage_diagnostics"] = coverage and raw["semantic"] != "dense"
@@ -377,6 +389,15 @@ def main() -> None:
                    help=f"comma list from: {', '.join(VARIANTS)}")
     p.add_argument("--topk-pct", type=float, default=5.0,
                     help="LongBench selector budget, as a percent of the live prefix")
+    p.add_argument(
+        "--longbench-topk", type=int, default=None,
+        help=(
+            "fixed KV budget in tokens for LongBench tasks, replacing --topk-pct. "
+            "A percentage budget scales with the prefix and stops discriminating "
+            "between selectors on long contexts; the KV-cache literature fixes the "
+            "budget instead (128/256/512)."
+        ),
+    )
     p.add_argument("--math-topk", type=int, default=64,
                     help="GSM8K/MATH-500 selector budget, a FIXED count (see load_config's "
                          "docstring for why math needs this instead of a percent)")
@@ -404,7 +425,11 @@ def main() -> None:
     print(f"variants        : {variants}")
     print(f"gsm8k           : n={args.gsm8k_n}")
     print(f"longbench       : tasks={longbench_tasks} n_per_task={args.longbench_n}")
-    print(f"topk_pct        : {args.topk_pct}")
+    print(
+        f"topk_pct        : {args.topk_pct}"
+        if args.longbench_topk is None
+        else f"longbench_topk  : {args.longbench_topk} tokens (fixed; --topk-pct ignored)"
+    )
     print(f"coverage pass   : {'skipped' if args.skip_coverage else 'enabled'}")
     print(f"output_root     : {output_root}", flush=True)
 
@@ -452,6 +477,7 @@ def main() -> None:
             "longbench_tasks": longbench_tasks,
             "variants": variants,
             "topk_pct": args.topk_pct,
+            "longbench_topk": args.longbench_topk,
             "math_topk": args.math_topk,
             "coverage_pass": not args.skip_coverage,
         },
@@ -489,6 +515,7 @@ def main() -> None:
                 cfg = load_config(
                     stem, benchmark=benchmark, topk_pct=args.topk_pct,
                     math_topk=args.math_topk, coverage=coverage,
+                    longbench_topk=args.longbench_topk,
                 )
                 out_path = output_root / f"{variant}.jsonl"
                 run_pass(
