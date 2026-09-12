@@ -18,27 +18,26 @@ import statistics
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from bitsieve_fastdllm.eval.benchmarks import LONGBENCH_E_BUCKETS, length_bucket
+
 DENSE, MAGE, QUANT, HERALD = (
     "dense", "sparse_fp16_all", "sparse_k4v4_all", "sparse_fp16_middle"
 )
 ORDER = [DENSE, MAGE, QUANT, HERALD]
 SHORT = {DENSE: "dense", MAGE: "mage", QUANT: "k4v4", HERALD: "herald"}
-BUCKETS = ["0-4k", "4-8k", "8k+"]
+# Imported rather than restated: the loader balances the sample against these
+# same edges, and a copy here could drift from them without anything failing.
+BUCKETS = [name for _, _, name in LONGBENCH_E_BUCKETS]
 
 
 def bucket(length: int | None) -> str | None:
-    if length is None:
-        return None
-    if length < 4000:
-        return "0-4k"
-    if length < 8000:
-        return "4-8k"
-    return "8k+"
+    return length_bucket(length) if isinstance(length, int) else None
 
 
-def load(task_dir: Path) -> dict[str, dict[str, tuple[float, str | None]]]:
-    """variant -> {example_id: (score, bucket)} for the quality pass."""
-    out: dict[str, dict[str, tuple[float, str | None]]] = {}
+def load(task_dir: Path) -> dict[str, dict[str, tuple[float, str | None, int]]]:
+    """variant -> {example_id: (score, bucket, prompt_tokens)} for the quality pass."""
+    out: dict[str, dict[str, tuple[float, str | None, int]]] = {}
     for path in sorted(task_dir.glob("*.jsonl")):
         for line in path.read_text(encoding="utf-8").splitlines():
             if not line.strip():
@@ -48,12 +47,15 @@ def load(task_dir: Path) -> dict[str, dict[str, tuple[float, str | None]]]:
                 continue
             meta = row.get("metadata") or {}
             out.setdefault(row["variant"], {})[str(row["id"])] = (
-                float(row["score"]), bucket(meta.get("length"))
+                float(row["score"]),
+                bucket(meta.get("length")),
+                int(row.get("prompt_tokens") or 0),
             )
     return out
 
 
-def paired(a: dict[str, tuple[float, str | None]], b: dict[str, tuple[float, str | None]],
+def paired(a: dict[str, tuple[float, str | None, int]],
+           b: dict[str, tuple[float, str | None, int]],
            keep: str | None) -> tuple[float, float, int]:
     keys = [k for k in set(a) & set(b) if keep is None or a[k][1] == keep]
     if len(keys) < 2:
@@ -77,27 +79,48 @@ def main() -> int:
         if not data:
             continue
         print(f"\n=== {task_dir.name} ===")
-        print(f"{'bucket':<8}{'n':>4}" + "".join(f"{SHORT[v]:>9}" for v in ORDER)
-              + f"{'mage-herald':>14}{'dense-mage':>13}")
+        print(
+            f"{'bucket':<8}{'n':>4}{'tok':>7}"
+            + "".join(f"{SHORT[v]:>9}" for v in ORDER)
+            + f"{'dense-mage':>14}{'k4v4-mage':>14}{'mage-herald':>14}"
+        )
         for b in BUCKETS + [None]:
             label = b or "ALL"
             per = {}
             for v in ORDER:
                 rows = data.get(v, {})
-                vals = [s for s, bk in rows.values() if b is None or bk == b]
+                vals = [s for s, bk, _ in rows.values() if b is None or bk == b]
                 per[v] = statistics.fmean(vals) if vals else float("nan")
-            n = sum(1 for s, bk in data.get(DENSE, {}).values() if b is None or bk == b)
-            mh, mh_t, _ = paired(data.get(MAGE, {}), data.get(HERALD, {}), b)
+            dense_rows = [
+                (s, bk, tok) for s, bk, tok in data.get(DENSE, {}).values()
+                if b is None or bk == b
+            ]
+            n = len(dense_rows)
+            # Mean prompt length actually fed to the model. A percentage budget
+            # is a very different absolute budget at 3k than at 20k, so this is
+            # the column that explains a gap changing across buckets.
+            toks = statistics.fmean([tok for _, _, tok in dense_rows]) if dense_rows else 0
             dm, dm_t, _ = paired(data.get(DENSE, {}), data.get(MAGE, {}), b)
+            qm, qm_t, _ = paired(data.get(QUANT, {}), data.get(MAGE, {}), b)
+            mh, mh_t, _ = paired(data.get(MAGE, {}), data.get(HERALD, {}), b)
             cells = "".join(
                 ("       --" if per[v] != per[v] else f"{per[v]:>9.3f}") for v in ORDER
             )
-            f = lambda d, t: "          --" if d != d else f"{d:>+7.3f} t={t:>+4.1f}"
-            print(f"{label:<8}{n:>4}{cells}  {f(mh, mh_t):>12}{f(dm, dm_t):>12}")
+            f = lambda d, t: "            --" if d != d else f"{d:>+8.3f} t={t:>+4.1f}"
+            print(
+                f"{label:<8}{n:>4}{toks:>7.0f}{cells}"
+                f"{f(dm, dm_t)}{f(qm, qm_t)}{f(mh, mh_t)}"
+            )
     print(
-        "\nThe question this table answers: does the gap to herald WIDEN with context length?"
-        "\nIf it does not, the selector's advantage is not a long-context effect and the"
-        "\ntask is carrying the claim on something else."
+        "\nWhat to read here:"
+        "\n  dense-mage  : the price of sparsity. Should be small and positive."
+        "\n  k4v4-mage   : the price of quantisation on top. Should be ~0 either way."
+        "\n  mage-herald : the value of the all-query selector over a single middle query."
+        "\n                Should be positive, and the open question is whether it WIDENS"
+        "\n                with context length. If it does not, the selector's advantage is"
+        "\n                not a long-context effect and the task carries the claim on"
+        "\n                something else. Read it against the tok column: a percentage"
+        "\n                budget is far tighter in absolute terms in the 0-4k bucket."
     )
     return 0
 
