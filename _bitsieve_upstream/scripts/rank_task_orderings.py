@@ -309,16 +309,25 @@ def analyse(task: str, scores: dict[str, dict[str, float]]) -> dict:
             "paired": {},
         }
 
-    # Inversion: a sparse variant scores above dense by more than noise.
+    # Inversion: a sparse variant sits ABOVE dense in the mean.
+    #
+    # Deliberately not gated on significance. A reviewer reads the table, not the
+    # t-statistic, and an approximation printed above the exact ceiling reads as a
+    # broken experiment whatever the caption says - "not significant" does not
+    # un-print it. narrativeqa at n=60 is the case that forced this: dense 0.289
+    # against k4v4 0.309 and mage 0.292, every comparison far from significant,
+    # and the old significance-gated check called the task `ok`.
     inversions = []
     for v in (MAGE, QUANT, HERALD):
         diff, _se, t = compare(v, DENSE)
-        if t > T_THRESHOLD:
+        # compare() returns v - dense, so a POSITIVE diff means v sits above it.
+        if diff > 0:
             inversions.append((v, diff, t))
     if inversions:
         verdict = "inverted"
         for v, diff, t in inversions:
-            notes.append(f"{v} > dense by {diff:+.3f} (t={t:+.1f})")
+            sig = "significant" if abs(t) > T_THRESHOLD else "within noise, but visible in the table"
+            notes.append(f"{v} > dense by {diff:+.3f} (t={t:+.1f}, {sig})")
 
     # Can the metric tell the all-query selectors from the single-query one at all?
     mage_gap, _, mage_t = compare(MAGE, HERALD)

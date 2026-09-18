@@ -67,10 +67,35 @@ class CoverageRecord:
 
 
 @dataclass(slots=True)
+class CoverageArmRecord:
+    """One sweep arm scored on the SAME queries and keys as the run's selector.
+
+    The arms exist to compare precision against budget at equal memory: an arm at
+    b bits and k entries costs b*k, so 4-bit at 4x the entries costs exactly what
+    fp16 at 1x does. `mass_abs` - the share of the full prefix attention mass the
+    arm's selection retains - is the comparable figure across arms, since the
+    relative `mass` normalises by each arm's own budget and so hides the very
+    trade being measured.
+    """
+
+    arm: str
+    bits: int
+    block: int
+    layer: int
+    old_cache_len: int
+    selected_k: int
+    mass: list[float]
+    mass_abs: list[float]
+    ceiling_abs: list[float]
+    overlap: list[float]
+
+
+@dataclass(slots=True)
 class RunTrace:
     timings: list[TimingRecord] = field(default_factory=list)
     selections: list[SelectionRecord] = field(default_factory=list)
     coverage: list[CoverageRecord] = field(default_factory=list)
+    coverage_arms: list[CoverageArmRecord] = field(default_factory=list)
     counters: dict[str, int | float] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
 
@@ -104,11 +129,45 @@ class RunTrace:
             summary["ceiling_abs_mean"] = sum(ceiling_abs) / len(ceiling_abs)
         return summary
 
+    def coverage_arms_summary(self) -> dict[str, dict[str, float | int]] | None:
+        """Per-arm means. `mass_abs` is the figure to compare across arms.
+
+        The relative `mass` normalises by each arm's own budget, so an arm that
+        keeps four times as many entries can look identical to one that keeps a
+        quarter as many - which is exactly the trade the sweep exists to measure.
+        """
+        if not self.coverage_arms:
+            return None
+        out: dict[str, dict[str, float | int]] = {}
+        by_arm: dict[str, list[CoverageArmRecord]] = {}
+        for rec in self.coverage_arms:
+            by_arm.setdefault(rec.arm, []).append(rec)
+        for arm, recs in by_arm.items():
+            mass = [v for r in recs for v in r.mass]
+            mass_abs = [v for r in recs for v in r.mass_abs]
+            ceiling = [v for r in recs for v in r.ceiling_abs]
+            overlap = [v for r in recs for v in r.overlap]
+            if not mass_abs:
+                continue
+            out[arm] = {
+                "bits": recs[0].bits,
+                "cells": len(mass_abs),
+                "mean_selected_k": sum(r.selected_k for r in recs) / len(recs),
+                "mass_abs_mean": sum(mass_abs) / len(mass_abs),
+                "mass_abs_min": min(mass_abs),
+                "ceiling_abs_mean": sum(ceiling) / len(ceiling),
+                "mass_mean": sum(mass) / len(mass),
+                "overlap_mean": sum(overlap) / len(overlap),
+            }
+        return out
+
     def to_dict(self) -> dict:
         return {
             "timings": [asdict(x) for x in self.timings],
             "selections": [asdict(x) for x in self.selections],
             "coverage": [asdict(x) for x in self.coverage],
+            "coverage_arms": [asdict(x) for x in self.coverage_arms],
+            "coverage_arms_summary": self.coverage_arms_summary(),
             "coverage_summary": self.coverage_summary(),
             "counters": dict(self.counters),
             "notes": list(self.notes),

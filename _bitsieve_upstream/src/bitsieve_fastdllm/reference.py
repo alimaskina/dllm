@@ -90,6 +90,81 @@ def quantize_keys(
     )
 
 
+def simulate_key_quantization(
+    key: torch.Tensor,
+    *,
+    bits: int,
+    token_group: int = 32,
+    param_dtype: torch.dtype = torch.float16,
+    dtype: torch.dtype | None = None,
+    allow_ragged: bool = False,
+) -> torch.Tensor:
+    """KIVI key quantization round-tripped back to float, for ANY bit width.
+
+    Returns exactly the values a b-bit packed cache would hand the selector, and
+    is bit-exact with quantize_keys + dequantize_keys wherever those exist - the
+    grouping, the dtype the min/max and scale are computed in, and the float16
+    storage of scale/zero all matter, because near a bin edge any of them moves a
+    value a whole quantization step.
+
+    It differs from the packed path only in skipping the bit-packing, which is
+    why it is not limited to the 2 and 4 bits the kernels can address: 3 bits
+    straddle byte boundaries and have no packed path here, but their quantization
+    grid is perfectly well defined.
+
+    `allow_ragged` quantizes a trailing partial group as its own short group,
+    for callers holding a live prefix whose length is not a multiple of
+    token_group. Off by default so the strict divisibility the packed path
+    demands stays the checked behaviour.
+
+    That makes this the honest way to measure how selection quality degrades with
+    precision - the selector sees the numbers it would really see, and the memory
+    claim (bits x entries) is arithmetic rather than something the measurement
+    has to demonstrate. It is NOT a substitute for the packed path in a speed or
+    memory measurement: nothing here is actually stored compactly.
+    """
+    if key.ndim != 4:
+        raise ValueError("key must have shape [B, Hkv, T, D]")
+    if not 1 <= bits <= 16:
+        raise ValueError(f"bits must be between 1 and 16, got {bits}")
+    if bits == 16:
+        return key if dtype is None else key.to(dtype)
+    b, h, t, d = key.shape
+    if t % token_group:
+        if not allow_ragged:
+            raise ValueError(f"T={t} must be divisible by token_group={token_group}")
+        head = (t // token_group) * token_group
+        parts = []
+        if head:
+            parts.append(
+                simulate_key_quantization(
+                    key[:, :, :head, :], bits=bits, token_group=token_group,
+                    param_dtype=param_dtype, dtype=dtype,
+                )
+            )
+        tail = key[:, :, head:, :]
+        parts.append(
+            simulate_key_quantization(
+                tail, bits=bits, token_group=tail.shape[2],
+                param_dtype=param_dtype, dtype=dtype,
+            )
+        )
+        return torch.cat(parts, dim=2)
+
+    ng = t // token_group
+    x = key.reshape(b, h, ng, token_group, d).permute(0, 1, 2, 4, 3)
+    mn = x.amin(dim=-1, keepdim=True)
+    mx = x.amax(dim=-1, keepdim=True)
+    levels = float((1 << bits) - 1)
+    scale = ((mx - mn) / levels).clamp_min(1e-8)
+    q = torch.round((x - mn) / scale).clamp_(0, levels)
+    # scale and zero live in param_dtype in the real cache; rounding them here
+    # too is what makes this bit-exact rather than merely close.
+    x = q.float() * scale.to(param_dtype).float() + mn.to(param_dtype).float()
+    x = x.permute(0, 1, 2, 4, 3).reshape(b, h, t, d)
+    return x.to(dtype if dtype is not None else key.dtype)
+
+
 def dequantize_keys(packed: PackedKeys, *, dtype: torch.dtype = torch.bfloat16) -> torch.Tensor:
     q = unpack_last_dim(packed.payload, packed.bits, packed.token_group)
     x = q.to(torch.float32) * packed.scale.float().unsqueeze(-1)

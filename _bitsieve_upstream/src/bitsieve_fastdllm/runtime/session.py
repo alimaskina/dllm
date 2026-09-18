@@ -14,8 +14,8 @@ from ..kernels.ops import (
     quantize_values_into,
     selector_topk,
 )
-from ..reference import sdpa_compact
-from .trace import CoverageRecord, RunTrace, RuntimeTimer, SelectionRecord
+from ..reference import sdpa_compact, simulate_key_quantization
+from .trace import CoverageArmRecord, CoverageRecord, RunTrace, RuntimeTimer, SelectionRecord
 
 
 @dataclass(slots=True)
@@ -249,13 +249,31 @@ class BitSieveSession:
         bit width: it is the target the selection is trying to hit, so it must
         not inherit the candidate's handicaps. Returns [B, Hkv, N].
         """
+        key = self._shadow_prefix(layer_idx)
+        if key is None:
+            return None
+        return self._importance_from_keys(key, query)
+
+    def _shadow_prefix(self, layer_idx: int) -> torch.Tensor | None:
         shadow = self._fp16_key_shadow.get(layer_idx)
         if shadow is None:
             return None
         n = self.old_cache_len
         if n <= 0 or shadow.shape[2] < n:
             return None
-        key = shadow[:, :, :n, :]
+        return shadow[:, :, :n, :]
+
+    def _importance_from_keys(
+        self, key: torch.Tensor, query: torch.Tensor
+    ) -> torch.Tensor | None:
+        """The scoring rule, factored out so a sweep arm is scored identically.
+
+        An arm differs from the reference in exactly one thing - the precision of
+        the keys it ranks with. Sharing this function is what makes that true;
+        a second copy of the softmax-mass rule would let the two drift apart and
+        the comparison would quietly stop meaning what it claims.
+        """
+        n = key.shape[2]
         rows = self.masked_positions or list(range(query.shape[2]))
         if not rows:
             return None
@@ -310,6 +328,7 @@ class BitSieveSession:
         mark = torch.zeros_like(ref, dtype=torch.bool)
         mark.scatter_(-1, ref_idx, True)
         overlap = (mark.gather(-1, sel).sum(dim=-1).float() / float(k)).flatten().tolist()
+        self._record_coverage_arms(layer_idx, query, ref)
         self.trace.coverage.append(
             CoverageRecord(
                 block=self.block_index,
@@ -323,6 +342,67 @@ class BitSieveSession:
                 ceiling_abs=[round(float(x), 5) for x in best_abs.flatten().tolist()],
             )
         )
+
+    @torch.no_grad()
+    def _record_coverage_arms(
+        self, layer_idx: int, query: torch.Tensor, ref: torch.Tensor
+    ) -> None:
+        """Score each configured sweep arm against the same fp16 reference.
+
+        Runs off the fp16 key shadow rather than the live cache, so one
+        generation yields every arm on identical queries. A per-arm generation
+        would diverge after the first block and the coverages would no longer be
+        measurements of the same thing.
+
+        Deliberately the slow path: simulate_key_quantization has no packed
+        kernel behind it, which is what lets an arm use a bit width the kernels
+        cannot address (3). It costs one scoring matmul per arm per layer-block
+        and changes nothing about what the model generates.
+        """
+        arms = self.config.coverage_arms
+        if not arms:
+            return
+        key = self._shadow_prefix(layer_idx)
+        if key is None:
+            return
+        n = int(ref.shape[-1])
+        group = int(self.config.quant.key_token_group)
+        for arm in arms:
+            bits = int(arm.get("bits", 16))
+            if arm.get("topk") is not None:
+                k = int(arm["topk"])
+            else:
+                k = int(n * float(arm["topk_percent"]) / 100.0)
+            k = max(1, min(k, n))
+            scored = self._importance_from_keys(
+                simulate_key_quantization(
+                    key, bits=bits, token_group=group, allow_ragged=True
+                ),
+                query,
+            )
+            if scored is None:
+                continue
+            sel = torch.topk(scored, k, dim=-1).indices
+            ref_vals, ref_idx = torch.topk(ref, k, dim=-1)
+            best_abs = ref_vals.sum(dim=-1)
+            got_abs = ref.gather(-1, sel).sum(dim=-1)
+            mark = torch.zeros_like(ref, dtype=torch.bool)
+            mark.scatter_(-1, ref_idx, True)
+            overlap = mark.gather(-1, sel).sum(dim=-1).float() / float(k)
+            self.trace.coverage_arms.append(
+                CoverageArmRecord(
+                    arm=str(arm["name"]),
+                    bits=bits,
+                    block=self.block_index,
+                    layer=layer_idx,
+                    old_cache_len=self.old_cache_len,
+                    selected_k=k,
+                    mass=[round(float(x), 5) for x in (got_abs / best_abs.clamp_min(1e-12)).flatten().tolist()],
+                    mass_abs=[round(float(x), 5) for x in got_abs.flatten().tolist()],
+                    ceiling_abs=[round(float(x), 5) for x in best_abs.flatten().tolist()],
+                    overlap=[round(float(x), 5) for x in overlap.flatten().tolist()],
+                )
+            )
 
     def compact_nbytes(self) -> int:
         """Bytes held by the gathered per-layer compact caches.

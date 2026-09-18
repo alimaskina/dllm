@@ -178,6 +178,16 @@ class ExperimentConfig:
     # Query rows per chunk when recomputing the fp16 reference (caps the
     # transient [rows x prefix] logit tensor on long prefixes).
     coverage_query_chunk: int = 32
+    # Extra selector settings to score on the SAME queries and keys as the run's
+    # own selector, for a precision-vs-budget sweep. Each entry is
+    # {"name": str, "bits": int, "topk": int} or {..., "topk_percent": float}.
+    #
+    # They are evaluated from the fp16 key shadow, so one generation pass yields
+    # every arm on identical inputs - which is the only way the arms are
+    # comparable, since a per-arm generation would diverge into different
+    # queries after the first block and the coverages would no longer be of the
+    # same thing. Nothing here affects what the model generates.
+    coverage_arms: tuple[dict[str, Any], ...] = ()
     profile_layers: bool = False
     dense_kernel_variant: KernelVariant = "blocked"
     selector_kernel_variant: KernelVariant = "blocked"
@@ -216,6 +226,28 @@ class ExperimentConfig:
             raise ValueError("max_cache_tokens is smaller than one generation block")
         if self.coverage_query_chunk <= 0:
             raise ValueError("coverage_query_chunk must be positive")
+        seen_arms: set[str] = set()
+        for arm in self.coverage_arms:
+            name = arm.get("name")
+            if not name:
+                raise ValueError("every coverage arm needs a name")
+            if name in seen_arms:
+                raise ValueError(f"duplicate coverage arm name {name!r}")
+            seen_arms.add(name)
+            bits = arm.get("bits", 16)
+            if not isinstance(bits, int) or not 1 <= bits <= 16:
+                raise ValueError(f"coverage arm {name!r}: bits must be 1-16, got {bits!r}")
+            has_topk = arm.get("topk") is not None
+            has_pct = arm.get("topk_percent") is not None
+            if has_topk == has_pct:
+                raise ValueError(
+                    f"coverage arm {name!r}: give exactly one of topk / topk_percent"
+                )
+        if self.coverage_arms and not self.coverage_diagnostics:
+            raise ValueError(
+                "coverage_arms are scored against the fp16 reference that only "
+                "coverage_diagnostics builds; enable it or drop the arms"
+            )
         if self.coverage_diagnostics and self.semantic == "dense":
             raise ValueError(
                 "coverage_diagnostics needs a selector to score; it is meaningless "
