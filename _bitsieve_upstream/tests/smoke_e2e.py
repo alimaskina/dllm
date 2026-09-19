@@ -29,7 +29,7 @@ from bitsieve_fastdllm.runtime.generator import BitSieveGenerator  # noqa: E402
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--config", default="configs/proposed_a_k4v4_k512.yaml")
+    p.add_argument("--config", default="configs/proposed_a_k4v4_p5.yaml")
     p.add_argument("--benchmark", default="gsm8k")
     p.add_argument("--device", default="cuda")
     p.add_argument("--coverage", action="store_true", help="enable honest coverage scoring")
@@ -83,6 +83,13 @@ def main() -> int:
     layers_selected = sorted({r.layer for r in tr.selections}) if tr else []
     print(f"\nlayers that ran selection: {layers_selected[:6]}... n={len(layers_selected)}")
 
+    # Longest prefix the selector ever faced: the prompt plus everything
+    # decoded before the final block. "cache_tokens" is what the cache held.
+    prefix_len = int(
+        m.get("cache_tokens")
+        or (int(input_ids.shape[1]) + int(m.get("generated_tokens_per_request") or 0))
+    )
+
     print("\n--- assertions ---")
     fails = 0
 
@@ -92,11 +99,27 @@ def main() -> int:
             fails += 1
         print(f"  [{'PASS' if ok else 'FAIL'}] {name}{(' - ' + detail) if detail else ''}")
 
-    chk("math budget is 2048", cfg.generation.max_new_tokens == 2048)
+    chk(
+        f"{args.benchmark} budget is {budget}",
+        cfg.generation.max_new_tokens == budget,
+    )
     chk("no fp16 tail in packed cache",
         m["packed_cache"]["key_residual"] == 0 and m["packed_cache"]["value_residual"] == 0)
+    # A fixed topk larger than the whole prefix leaves nothing to select, so
+    # every block legitimately runs dense. That is a property of the config,
+    # not a failed fix - say so rather than reporting it as a broken selector.
+    budget_covers_prefix = (
+        cfg.selector.topk_percent is None and cfg.selector.topk >= prefix_len
+    )
     chk("sparse path engaged", (m.get("blocks_sparse") or 0) > 0,
-        f"sparse={m.get('blocks_sparse')} bypass={m.get('blocks_dense_bypass')}")
+        f"sparse={m.get('blocks_sparse')} bypass={m.get('blocks_dense_bypass')}"
+        + (
+            f" - topk={cfg.selector.topk} >= final prefix {prefix_len} tokens, so"
+            " there was never more prefix than budget; rerun with a percent"
+            " budget (configs/proposed_a_k4v4_p5.yaml) or a smaller --math-topk"
+            if budget_covers_prefix
+            else ""
+        ))
     chk("layers 0 and 1 take part in selection",
         0 in layers_selected and 1 in layers_selected)
     chk("compact buffers are counted", (m.get("compact_cache_bytes") or 0) > 0)

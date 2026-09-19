@@ -41,8 +41,15 @@ def load_fast_dllm(
     # Triton (cpu tensor?)" - a deterministic crash on every call, not a CPU
     # tensor at all. Only avoided previously by restricting visibility with
     # CUDA_VISIBLE_DEVICES so the requested index was always 0.
+    # set_device also rejects an unindexed "cuda" - which is exactly what
+    # quality.py, performance.py and every tests/ entry point default to, so
+    # they all died here while scripts/run_experiments.py worked around it by
+    # passing --device cuda:0. Normalize instead of making each caller do it.
     if device not in ("auto", "cpu") and torch.cuda.is_available():
-        torch.cuda.set_device(device)
+        target = torch.device(device)
+        torch.cuda.set_device(
+            target.index if target.index is not None else torch.cuda.current_device()
+        )
 
     tokenizer = AutoTokenizer.from_pretrained(
         model_id, trust_remote_code=True, revision=revision
