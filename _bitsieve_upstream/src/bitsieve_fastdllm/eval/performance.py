@@ -64,6 +64,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--revision")
     p.add_argument("--dtype", default="bf16")
     p.add_argument("--device", default="cuda")
+    p.add_argument("--adapter", help="LoRA adapter directory to merge before evaluating")
     p.add_argument("--attn-implementation")
     p.add_argument("--contexts", default="2048,8192,16384,28672")
     p.add_argument("--batch-sizes", default="1,4")
@@ -89,6 +90,7 @@ def main(argv: list[str] | None = None) -> None:
         device=args.device,
         revision=args.revision,
         attn_implementation=args.attn_implementation,
+        adapter=args.adapter,
     )
     device = next(model.parameters()).device
     out = Path(args.output)

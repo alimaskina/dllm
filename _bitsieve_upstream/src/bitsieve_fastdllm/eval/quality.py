@@ -31,6 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--model", default="Efficient-Large-Model/Fast_dLLM_v2_7B")
     p.add_argument("--dtype", default="bf16")
     p.add_argument("--device", default="cuda")
+    p.add_argument("--adapter", help="LoRA adapter directory to merge before evaluating")
     p.add_argument("--revision")
     p.add_argument("--attn-implementation")
     p.add_argument("--split", default="test")
@@ -77,6 +78,7 @@ def main(argv: list[str] | None = None) -> None:
         device=args.device,
         revision=args.revision,
         attn_implementation=args.attn_implementation,
+        adapter=args.adapter,
     )
     examples = load_benchmark(
         args.benchmark,

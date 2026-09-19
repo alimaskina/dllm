@@ -213,6 +213,49 @@ def quantize_values(
     )
 
 
+def simulate_value_quantization(
+    value: torch.Tensor,
+    *,
+    bits: int,
+    channel_group: int = 32,
+    param_dtype: torch.dtype = torch.float16,
+    dtype: torch.dtype | None = None,
+) -> torch.Tensor:
+    """Value quantization round-tripped back to float, the twin of
+    ``simulate_key_quantization``.
+
+    Values group along channels, not tokens, so there is no ragged case: the
+    head dimension is fixed and must divide ``channel_group``. Like the key
+    version this rounds scale and zero through ``param_dtype``, which is what
+    makes it bit-exact with ``quantize_values`` + ``dequantize_values`` rather
+    than merely close, and it skips only the bit-packing - so it is not limited
+    to the 2 and 4 bits the kernels can address.
+
+    Training reads old-cache values through this, so what a student learns to
+    tolerate is the grid the packed cache actually hands it.
+    """
+    if value.ndim != 4:
+        raise ValueError("value must have shape [B, Hkv, T, D]")
+    if not 1 <= bits <= 16:
+        raise ValueError(f"bits must be between 1 and 16, got {bits}")
+    if bits == 16:
+        return value if dtype is None else value.to(dtype)
+    b, h, t, d = value.shape
+    if d % channel_group:
+        raise ValueError(f"D={d} must be divisible by channel_group={channel_group}")
+
+    ng = d // channel_group
+    x = value.reshape(b, h, t, ng, channel_group)
+    mn = x.amin(dim=-1, keepdim=True)
+    mx = x.amax(dim=-1, keepdim=True)
+    levels = float((1 << bits) - 1)
+    scale = ((mx - mn) / levels).clamp_min(1e-8)
+    q = torch.round((x - mn) / scale).clamp_(0, levels)
+    x = q.float() * scale.to(param_dtype).float() + mn.to(param_dtype).float()
+    x = x.reshape(b, h, t, d)
+    return x.to(dtype if dtype is not None else value.dtype)
+
+
 def dequantize_values(
     packed: PackedValues,
     *,

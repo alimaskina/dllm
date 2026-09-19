@@ -117,6 +117,7 @@ def parser():
         q.add_argument('--gpus', type=csv_items)
         q.add_argument('--output-root', type=Path, default=ROOT / 'results' / 'release_runs')
         q.add_argument('--model', default='Efficient-Large-Model/Fast_dLLM_v2_7B')
+        q.add_argument('--adapter', help='LoRA adapter directory to merge before evaluating')
         q.add_argument('--revision', default='0661abf5f9f0ee338970d091052a26c8efa51974')
         q.add_argument('--dtype', choices=('bf16', 'fp16'), default='bf16')
         q.add_argument('--attn-implementation')
@@ -167,6 +168,8 @@ def make_jobs(args):
     # physical GPU is always local device cuda:0. An unindexed "cuda" is
     # rejected by torch.cuda.set_device on current PyTorch releases.
     common = ['--model', args.model, '--revision', args.revision, '--device', 'cuda:0', '--dtype', args.dtype]
+    if getattr(args, 'adapter', None):
+        common += ['--adapter', args.adapter]
     if args.attn_implementation:
         common += ['--attn-implementation', args.attn_implementation]
     jobs = []

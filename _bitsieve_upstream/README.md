@@ -229,6 +229,30 @@ python scripts/run_experiments.py memory \
 The existing runtime fields `peak_cuda_allocated_bytes` and `peak_cuda_reserved_bytes` reset after prefill. They are decode-phase metrics, not end-to-end peaks.
 One failed job does not stop other jobs, and all requested batch sizes are attempted. OOM and other errors are recorded separately for new runs.
 
+## Recovery training
+
+Can fine-tuning bring the metric back under a packed cache and a sparse budget?
+`scripts/train_recovery.py` trains a LoRA adapter against the cache regime a
+given evaluation config describes, and `--adapter` on the evaluation entry
+points measures it with the same harness everything else is reported with.
+
+```bash
+python scripts/calibrate_training_noise.py --device cuda:0     # once
+python tests/training_parity_e2e.py --device cuda:0            # once
+
+python scripts/train_recovery.py --branch sft_noise \
+    --config configs/proposed_a_k4v4_p5.yaml --out runs/D --device cuda:0
+
+python -m bitsieve_fastdllm.eval.quality \
+    --config configs/proposed_a_k4v4_p5.yaml --benchmark gsm8k \
+    --adapter runs/D/adapter --output results/D_gsm8k.jsonl
+```
+
+`DEVICES=cuda:0,cuda:1 bash scripts/run_recovery_matrix.sh` runs the whole
+matrix, one model per card at a time. Branches, what is matched against the
+decoder and how it is checked, the noise calibration, and the caveats are in
+[recovery training](docs/recovery_training.md).
+
 ## GPUs, logging, and resuming
 
 `--gpus` accepts CUDA device selectors passed verbatim into each child's `CUDA_VISIBLE_DEVICES`, for example `1,4` or GPU UUIDs.

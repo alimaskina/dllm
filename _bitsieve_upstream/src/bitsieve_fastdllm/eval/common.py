@@ -27,6 +27,7 @@ def load_fast_dllm(
     device: str = "cuda",
     revision: str | None = None,
     attn_implementation: str | None = None,
+    adapter: str | None = None,
 ):
     try:
         from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -67,6 +68,19 @@ def load_fast_dllm(
     model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
     if device != "auto":
         model = model.to(device)
+
+    if adapter:
+        # Merged, not kept as a live PEFT wrapper: the runtime patches
+        # attention module forwards by identity, and an adapter wrapper would
+        # sit between them and the session. Merging folds the LoRA into the
+        # base weights so decoding sees plain Linear layers.
+        from peft import PeftModel
+
+        model = PeftModel.from_pretrained(model, adapter)
+        model = model.merge_and_unload()
+        if device != "auto":
+            model = model.to(device)
+
     model.eval()
     return model, tokenizer
 

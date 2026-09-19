@@ -157,17 +157,22 @@ def load_gsm8k(limit: int | None = None, split: str = "test") -> list[BenchmarkE
     return out
 
 
+def competition_math_prompt(problem: str) -> str:
+    """The MATH-500 prompt. Shared so training cannot drift from evaluation."""
+    return (
+        "Solve the following competition mathematics problem rigorously. Show the key steps and "
+        "put the final answer inside \\boxed{...}.\n\n"
+        f"Problem: {problem}\n\nSolution:"
+    )
+
+
 def load_math500(limit: int | None = None, split: str = "test") -> list[BenchmarkExample]:
     ds = _load_hf("HuggingFaceH4/MATH-500", None, split)
     out = []
     for idx, row in _take(ds, limit):
         problem = row.get("problem") or row.get("question")
         answer = row.get("answer") or row.get("solution")
-        prompt = (
-            "Solve the following competition mathematics problem rigorously. Show the key steps and "
-            "put the final answer inside \\boxed{...}.\n\n"
-            f"Problem: {problem}\n\nSolution:"
-        )
+        prompt = competition_math_prompt(problem)
         out.append(
             BenchmarkExample(
                 str(row.get("unique_id", idx)),
