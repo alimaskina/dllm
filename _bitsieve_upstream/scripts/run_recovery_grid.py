@@ -41,6 +41,14 @@ DENSE_CONFIG = "configs/official_dense_bf16.yaml"
 SPARSE_CONFIG = "configs/proposed_a_k4v4_p5.yaml"
 
 
+def limit_for(task: str, args) -> int:
+    if task == "narrativeqa" and getattr(args, "limit_narrativeqa", None):
+        return args.limit_narrativeqa
+    if task not in MATH_TASKS and getattr(args, "limit_longbench", None):
+        return args.limit_longbench
+    return args.limit
+
+
 def cells(args) -> list[dict]:
     out: list[dict] = []
     for task in MATH_TASKS:
@@ -61,15 +69,22 @@ def run(args) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     for c in cells(args):
         dest = out_dir / f"{args.branch}__{c['task']}__{c['cell']}.jsonl"
+        want = limit_for(c["task"], args)
+        # quality.py appends rows as it goes, so an interrupted cell leaves a
+        # file that merely *looks* finished. Count the rows: a short cell is
+        # rerun, and quality.py's own --resume tops it up rather than redoing it.
         if dest.exists() and not args.overwrite:
-            print(f"skip (exists) {dest.name}")
-            continue
+            have = sum(1 for line in dest.read_text(encoding="utf-8").splitlines() if line.strip())
+            if have >= want:
+                print(f"skip (complete, {have} rows) {dest.name}")
+                continue
+            print(f"resuming {dest.name}: {have}/{want} rows")
         cmd = [
             sys.executable, "-m", "bitsieve_fastdllm.eval.quality",
             "--config", str(ROOT / c["config"]),
             "--benchmark", c["task"],
             "--device", args.device,
-            "--limit", str(args.limit),
+            "--limit", str(limit_for(c["task"], args)),
             "--output", str(dest),
         ]
         if c["offset"]:
@@ -138,6 +153,12 @@ def main() -> int:
     r.add_argument("--adapter", help="LoRA adapter to merge; omit for branch A")
     r.add_argument("--device", default="cuda:0")
     r.add_argument("--limit", type=int, default=60)
+    r.add_argument("--limit-longbench", type=int, default=None,
+                   help="override --limit for LongBench tasks (their prompts are "
+                        "5-17k tokens, so a cell costs far more than a math one)")
+    r.add_argument("--limit-narrativeqa", type=int, default=None,
+                   help="override again for NarrativeQA, whose 31k-token median "
+                        "prompt makes it ~46%% of a full grid's wall clock")
     r.add_argument("--example-offset", type=int, default=200,
                    help="examples to skip on LongBench tasks the adapter trained on")
     r.add_argument("--out", required=True)

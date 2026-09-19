@@ -248,10 +248,13 @@ python -m bitsieve_fastdllm.eval.quality \
     --adapter runs/D/adapter --output results/D_gsm8k.jsonl
 ```
 
-`DEVICES=cuda:0,cuda:1 bash scripts/run_recovery_matrix.sh` runs the whole
-matrix, one model per card at a time. Branches, what is matched against the
-decoder and how it is checked, the noise calibration, and the caveats are in
-[recovery training](docs/recovery_training.md).
+`bash scripts/run_recovery_matrix.sh` runs the whole study end to end --
+calibrate, verify against the real decoder, train every branch, evaluate the
+18-cell grid, print the table -- across whatever GPUs are visible, one model per
+card at a time. `PLAN_ONLY=1` prints the plan without running anything. The
+[runbook](docs/RUN_RECOVERY.md) has the jobs, the grid, the cost and the knobs;
+[recovery training](docs/recovery_training.md) has what the training forward
+matches against the decoder, how that is checked, and the caveats.
 
 ## GPUs, logging, and resuming
 
