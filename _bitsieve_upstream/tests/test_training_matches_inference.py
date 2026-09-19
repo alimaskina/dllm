@@ -262,3 +262,81 @@ def test_noise_survives_gradient_checkpointing() -> None:
     torch.manual_seed(0)
     ckpt = run(True)
     assert torch.equal(plain, ckpt), (plain - ckpt).abs().max().item()
+
+
+# --------------------------------------------------------------------------
+# long-context path
+# --------------------------------------------------------------------------
+def test_prefix_masks_match_the_decoder_layout() -> None:
+    """A cached prefix is strictly earlier than every answer block, and every
+    read of it is served by the packed cache."""
+    from bitsieve_fastdllm.training.longctx import build_prefix_masks
+
+    a, p = 2 * BLOCK, 5 * BLOCK
+    m = build_prefix_masks(a, BLOCK, p, "cpu")
+
+    # Every query, in both halves, can read the whole prefix...
+    assert bool(m.visible[:, :p].all())
+    # ...and every one of those reads is a cache read.
+    assert bool(m.old_pair[:, :p].all())
+
+    for q in range(2 * a):
+        is_x0_q = q >= a
+        bq = (q - a) // BLOCK if is_x0_q else q // BLOCK
+        for k in range(p, p + 2 * a):
+            rel = k - p
+            is_x0_k = rel >= a
+            bk = (rel - a) // BLOCK if is_x0_k else rel // BLOCK
+            want = (
+                (bq == bk and is_x0_q == is_x0_k)
+                or (is_x0_k and not is_x0_q and bk < bq)
+                or (is_x0_k and is_x0_q and bk <= bq)
+            )
+            assert bool(m.visible[q, k]) == want, (q, k)
+
+
+def test_an_empty_prefix_reduces_to_the_short_context_layout() -> None:
+    """With no cache, the long path's mask must be the doubled mask again."""
+    from bitsieve_fastdllm.training.longctx import build_prefix_masks
+
+    a = 3 * BLOCK
+    long = build_prefix_masks(a, BLOCK, 0, "cpu", propagate_to_x0=False)
+    short = build_masks(a, BLOCK, "cpu", propagate_to_x0=False)
+    assert torch.equal(long.visible, short.visible)
+    assert torch.equal(long.old_pair, short.old_pair)
+
+
+def test_long_context_selection_budgets_only_cache_reads() -> None:
+    from bitsieve_fastdllm.training.longctx import build_prefix_masks, select_prefix_keep
+
+    torch.manual_seed(0)
+    a, p = BLOCK, 8 * BLOCK
+    masks = build_prefix_masks(a, BLOCK, p, "cpu")
+    query = torch.randn(B, HQ, 2 * a, D)
+    key = torch.randn(B, HKV, p + 2 * a, D)
+    is_masked = torch.zeros(2 * a, dtype=torch.bool)
+    is_masked[:a] = True
+
+    selector = SelectorConfig(mode="uniform", uniform_queries=5, topk=64, dense_prefix_layers=0)
+    keep = select_prefix_keep(query, key, masks, is_masked, selector, D**-0.5, G, BLOCK)
+
+    # Budget is spent on the prefix only; nothing else is masked out.
+    assert bool(keep[:, :, p:].all())
+    kept_prefix = keep[0, 0, :p].sum().item()
+    assert kept_prefix == 64, kept_prefix
+
+
+def test_long_context_budget_above_the_prefix_keeps_everything() -> None:
+    from bitsieve_fastdllm.training.longctx import build_prefix_masks, select_prefix_keep
+
+    torch.manual_seed(0)
+    a, p = BLOCK, 2 * BLOCK
+    masks = build_prefix_masks(a, BLOCK, p, "cpu")
+    query = torch.randn(B, HQ, 2 * a, D)
+    key = torch.randn(B, HKV, p + 2 * a, D)
+    is_masked = torch.zeros(2 * a, dtype=torch.bool)
+    is_masked[:a] = True
+
+    selector = SelectorConfig(mode="uniform", uniform_queries=5, topk=10**6, dense_prefix_layers=0)
+    keep = select_prefix_keep(query, key, masks, is_masked, selector, D**-0.5, G, BLOCK)
+    assert bool(keep.all())

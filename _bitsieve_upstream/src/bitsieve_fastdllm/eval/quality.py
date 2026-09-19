@@ -36,6 +36,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--attn-implementation")
     p.add_argument("--split", default="test")
     p.add_argument("--limit", type=int)
+    p.add_argument(
+        "--example-offset", type=int, default=0,
+        help="skip this many examples from the front of the split. LongBench has "
+             "no train split, so recovery training takes its examples from the "
+             "front; evaluating a task that was trained on needs an offset at "
+             "least as large or the score is measured on the training set.",
+    )
     p.add_argument("--max-new-tokens", type=int)
     p.add_argument("--max-cache-tokens", type=int)
     p.add_argument(
@@ -117,12 +124,23 @@ def main(argv: list[str] | None = None) -> None:
     examples = load_benchmark(
         args.benchmark,
         tokenizer=tokenizer,
-        limit=args.limit,
+        limit=(args.limit + args.example_offset) if args.limit is not None else None,
         split=args.split,
         niah_contexts=_parse_ints(args.niah_contexts),
         niah_depths=_parse_floats(args.niah_depths),
         seed=cfg.seed,
     )
+    if args.example_offset:
+        if len(examples) <= args.example_offset:
+            raise SystemExit(
+                f"--example-offset {args.example_offset} skips all "
+                f"{len(examples)} examples of {args.benchmark}"
+            )
+        examples = examples[args.example_offset :]
+        print(
+            f"skipping the first {args.example_offset} examples; "
+            f"scoring {len(examples)}"
+        )
     generator = (
         BitSieveGenerator(model, tokenizer, cfg)
         if cfg.engine == "bitsieve"

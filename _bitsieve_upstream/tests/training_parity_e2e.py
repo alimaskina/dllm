@@ -42,6 +42,11 @@ from bitsieve_fastdllm.training.data import (  # noqa: E402
     load_math_train,
 )
 from bitsieve_fastdllm.training.degrade import CacheDegradation  # noqa: E402
+from bitsieve_fastdllm.training.longctx import (  # noqa: E402
+    build_prefix_masks,
+    cached_prefix_logits,
+    encode_prefix,
+)
 
 
 def reference_block_logits(model, ids, xt_block, block_start, block_size):
@@ -214,6 +219,48 @@ def main() -> int:
     print(f"    loss = {loss.item():.4f}, tensors with grad = {len(grads)}, "
           f"non-zero = {sum(1 for v in grads if v > 0)}, all finite = {finite}")
     ok.append(("gradients", finite and len(grads) > 0 and any(v > 0 for v in grads)))
+
+    # ---- 5. the long-context path reproduces the decoder too ------------
+    # LongBench prompts make the doubled forward quadratically impossible, so
+    # that track encodes the prefix once and runs only the answer window. It
+    # has to land in the same place as the real decoder.
+    ans = torch.cat([xt[:, start : start + bs], ids[:, start : start + bs]], dim=1)
+    ans_masked = torch.cat(
+        [xt[0, start : start + bs] == MASK_TOKEN_ID, torch.zeros(bs, dtype=torch.bool, device=device)]
+    )
+    pmasks = build_prefix_masks(bs, bs, start, device)
+    with torch.no_grad():
+        cache = encode_prefix(model, ids[:, :start], bs)
+        long_mine = cached_prefix_logits(
+            model, ans, cache, masks=pmasks, degrade=exact, selector=None,
+            is_masked_token=ans_masked, block_size=bs, gradient_checkpointing=False,
+        ).float()
+    la, lb = long_mine[0], ref[0]
+    l_agree = (la.argmax(-1) == lb.argmax(-1)).float().mean().item()
+    l_kl = F.kl_div(
+        F.log_softmax(la, -1), F.log_softmax(lb, -1), log_target=True, reduction="batchmean"
+    ).item()
+    print("\n[5] cached-prefix (long-context) path vs the real decoding path")
+    print(f"    top-1 agreement    = {l_agree:.3f}")
+    print(f"    KL(mine || ref)    = {l_kl:.3e} nats")
+    ok.append(("long-context parity", l_agree > 0.95 and l_kl < 1e-2))
+
+    # And its degradation must also be confined to cache reads: with a prefix
+    # of zero there is no cache, so nothing may move.
+    empty = build_prefix_masks(bs, bs, 0, device)
+    zero_cache = [(k[:, :, :0, :], v[:, :, :0, :]) for k, v in cache]
+    with torch.no_grad():
+        clean0 = cached_prefix_logits(
+            model, ans, zero_cache, masks=empty, degrade=quant0, selector=None,
+            is_masked_token=ans_masked, block_size=bs, gradient_checkpointing=False,
+        ).float()
+        deg0 = cached_prefix_logits(
+            model, ans, zero_cache, masks=empty, degrade=deg, selector=selector,
+            is_masked_token=ans_masked, block_size=bs, gradient_checkpointing=False,
+        ).float()
+    d0 = (deg0 - clean0).abs().max().item()
+    print(f"    max|d| with an empty prefix = {d0:.4f}  (no cache -> must be 0)")
+    ok.append(("long-context degradation is localized", d0 < 1e-5))
 
     print("\n--- assertions ---")
     for name, passed in ok:

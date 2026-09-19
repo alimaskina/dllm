@@ -46,6 +46,16 @@ from bitsieve_fastdllm.training.data import (  # noqa: E402
     make_noisy_batch,
 )
 from bitsieve_fastdllm.training.degrade import CacheDegradation  # noqa: E402
+from bitsieve_fastdllm.training.longbench_data import (  # noqa: E402
+    DEFAULT_HELDOUT_TASKS,
+    DEFAULT_TRAIN_TASKS,
+    load_longbench_train,
+)
+from bitsieve_fastdllm.training.longctx import (  # noqa: E402
+    build_prefix_masks,
+    cached_prefix_logits,
+    encode_prefix,
+)
 from bitsieve_fastdllm.training.losses import masked_cross_entropy, masked_jsd  # noqa: E402
 from bitsieve_fastdllm.training.onpolicy import generate_batch, sampling_config  # noqa: E402
 
@@ -100,7 +110,65 @@ def encode_pairs(tokenizer, pairs, args, device):
     return out
 
 
+def _long_context_loss(model, peft_model, ex, args, spec, degrade, selector, exact, generator):
+    """Loss for one long-context example: cached prefix, answer window only."""
+    bs = args.block_size
+    batch = make_noisy_batch(
+        ex.window_ids.unsqueeze(0), ex.labels.unsqueeze(0),
+        block_size=bs, generator=generator, complementary=not args.no_complementary,
+    )
+    a = int(ex.window_ids.shape[0])
+    masks = build_prefix_masks(
+        a, bs, ex.prefix_len, ex.window_ids.device,
+        propagate_to_x0=not args.no_error_compounding,
+    )
+    prefix_ids = ex.prefix_ids.unsqueeze(0)
+    student_cache = encode_prefix(model, prefix_ids, bs)
+    teacher_cache = None
+    if spec["loss"] == "jsd":
+        with peft_model.disable_adapter():
+            teacher_cache = encode_prefix(model, prefix_ids, bs)
+
+    total, n_tok, rows = None, 0, batch.input_ids.shape[0]
+    for r in range(rows):
+        ids, lab = batch.input_ids[r : r + 1], batch.labels[r : r + 1]
+        if int((lab != -100).sum()) == 0:
+            continue
+        im = batch.is_masked_token[r]
+
+        s_logits = cached_prefix_logits(
+            model, ids, student_cache, masks=masks, degrade=degrade, selector=selector,
+            is_masked_token=im, block_size=bs,
+            gradient_checkpointing=args.grad_checkpointing,
+        )
+        if spec["loss"] == "ce":
+            loss, n = masked_cross_entropy(
+                s_logits, lab,
+                p_mask=batch.p_mask[r : r + 1] if args.p_mask_weighting else None,
+            )
+        else:
+            with torch.no_grad(), peft_model.disable_adapter():
+                t_logits = cached_prefix_logits(
+                    model, ids, teacher_cache, masks=masks, degrade=exact,
+                    selector=None, is_masked_token=im, block_size=bs,
+                    gradient_checkpointing=False,
+                )
+            loss, n = masked_jsd(s_logits, t_logits, lab, beta=args.beta)
+            del t_logits
+        del s_logits
+        if n == 0:
+            continue
+        (loss / rows).backward()
+        total = loss.detach() if total is None else total + loss.detach()
+        n_tok += n
+    return (total / max(1, rows)) if total is not None else None, n_tok
+
+
 def forward_loss(model, peft_model, ex, args, spec, degrade, selector, exact, generator):
+    if getattr(ex, "prefix_ids", None) is not None:
+        return _long_context_loss(
+            model, peft_model, ex, args, spec, degrade, selector, exact, generator
+        )
     """Loss for one example, summed over the complementary masking pair.
 
     Rows run one at a time: selection is per-sequence, and a single doubled row
@@ -160,7 +228,12 @@ def heldout_ce(model, examples, args, degrade, selector, *, seed: int = 999) -> 
     (see blockdiff_attention), so that is forked and seeded too -- and forked
     rather than just seeded, so scoring does not perturb the training stream.
     """
-    device = examples[0].input_ids.device
+    first = examples[0]
+    device = (
+        first.prefix_ids.device
+        if getattr(first, "prefix_ids", None) is not None
+        else first.input_ids.device
+    )
     with torch.random.fork_rng(devices=[device] if device.type == "cuda" else []):
         torch.manual_seed(seed)
         return _heldout_ce_inner(model, examples, args, degrade, selector, seed)
@@ -168,10 +241,35 @@ def heldout_ce(model, examples, args, degrade, selector, *, seed: int = 999) -> 
 
 @torch.no_grad()
 def _heldout_ce_inner(model, examples, args, degrade, selector, seed):
-    device = examples[0].input_ids.device
+    device = (
+        examples[0].prefix_ids.device
+        if getattr(examples[0], "prefix_ids", None) is not None
+        else examples[0].input_ids.device
+    )
     generator = torch.Generator(device=device).manual_seed(seed)
     tot, n = 0.0, 0
     for ex in examples:
+        if getattr(ex, "prefix_ids", None) is not None:
+            bs = args.block_size
+            batch = make_noisy_batch(
+                ex.window_ids.unsqueeze(0), ex.labels.unsqueeze(0),
+                block_size=bs, generator=generator, complementary=False,
+            )
+            masks = build_prefix_masks(
+                int(ex.window_ids.shape[0]), bs, ex.prefix_len, device,
+                propagate_to_x0=not args.no_error_compounding,
+            )
+            logits = cached_prefix_logits(
+                model, batch.input_ids, encode_prefix(model, ex.prefix_ids.unsqueeze(0), bs),
+                masks=masks, degrade=degrade, selector=selector,
+                is_masked_token=batch.is_masked_token[0], block_size=bs,
+                gradient_checkpointing=False,
+            )
+            loss, k = masked_cross_entropy(logits, batch.labels)
+            if k:
+                tot += loss.item() * k
+                n += k
+            continue
         batch = make_noisy_batch(
             ex.input_ids.unsqueeze(0), ex.labels.unsqueeze(0),
             block_size=args.block_size, generator=generator, complementary=False,
@@ -211,6 +309,16 @@ def main() -> int:
     ap.add_argument("--grad-checkpointing", action="store_true", default=True)
     ap.add_argument("--no-grad-checkpointing", dest="grad_checkpointing", action="store_false")
 
+    ap.add_argument("--dataset", choices=("math", "longbench"), default="math",
+                    help="math: Hendrycks MATH train, full doubled forward. "
+                         "longbench: a cached prompt plus one answer window "
+                         "(see training/longctx.py for why they differ)")
+    ap.add_argument("--longbench-train-tasks", default=",".join(DEFAULT_TRAIN_TASKS),
+                    help=f"comma-separated; held out by default: {', '.join(DEFAULT_HELDOUT_TASKS)}")
+    ap.add_argument("--longbench-per-task", type=int, default=150,
+                    help="training examples per task, taken from the FRONT of the split; "
+                         "evaluate with --example-offset at least this large")
+    ap.add_argument("--longbench-heldout-per-task", type=int, default=8)
     ap.add_argument("--max-len", type=int, default=1280)
     ap.add_argument("--min-answer-tokens", type=int, default=16)
     ap.add_argument("--train-examples", type=int, default=6000)
@@ -331,23 +439,53 @@ def main() -> int:
             "        student read the degraded cache the teacher does not.\n"
         )
 
-    rows = load_math_train(limit=None, seed=args.seed, exclude_math500=True)
-    heldout = encode_pairs(
-        tokenizer, [(r["problem"], r["solution"]) for r in rows[: args.heldout_examples]],
-        args, device,
-    )
-    train_pool = [
-        (r["problem"], r["solution"])
-        for r in rows[args.heldout_examples : args.heldout_examples + args.train_examples]
-    ]
-    train_examples = encode_pairs(tokenizer, train_pool, args, device)
-    print(f"[train] usable train examples {len(train_examples)}/{len(train_pool)} "
-          f"(max_len={args.max_len}); held-out {len(heldout)}")
+    if args.dataset == "longbench":
+        tasks = tuple(t.strip() for t in args.longbench_train_tasks.split(",") if t.strip())
+        n_hold = args.longbench_heldout_per_task
+        pool = load_longbench_train(
+            tokenizer, tasks=tasks,
+            per_task=args.longbench_per_task + n_hold,
+            block_size=args.block_size,
+            max_cache_tokens=cfg.max_cache_tokens, device=device,
+        )
+        # Hold out the tail of each task's slice, so the held-out curve is not
+        # scored on examples the adapter trained on.
+        by_task: dict[str, list] = {}
+        for ex in pool:
+            by_task.setdefault(ex.task, []).append(ex)
+        train_examples, heldout = [], []
+        for task, items in by_task.items():
+            heldout.extend(items[-n_hold:] if n_hold else [])
+            train_examples.extend(items[:-n_hold] if n_hold else items)
+        train_pool = None
+        print(f"[train] longbench: train on {list(by_task)} -- "
+              f"{len(train_examples)} examples, {len(heldout)} held out; "
+              f"tasks NOT trained on: {[t for t in DEFAULT_HELDOUT_TASKS if t not in tasks]}")
+        print(f"[train] evaluate these tasks with --example-offset "
+              f">= {args.longbench_per_task + n_hold} so eval never reuses a training example")
+    else:
+        rows = load_math_train(limit=None, seed=args.seed, exclude_math500=True)
+        heldout = encode_pairs(
+            tokenizer, [(r["problem"], r["solution"]) for r in rows[: args.heldout_examples]],
+            args, device,
+        )
+        train_pool = [
+            (r["problem"], r["solution"])
+            for r in rows[args.heldout_examples : args.heldout_examples + args.train_examples]
+        ]
+        train_examples = encode_pairs(tokenizer, train_pool, args, device)
+        print(f"[train] usable train examples {len(train_examples)}/{len(train_pool)} "
+              f"(max_len={args.max_len}); held-out {len(heldout)}")
     if not train_examples:
-        print("no training examples fit in --max-len")
+        print("no training examples available")
         return 1
 
     gen_cfg = None
+    if spec["onpolicy"] and args.dataset == "longbench":
+        print("[train] NOTE: on-policy sampling is not wired for the longbench track "
+              "(each sample would re-decode a 5-30k-token prompt); training on the "
+              "reference answers instead.")
+        spec = dict(spec, onpolicy=False)
     if spec["onpolicy"]:
         gen_cfg = sampling_config(
             cfg, dense=spec["dense_sampling"], max_new_tokens=args.gen_max_new_tokens
