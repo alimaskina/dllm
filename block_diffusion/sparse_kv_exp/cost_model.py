@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 
@@ -21,6 +21,7 @@ class StepCost:
     num_kv_heads: int
     head_dim: int
     num_layers: int
+    kivi_group_size: int = 32
 
     @property
     def old_k_len(self) -> int:
@@ -98,10 +99,36 @@ class StepCost:
 
     @property
     def kv_stored_bytes_old(self) -> int:
+        """Resident bytes of the old KV cache, quantization metadata included.
+
+        NOTE: the payload term must be ``elems * bits // 8``, not
+        ``elems * (bits // 8)`` — the latter is 0 for every sub-byte width and
+        previously reported 4-bit and 2-bit caches as occupying no memory.
+
+        Metadata follows the geometry the cache actually uses (see
+        ``kv_quant/kv_cache_quant.py``): KIVI keys carry an fp16 scale and
+        zero-point per (head, token-group, channel), values an fp16 scale and
+        zero-point per (head, token).
+        """
         elems = self.num_layers * self.num_kv_heads * self.old_cache_len * self.head_dim
-        k_b = elems * (2 if self.k_bits >= 16 else max(self.k_bits, 1) // 8)
-        v_b = elems * (2 if self.v_bits >= 16 else max(self.v_bits, 1) // 8)
-        return k_b + v_b
+
+        def _payload(bits: int) -> int:
+            return elems * 2 if bits >= 16 else (elems * max(bits, 1)) // 8
+
+        k_meta = 0
+        v_meta = 0
+        if self.k_bits < 16:
+            groups = max(1, self.old_cache_len // self.kivi_group_size)
+            k_meta = self.num_layers * self.num_kv_heads * groups * self.head_dim * 2 * 2
+        if self.v_bits < 16:
+            v_meta = self.num_layers * self.num_kv_heads * self.old_cache_len * 2 * 2
+        return _payload(self.k_bits) + k_meta + _payload(self.v_bits) + v_meta
+
+    @property
+    def kv_stored_bytes_dense_fp16(self) -> int:
+        """Resident bytes the same cache would take at bf16, for the ratio."""
+        elems = self.num_layers * self.num_kv_heads * self.old_cache_len * self.head_dim
+        return elems * 2 * 2
 
     @property
     def bit_weighted_qk(self) -> float:
@@ -131,9 +158,56 @@ class StepCost:
             "pv_macs_current": self.pv_macs_current,
             "kv_bytes_read_old": self.kv_bytes_read_old,
             "kv_stored_bytes_old": self.kv_stored_bytes_old,
+            "kv_stored_bytes_dense_fp16": self.kv_stored_bytes_dense_fp16,
             "bit_weighted_qk": self.bit_weighted_qk,
             "bit_weighted_pv": self.bit_weighted_pv,
         }
+
+
+def _bytes_at(step: "StepCost", k_bits: int, v_bits: int) -> int:
+    """Resident bytes of ``step``'s cache stored at the given K/V widths."""
+    clone = replace(step, k_bits=k_bits, v_bits=v_bits)
+    return clone.kv_stored_bytes_old
+
+
+def _resident_footprint(peak, sel: list, exe: list) -> dict[str, Any]:
+    """Bytes that must be resident at the largest cache the run reached.
+
+    A configuration whose *selector* reads a different precision than execution
+    (the sweep default is an fp16 selector over a 4-bit exec cache) has to keep
+    BOTH views alive: the selector re-ranks the old cache at the start of every
+    block, so its copy cannot be discarded.  Charging only the quantized bytes
+    would report a memory saving the configuration does not actually deliver.
+    """
+    if peak is None:
+        return {}
+    exec_ref = exe[0] if exe else peak
+    sel_ref = sel[0] if sel else None
+
+    exec_bytes = _bytes_at(peak, exec_ref.k_bits, exec_ref.v_bits)
+    dense_bytes = peak.kv_stored_bytes_dense_fp16
+
+    sel_bytes = 0
+    both = False
+    if sel_ref is not None and (sel_ref.k_bits, sel_ref.v_bits) != (exec_ref.k_bits, exec_ref.v_bits):
+        sel_bytes = _bytes_at(peak, sel_ref.k_bits, sel_ref.v_bits)
+        both = True
+
+    total = exec_bytes + sel_bytes
+    n = max(1, peak.old_cache_len)
+    return {
+        "kv_resident_bytes": total,
+        "kv_resident_bytes_exec_view": exec_bytes,
+        "kv_resident_bytes_selector_view": sel_bytes,
+        "kv_resident_keeps_two_views": both,
+        "kv_resident_bytes_dense_fp16": dense_bytes,
+        "kv_resident_ratio_vs_dense_fp16": total / dense_bytes if dense_bytes else None,
+        "kv_resident_bytes_per_cache_token": total / n,
+        "exec_k_bits": exec_ref.k_bits,
+        "exec_v_bits": exec_ref.v_bits,
+        "selector_k_bits": sel_ref.k_bits if sel_ref else None,
+        "selector_v_bits": sel_ref.v_bits if sel_ref else None,
+    }
 
 
 @dataclass
@@ -265,6 +339,10 @@ class RunCostSummary:
         avg_exec_kv = _avg("kv_bytes_read_old", exe)
         avg_sel_qk = _avg("qk_macs_dense_old", sel) + _avg("qk_macs_current_block", sel)
         avg_sel_kv = _avg("kv_bytes_read_old", sel)
+        # Resident footprint is a property of the cache, not of a step, so take
+        # the largest cache any step saw (= the cache at the end of the run).
+        peak = max(self.step_costs, key=lambda s: s.old_cache_len, default=None)
+        resident = _resident_footprint(peak, sel, exe)
 
         dense_qk = base.get("qk_macs", avg_sel_qk or 1)
         dense_pv = base.get("pv_macs", 1)
@@ -279,6 +357,8 @@ class RunCostSummary:
             "avg_exec_pv_macs": avg_exec_pv,
             "avg_exec_kv_bytes_read": avg_exec_kv,
             "avg_selector_kv_bytes_read": avg_sel_kv,
+            "peak_old_cache_len": peak.old_cache_len if peak else 0,
+            **resident,
             "total_bit_weighted_qk": sum(s.bit_weighted_qk for s in self.step_costs),
             "total_bit_weighted_pv": sum(s.bit_weighted_pv for s in self.step_costs),
             "ratio_vs_dense_fp16_per_step": {
