@@ -38,6 +38,21 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--limit", type=int)
     p.add_argument("--max-new-tokens", type=int)
     p.add_argument("--max-cache-tokens", type=int)
+    p.add_argument(
+        "--topk", type=int,
+        help="override the selector budget with a fixed number of prefix tokens; "
+             "clears topk_percent. Lets one config be swept across budgets.",
+    )
+    p.add_argument(
+        "--topk-percent", type=float,
+        help="override the selector budget with a percent of the live prefix; "
+             "clears topk.",
+    )
+    p.add_argument(
+        "--coverage", action="store_true",
+        help="score the selection against an fp16 all-masked-query reference "
+             "(reports attention mass retained; slower)",
+    )
     p.add_argument("--output", required=True)
     p.add_argument("--plain-prompt", action="store_true")
     p.add_argument("--niah-contexts", default="8192,16384,28672")
@@ -66,11 +81,30 @@ def main(argv: list[str] | None = None) -> None:
         if args.max_new_tokens is not None
         else max_new_tokens_for(args.benchmark)
     )
-    if resolved_max_new != cfg.generation.max_new_tokens or args.max_cache_tokens is not None:
+    if args.topk is not None and args.topk_percent is not None:
+        raise SystemExit("--topk and --topk-percent are mutually exclusive")
+    budget_override = args.topk is not None or args.topk_percent is not None
+    wants_coverage = args.coverage and cfg.semantic != "dense"
+    if (
+        resolved_max_new != cfg.generation.max_new_tokens
+        or args.max_cache_tokens is not None
+        or budget_override
+        or wants_coverage != cfg.coverage_diagnostics
+    ):
         raw = cfg.to_dict()
         raw["generation"]["max_new_tokens"] = resolved_max_new
         if args.max_cache_tokens is not None:
             raw["max_cache_tokens"] = args.max_cache_tokens
+        if args.topk is not None:
+            # A fixed budget and a percent budget are alternatives, not a pair:
+            # leaving the other one set would silently win in effective_topk.
+            raw["selector"]["topk"] = args.topk
+            raw["selector"]["topk_percent"] = None
+            raw["name"] = f"{raw['name']}_k{args.topk}"
+        elif args.topk_percent is not None:
+            raw["selector"]["topk_percent"] = args.topk_percent
+            raw["name"] = f"{raw['name']}_p{args.topk_percent:g}".replace(".", "p")
+        raw["coverage_diagnostics"] = wants_coverage
         cfg = ExperimentConfig.from_dict(raw)
     model, tokenizer = load_fast_dllm(
         args.model,

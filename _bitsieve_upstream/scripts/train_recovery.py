@@ -29,7 +29,7 @@ import math
 import random
 import sys
 import time
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 
 import torch
@@ -127,7 +127,6 @@ def forward_loss(model, peft_model, ex, args, spec, degrade, selector, exact, ge
         s_logits = blockdiff_logits(
             model, ids, masks=masks, degrade=degrade, selector=selector,
             is_masked_token=im, gradient_checkpointing=args.grad_checkpointing,
-            generator=generator,
         )
         if spec["loss"] == "ce":
             loss, n = masked_cross_entropy(
@@ -157,9 +156,20 @@ def heldout_ce(model, examples, args, degrade, selector, *, seed: int = 999) -> 
 
     Re-seeded every call so each evaluation sees the same masking pattern and
     the same noise draw; otherwise the curve is dominated by which tokens
-    happened to be masked.
+    happened to be masked. The degradation noise comes from the default RNG
+    (see blockdiff_attention), so that is forked and seeded too -- and forked
+    rather than just seeded, so scoring does not perturb the training stream.
     """
-    generator = torch.Generator(device=examples[0].input_ids.device).manual_seed(seed)
+    device = examples[0].input_ids.device
+    with torch.random.fork_rng(devices=[device] if device.type == "cuda" else []):
+        torch.manual_seed(seed)
+        return _heldout_ce_inner(model, examples, args, degrade, selector, seed)
+
+
+@torch.no_grad()
+def _heldout_ce_inner(model, examples, args, degrade, selector, seed):
+    device = examples[0].input_ids.device
+    generator = torch.Generator(device=device).manual_seed(seed)
     tot, n = 0.0, 0
     for ex in examples:
         batch = make_noisy_batch(
@@ -172,7 +182,7 @@ def heldout_ce(model, examples, args, degrade, selector, *, seed: int = 999) -> 
         )
         logits = blockdiff_logits(
             model, batch.input_ids, masks=masks, degrade=degrade, selector=selector,
-            is_masked_token=batch.is_masked_token[0], generator=generator,
+            is_masked_token=batch.is_masked_token[0],
         )
         loss, k = masked_cross_entropy(logits, batch.labels)
         if k:
@@ -213,6 +223,16 @@ def main() -> int:
 
     ap.add_argument("--student-cache", choices=("auto", "exact", "noise", "quant"), default="auto")
     ap.add_argument("--student-select", choices=("auto", "on", "off"), default="auto")
+    ap.add_argument(
+        "--train-topk", type=int,
+        help="selector budget to TRAIN at, independent of the config's evaluation "
+             "budget -- this is what makes budget generalization measurable "
+             "(train at one budget, evaluate at others)",
+    )
+    ap.add_argument(
+        "--train-topk-percent", type=float,
+        help="percent-of-prefix training budget; mutually exclusive with --train-topk",
+    )
     ap.add_argument("--noise-calibration", default="results/training_noise_calibration.json")
 
     ap.add_argument("--beta", type=float, default=0.1)
@@ -272,15 +292,35 @@ def main() -> int:
         args.student_cache = "noise" if spec["degrade"] else "exact"
     use_select = spec["select"] if args.student_select == "auto" else (args.student_select == "on")
 
+    if args.train_topk is not None and args.train_topk_percent is not None:
+        print("--train-topk and --train-topk-percent are mutually exclusive")
+        return 1
+
     degrade = build_degradation(cfg, args, degrade=args.student_cache != "exact")
-    selector = cfg.selector if use_select else None
+    train_selector = cfg.selector
+    if args.train_topk is not None or args.train_topk_percent is not None:
+        train_selector = replace(
+            cfg.selector,
+            topk=args.train_topk if args.train_topk is not None else cfg.selector.topk,
+            # A fixed budget and a percent budget are alternatives; leaving the
+            # other set would silently win inside effective_topk.
+            topk_percent=args.train_topk_percent,
+        )
+        shown = (f"topk={args.train_topk}" if args.train_topk is not None
+                 else f"topk_percent={args.train_topk_percent}")
+        print(f"[train] training budget {shown} (evaluation budget stays "
+              f"topk={cfg.selector.topk} pct={cfg.selector.topk_percent})")
+    selector = train_selector if use_select else None
     exact = CacheDegradation(mode="exact")
     # Every branch is scored under the same regime -- the full target cache --
     # so the held-out curves of A/B/C/D/E are directly comparable.
     eval_degrade = build_degradation(
         cfg, argparse.Namespace(**{**vars(args), "student_cache": "quant"}), degrade=True
     )
-    print(f"[train] student loss forward: {asdict(degrade)}, selection={'on' if use_select else 'off'}")
+    print(f"[train] student loss forward: {asdict(degrade)}, "
+          f"selection={'on' if use_select else 'off'}"
+          + (f" @ topk={selector.effective_topk(10**9)}" if selector and selector.topk_percent is None else "")
+          + (f" @ {selector.topk_percent}%" if selector and selector.topk_percent is not None else ""))
 
     if spec["loss"] == "jsd" and not degrade.active and not use_select:
         print(

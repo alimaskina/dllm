@@ -72,6 +72,10 @@ def value_quant_sigma(
     """Per-element std of value rounding error: per token, min/max inside each
     group of ``channel_group`` channels."""
     b, h, t, d = value.shape
+    if d % channel_group:
+        raise ValueError(
+            f"head_dim={d} must be divisible by channel_group={channel_group}"
+        )
     ng = d // channel_group
     x = value.float().reshape(b, h, t, ng, channel_group)
     delta = (x.amax(dim=-1, keepdim=True) - x.amin(dim=-1, keepdim=True)) / _levels(bits)

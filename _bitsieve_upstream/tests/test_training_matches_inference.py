@@ -221,3 +221,44 @@ def test_error_compounds_into_the_cache_by_default() -> None:
     off = build_masks(seq, BLOCK, "cpu", propagate_to_x0=False)
     assert int(on.old_pair.sum()) > int(off.old_pair.sum())
     assert torch.equal(on.visible, off.visible)
+
+
+# --------------------------------------------------------------------------
+# gradient checkpointing
+# --------------------------------------------------------------------------
+def test_noise_survives_gradient_checkpointing() -> None:
+    """The recompute must redraw the *same* noise, or backward differentiates
+    a different function than forward computed.
+
+    ``checkpoint(preserve_rng_state=True)`` restores the default RNG but not a
+    user-supplied generator, so the degradation path must not take one.
+    """
+    from torch.utils.checkpoint import checkpoint
+
+    from bitsieve_fastdllm.training.blockdiff import blockdiff_attention
+
+    blk, n_blocks, d = 32, 3, 64
+    seq = n_blocks * blk
+    s = 2 * seq
+    masks = build_masks(seq, blk, "cpu")
+    is_masked = torch.zeros(s, dtype=torch.bool)
+    is_masked[2 * blk : 3 * blk] = True
+    cfg = CacheDegradation(mode="noise", k_bits=4, v_bits=4)
+
+    def run(use_checkpoint: bool) -> torch.Tensor:
+        torch.manual_seed(7)
+        q = torch.randn(1, 4, s, d, requires_grad=True)
+        k = torch.randn(1, 2, s, d, requires_grad=True)
+        v = torch.randn(1, 2, s, d, requires_grad=True)
+        fn = lambda a, b, c: blockdiff_attention(  # noqa: E731
+            a, b, c, masks, d**-0.5, 2, cfg, None, is_masked
+        )
+        out = checkpoint(fn, q, k, v, use_reentrant=False) if use_checkpoint else fn(q, k, v)
+        out.sum().backward()
+        return k.grad.clone()
+
+    torch.manual_seed(0)
+    plain = run(False)
+    torch.manual_seed(0)
+    ckpt = run(True)
+    assert torch.equal(plain, ckpt), (plain - ckpt).abs().max().item()

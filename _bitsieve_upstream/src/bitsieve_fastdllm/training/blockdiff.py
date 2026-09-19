@@ -178,9 +178,15 @@ def blockdiff_attention(
     degrade: CacheDegradation,
     selector: SelectorConfig | None,
     is_masked_token: torch.Tensor,
-    generator: torch.Generator | None = None,
 ) -> torch.Tensor:
     """Attention where reads that would hit the packed cache use a degraded copy.
+
+    The noise draw deliberately uses the **default** RNG rather than an explicit
+    generator. Gradient checkpointing reruns this function during backward, and
+    ``checkpoint(preserve_rng_state=True)`` restores the default RNG state but
+    not a user-supplied generator -- so an explicit generator would draw fresh
+    noise on the recompute and the backward would differentiate a different
+    function than the forward computed. Measured: max|grad| difference 1.08.
 
     ``query`` [B, Hq, S, D]; ``key``/``value`` [B, Hkv, S, D]; S = 2L.
     With no degradation and no selector this is plain SDPA under the upstream mask.
@@ -197,7 +203,7 @@ def blockdiff_attention(
 
     key_deg = key
     if degrade.degrades_keys and bool(masks.old_pair.any()):
-        key_deg = degrade_keys(key, degrade, generator=generator)
+        key_deg = degrade_keys(key, degrade)
         scores_c = torch.matmul(
             q32, _repeat_kv(key_deg, n_rep).float().transpose(-2, -1)
         ) * scaling
@@ -219,7 +225,7 @@ def blockdiff_attention(
     v_ref = _repeat_kv(value, n_rep).float()
 
     if degrade.degrades_values and bool(masks.old_pair.any()):
-        v_deg = _repeat_kv(degrade_values(value, degrade, generator=generator), n_rep).float()
+        v_deg = _repeat_kv(degrade_values(value, degrade), n_rep).float()
         m = masks.old_pair[None, None].to(probs.dtype)
         out = torch.matmul(probs * (1.0 - m), v_ref) + torch.matmul(probs * m, v_deg)
     else:
@@ -239,7 +245,7 @@ def _rope_fn(base_model):
 
 
 def _attention_forward(attn, hidden_states, cos, sin, masks, degrade, selector,
-                       is_masked_token, apply_rope, generator):
+                       is_masked_token, apply_rope):
     """Reimplementation of ``Fast_dLLM_QwenAttention.forward`` (training geometry).
 
     RoPE is applied to the two halves of the doubled sequence independently with
@@ -260,17 +266,17 @@ def _attention_forward(attn, hidden_states, cos, sin, masks, degrade, selector,
 
     out = blockdiff_attention(
         q, k, v, masks, attn.scaling, attn.num_key_value_groups,
-        degrade, selector, is_masked_token, generator,
+        degrade, selector, is_masked_token,
     )
     return attn.o_proj(out.reshape(b, s, -1))
 
 
 def _layer_forward(layer, hidden_states, cos, sin, masks, degrade, selector,
-                   is_masked_token, apply_rope, generator):
+                   is_masked_token, apply_rope):
     residual = hidden_states
     h = _attention_forward(
         layer.self_attn, layer.input_layernorm(hidden_states), cos, sin,
-        masks, degrade, selector, is_masked_token, apply_rope, generator,
+        masks, degrade, selector, is_masked_token, apply_rope,
     )
     hidden_states = residual + h
     return hidden_states + layer.mlp(layer.post_attention_layernorm(hidden_states))
@@ -285,7 +291,6 @@ def blockdiff_logits(
     selector: SelectorConfig | None,
     is_masked_token: torch.Tensor,
     gradient_checkpointing: bool = True,
-    generator: torch.Generator | None = None,
 ) -> torch.Tensor:
     """Logits over the x_t half of a doubled ``[x_t ; x_0]`` sequence.
 
@@ -302,7 +307,7 @@ def blockdiff_logits(
 
     for layer in base.model.layers:
         args = (layer, h, cos, sin, masks, degrade, selector,
-                is_masked_token, apply_rope, generator)
+                is_masked_token, apply_rope)
         if gradient_checkpointing and torch.is_grad_enabled():
             h = checkpoint(_layer_forward, *args, use_reentrant=False)
         else:
