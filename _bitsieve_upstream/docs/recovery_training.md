@@ -127,6 +127,13 @@ are the identical function, $\mathrm{JSD} \equiv 0$, and the gradient norm is
   step    0  loss -0.0000  tok   738  gnorm 0.000
 ```
 
+Note that C still produces a model that differs from A. The JSD is not *exactly*
+zero -- it is float noise around zero -- so AdamW takes real steps on a gradient
+that carries no signal, and the adapter drifts. In a smoke run all five branches
+generated different text, C included. A small C-vs-A score difference is
+therefore optimizer noise, not recovery, and must not be read as one; the
+gradient norm in `train_log.jsonl` is what tells the two apart.
+
 In GKD the student is a *smaller* model, which is where the signal comes from.
 Under self-distillation the only thing that can separate student from teacher is
 the cache regime. So either keep C as specified and report it as a null cell
