@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from dataclasses import dataclass
 
 import torch
@@ -14,6 +16,7 @@ from ..kernels.ops import (
     quantize_values_into,
     selector_topk,
 )
+from ..eviction import EvictionState, live_cache_nbytes
 from ..reference import sdpa_compact, simulate_key_quantization
 from .trace import CoverageArmRecord, CoverageRecord, RunTrace, RuntimeTimer, SelectionRecord
 
@@ -65,17 +68,76 @@ class BitSieveSession:
         # cache and extended at every block commit, so it mirrors exactly what
         # the packed cache holds.
         self._fp16_key_shadow: dict[int, torch.Tensor] = {}
+        # Eviction: what the cache KEEPS, as opposed to what a block reads.
+        self._eviction: EvictionState | None = None
+        self._next_position = 0     # cache positions admitted so far
+        self._tokens_seen = 0       # what the cache would hold with no eviction
+        self._live_scratch: torch.Tensor | None = None
+        self._live_scratch_v: torch.Tensor | None = None
+        if config.eviction.enabled:
+            self._eviction = EvictionState(
+                num_layers=cache.num_layers,
+                batch_size=cache.batch_size,
+                num_kv_heads=self.num_kv_heads,
+                capacity=config.eviction.capacity_floor,
+                device=cache.device,
+                max_position=config.max_cache_tokens,
+            )
+
         self._selection_stream: torch.cuda.Stream | None = None
-        if cache.device.type == "cuda" and config.async_selector and config.semantic == "A":
-
-
+        if (
+            cache.device.type == "cuda"
+            and config.async_selector
+            and config.semantic == "A"
+            and self._eviction is None
+        ):
+            # Step 0 under eviction attends over a single shared live buffer, so
+            # overlapping layers on a second stream would race on it. Correctness
+            # first; the overlap is an optimization, not a result.
             self._selection_stream = torch.cuda.Stream(device=cache.device)
 
     @property
     def old_cache_len(self) -> int:
         return self.cache.get_seq_length()
 
+    @property
+    def live_cache_len(self) -> int:
+        """Entries that still exist. Equals the cache length without eviction."""
+        if self._eviction is None:
+            return self.old_cache_len
+        return self._eviction.live
+
+    def _admit_new_entries(self) -> None:
+        """Give newly committed cache positions a slot in the live set."""
+        if self._eviction is None:
+            return
+        length = self.cache.get_seq_length()
+        if length > self._next_position:
+            self._eviction.append(
+                torch.arange(self._next_position, length, device=self.cache.device)
+            )
+            self._tokens_seen += length - self._next_position
+            self._next_position = length
+
+    def _live_positions(self, layer_idx: int) -> torch.Tensor:
+        """Physical cache positions still live for one layer. [B, Hkv, live]."""
+        assert self._eviction is not None
+        return self._eviction.pos[layer_idx, ..., : self._eviction.live].to(torch.int64)
+
+    def _live_mask(self, layer_idx: int) -> torch.Tensor:
+        """[B, Hkv, cache_len] -- False on entries this layer has evicted."""
+        assert self._eviction is not None
+        n = self.cache.get_seq_length()
+        mask = torch.zeros(
+            (self.cache.batch_size, self.num_kv_heads, n),
+            dtype=torch.bool,
+            device=self.cache.device,
+        )
+        mask.scatter_(-1, self._live_positions(layer_idx), True)
+        return mask
+
     def begin_block(self, masked_positions: list[int]) -> None:
+        self._admit_new_entries()
         self.block_index += 1
         self.step_index = -1
         self.masked_positions = sorted(set(masked_positions))
@@ -159,6 +221,11 @@ class BitSieveSession:
             return True
         if layer_idx < self.config.selector.dense_prefix_layers:
             return True
+        if self._eviction is not None:
+            # With eviction the cache IS the live set, so even a budget that
+            # covers it must be served from a gather -- the physical dense path
+            # would read entries that no longer exist.
+            return self.live_cache_len == 0 or not self.query_indices
         k = self.config.selector.effective_topk(self.old_cache_len)
         return self.old_cache_len == 0 or k >= self.old_cache_len or not self.query_indices
 
@@ -428,6 +495,11 @@ class BitSieveSession:
                     total += t.numel() * t.element_size()
         return int(total)
 
+    def _effective_budget(self) -> int:
+        """Entries a block may read. Never more than the live set."""
+        live = self.live_cache_len
+        return min(self.config.selector.effective_topk(live), live)
+
     def _select_and_gather(
         self,
         layer_idx: int,
@@ -435,7 +507,7 @@ class BitSieveSession:
         current_key: torch.Tensor,
         state: CompactLayerState,
     ) -> None:
-        k = self.config.selector.effective_topk(self.old_cache_len)
+        k = self._effective_budget()
         view = self.cache.layer_view(layer_idx)
         with self.timer.region(
             "selector",
@@ -446,9 +518,11 @@ class BitSieveSession:
             stream_name="selector" if self._selection_stream is not None else "main",
             stream=self._selection_stream,
         ):
+            live_mask = None if self._eviction is None else self._live_mask(layer_idx)
             selected = selector_topk(
                 query,
                 view,
+                live_mask=live_mask,
                 query_indices=self.query_indices,
                 topk=k,
                 current_key=current_key,
@@ -457,7 +531,7 @@ class BitSieveSession:
                 sort_indices=self.config.selector.sort_indices,
                 scaling=self.head_dim**-0.5,
                 backend=self.config.backend,
-                return_importance=self.config.collect_diagnostics,
+                return_importance=self.config.collect_diagnostics or self._eviction is not None,
                 scratch=self.selector_scratch,
                 kernel_variant=self.config.selector_kernel_variant,
                 logits_dtype=(
@@ -483,6 +557,13 @@ class BitSieveSession:
                 out_key=state.key[:, :, :k, :],
                 out_value=state.value[:, :, :k, :],
             )
+        if self._eviction is not None and selected.importance is not None:
+            # alpha for the live set, in live-slot order. The selector scored
+            # the physical cache, so read it back at the positions this layer
+            # still holds.
+            alpha = selected.importance.gather(-1, self._live_positions(layer_idx))
+            self._eviction.observe(layer_idx, alpha, self.config.eviction.decay)
+
         state.indices = selected.indices
         state.selected_k = k
         if self.config.coverage_diagnostics:
@@ -526,7 +607,7 @@ class BitSieveSession:
         query: torch.Tensor,
         current_key: torch.Tensor,
     ) -> None:
-        k = self.config.selector.effective_topk(self.old_cache_len)
+        k = self._effective_budget()
         state = self._ensure_state(layer_idx, k)
         if state.indices is not None or state.ready_event is not None:
             return
@@ -619,6 +700,14 @@ class BitSieveSession:
     ) -> torch.Tensor:
         if self.old_cache_len == 0:
             return sdpa_compact(query, current_key, current_value)
+        if self._eviction is not None and self.live_cache_len < self.old_cache_len:
+            # Semantic A attends densely at step 0 -- over the *cache*, and
+            # under eviction the cache is the live set. Reading the packed
+            # buffer wholesale would attend to evicted entries and quietly
+            # undo the policy.
+            return self._live_dense_attention(
+                layer_idx, query, current_key, current_value
+            )
         with self.timer.region(
             "dense_packed_attention",
             tensor=query,
@@ -635,6 +724,53 @@ class BitSieveSession:
                 backend=self.config.backend,
                 kernel_variant=self.config.dense_kernel_variant,
             )
+
+    def _live_dense_attention(
+        self,
+        layer_idx: int,
+        query: torch.Tensor,
+        current_key: torch.Tensor,
+        current_value: torch.Tensor,
+    ) -> torch.Tensor:
+        """Dense attention over the live set: gather it, then attend normally."""
+        assert self._eviction is not None
+        live = self._eviction.live
+        ncur = current_key.shape[2]
+        need = live + ncur
+        shape = (self.cache.batch_size, self.num_kv_heads, need, self.head_dim)
+        if self._live_scratch is None or self._live_scratch.shape[2] < need:
+            self._live_scratch = torch.empty(
+                shape, device=self.cache.device, dtype=self.compute_dtype
+            )
+            self._live_scratch_v = torch.empty_like(self._live_scratch)
+        key_buf = self._live_scratch[:, :, :need, :]
+        value_buf = self._live_scratch_v[:, :, :need, :]
+
+        with self.timer.region(
+            "live_gather_dequant",
+            tensor=query,
+            layer=layer_idx,
+            block=self.block_index,
+            step=self.step_index,
+        ):
+            gather_packed_kv(
+                self.cache.layer_view(layer_idx),
+                self._live_positions(layer_idx).to(torch.int32),
+                dtype=self.compute_dtype,
+                backend=self.config.backend,
+                out_key=key_buf[:, :, :live, :],
+                out_value=value_buf[:, :, :live, :],
+            )
+        key_buf[:, :, live:need, :].copy_(current_key.to(self.compute_dtype))
+        value_buf[:, :, live:need, :].copy_(current_value.to(self.compute_dtype))
+        with self.timer.region(
+            "live_dense_attention",
+            tensor=query,
+            layer=layer_idx,
+            block=self.block_index,
+            step=self.step_index,
+        ):
+            return sdpa_compact(query.to(self.compute_dtype), key_buf, value_buf)
 
     def attend(
         self,
@@ -695,6 +831,63 @@ class BitSieveSession:
     def end_block(self) -> None:
         self.finish_step0()
         self.commit_current = False
+        if self._eviction is not None:
+            self._admit_new_entries()
+            cfg = self.config.eviction
+            before = self._eviction.live
+            if self._eviction.maybe_evict(
+                cfg, block_index=self.block_index, tokens_seen=self._tokens_seen
+            ) is not None:
+                self.trace.add_counter("evictions", 1)
+                self.trace.add_counter("entries_evicted", before - self._eviction.live)
+
+    def eviction_metrics(self) -> dict[str, Any]:
+        """What the policy kept, and what that costs. {} when eviction is off."""
+        if self._eviction is None:
+            return {}
+        st = self._eviction
+        cache_bytes = live_cache_nbytes(
+            st.pos,
+            live=st.live,
+            head_dim=self.head_dim,
+            k_bits=self.config.quant.k_bits,
+            v_bits=self.config.quant.v_bits,
+            key_token_group=self.config.quant.key_token_group,
+            value_channel_group=self.config.quant.value_channel_group,
+            param_bytes=torch.tensor([], dtype=self.cache.param_dtype).element_size(),
+            compute_bytes=torch.tensor([], dtype=self.compute_dtype).element_size(),
+        )
+        state_bytes = st.state_nbytes()
+        # What the same run would hold with no eviction: every token it ever saw.
+        full = live_cache_nbytes(
+            torch.arange(self._tokens_seen, device=st.pos.device, dtype=st.pos.dtype)
+            .view(1, 1, 1, -1)
+            .expand(st.num_layers, st.batch_size, st.num_kv_heads, self._tokens_seen)
+            .contiguous(),
+            live=self._tokens_seen,
+            head_dim=self.head_dim,
+            k_bits=self.config.quant.k_bits,
+            v_bits=self.config.quant.v_bits,
+            key_token_group=self.config.quant.key_token_group,
+            value_channel_group=self.config.quant.value_channel_group,
+            param_bytes=torch.tensor([], dtype=self.cache.param_dtype).element_size(),
+            compute_bytes=torch.tensor([], dtype=self.compute_dtype).element_size(),
+        ) if self._tokens_seen else 0
+        total = cache_bytes + state_bytes
+        return {
+            "eviction_policy": self.config.eviction.policy,
+            "eviction_live_entries": st.live,
+            "eviction_tokens_seen": self._tokens_seen,
+            "eviction_capacity": self.config.eviction.capacity(self._tokens_seen),
+            "eviction_cache_bytes": cache_bytes,
+            "eviction_state_bytes": state_bytes,
+            "eviction_total_bytes": total,
+            "eviction_unevicted_bytes": full,
+            # The number the study reports: what the bounded cache costs against
+            # the same run keeping everything, policy overhead included.
+            "eviction_bytes_vs_unevicted": (total / full) if full else None,
+            "eviction_state_overhead": (state_bytes / cache_bytes) if cache_bytes else None,
+        }
 
     def finalize_trace(self) -> RunTrace:
         self.timer.finalize()

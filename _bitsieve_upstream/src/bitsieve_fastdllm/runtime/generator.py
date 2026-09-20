@@ -371,6 +371,7 @@ class BitSieveGenerator:
             "packed_cache": memory,
             "compact_cache_bytes": compact_bytes,
             "resident_cache_bytes": resident_bytes,
+            **session.eviction_metrics(),
             "dense_cache_equivalent_bytes": int(dense_equivalent),
             "cache_compression_ratio": (
                 dense_equivalent / resident_bytes if resident_bytes else None

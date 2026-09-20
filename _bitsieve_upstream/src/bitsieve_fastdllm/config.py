@@ -9,6 +9,10 @@ from typing import Any, Literal
 
 import yaml
 
+# One definition, in the module that implements the policy. A second copy here
+# would drift the moment either side gained a field.
+from .eviction import EvictionConfig  # noqa: F401  (re-exported for configs)
+
 Semantic = Literal["dense", "A", "B"]
 SelectorMode = Literal["all", "middle", "uniform"]
 SelectorDomain = Literal["prefix", "full"]
@@ -159,6 +163,7 @@ class ExperimentConfig:
     quant: QuantizationConfig = field(default_factory=QuantizationConfig)
     selector: SelectorConfig = field(default_factory=SelectorConfig)
     generation: GenerationConfig = field(default_factory=GenerationConfig)
+    eviction: EvictionConfig = field(default_factory=EvictionConfig)
     engine: Engine = "bitsieve"
     backend: Backend = "auto"
     async_selector: bool = True
@@ -207,6 +212,13 @@ class ExperimentConfig:
         if self.engine == "official" and self.semantic != "dense":
             raise ValueError("the official engine is only valid for the dense baseline")
         self.generation.validate()
+        self.eviction.validate()
+        if self.eviction.enabled and self.semantic == "dense":
+            raise ValueError(
+                "eviction needs a selector: the dense engine reads the whole "
+                "prefix, so evicting from it would change what the model sees "
+                "with nothing deciding what to keep"
+            )
         self.quant.validate(head_dim=head_dim)
         self.selector.validate(
             block_size=self.generation.block_size,
@@ -263,7 +275,11 @@ class ExperimentConfig:
         quant = QuantizationConfig(**data.pop("quant", {}))
         selector = SelectorConfig(**data.pop("selector", {}))
         generation = GenerationConfig(**data.pop("generation", {}))
-        cfg = cls(quant=quant, selector=selector, generation=generation, **data)
+        eviction = EvictionConfig(**data.pop("eviction", {}))
+        cfg = cls(
+            quant=quant, selector=selector, generation=generation,
+            eviction=eviction, **data,
+        )
         cfg.validate()
         return cfg
 

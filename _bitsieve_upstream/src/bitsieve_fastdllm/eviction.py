@@ -247,3 +247,54 @@ class EvictionState:
             self.g.element_size() + self.n.element_size() + self.pos.element_size()
         )
         return self.num_layers * self.batch_size * self.num_kv_heads * self.live * per_entry
+
+
+def live_cache_nbytes(
+    pos: torch.Tensor,
+    *,
+    live: int,
+    head_dim: int,
+    k_bits: int,
+    v_bits: int,
+    key_token_group: int,
+    value_channel_group: int,
+    param_bytes: int = 2,
+    compute_bytes: int = 2,
+) -> int:
+    """Bytes a cache holding exactly this live set would occupy.
+
+    ``pos``: [L, B, Hkv, capacity] -- the live positions, of which the first
+    ``live`` are valid.
+
+    Keys are quantized per 32-token *group*, so an entry carries a reference to
+    its group's scale vector rather than a scale of its own. A group therefore
+    survives as long as any one of its entries does, and the metadata is counted
+    per surviving group, not per surviving entry -- which is why a policy that
+    keeps a contiguous tail is cheaper per entry than one that keeps a scatter.
+    """
+    if live <= 0:
+        return 0
+    l, b, h = pos.shape[0], pos.shape[1], pos.shape[2]
+    live_pos = pos[..., :live]
+
+    if k_bits >= 16:
+        k_payload = l * b * h * live * head_dim * compute_bytes
+        k_meta = 0
+    else:
+        k_payload = l * b * h * live * head_dim * k_bits // 8
+        groups = torch.unique(live_pos // key_token_group, dim=-1)
+        # unique() pads with repeats per row, so count distinct values per row.
+        n_groups = 0
+        flat = (live_pos // key_token_group).reshape(-1, live)
+        for row in flat:
+            n_groups += int(torch.unique(row).numel())
+        k_meta = n_groups * head_dim * 2 * param_bytes
+
+    if v_bits >= 16:
+        v_payload = l * b * h * live * head_dim * compute_bytes
+        v_meta = 0
+    else:
+        v_payload = l * b * h * live * head_dim * v_bits // 8
+        v_meta = l * b * h * live * (head_dim // value_channel_group) * 2 * param_bytes
+
+    return k_payload + k_meta + v_payload + v_meta
