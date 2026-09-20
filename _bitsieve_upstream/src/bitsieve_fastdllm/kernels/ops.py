@@ -342,6 +342,7 @@ def selector_topk(
     sort_indices: bool = True,
     scaling: float | None = None,
     backend: Backend = "auto",
+    live_mask: torch.Tensor | None = None,
     return_importance: bool = False,
     scratch: SelectorScratch | None = None,
     kernel_variant: str = "blocked",
@@ -368,8 +369,15 @@ def selector_topk(
             domain=domain,
             score_kind=score_kind,
             scale=scaling,
+            live_mask=live_mask,
         )
-        values, indices = torch.topk(importance, k=k, dim=-1, sorted=False)
+        # The masked softmax already puts exact zeros on dead entries, which is
+        # what importance means -- a probability. -inf is only for ranking, so
+        # a dead entry can never be selected even if every live one scores 0.
+        rank_on = importance if live_mask is None else importance.masked_fill(
+            ~live_mask, float("-inf")
+        )
+        values, indices = torch.topk(rank_on, k=k, dim=-1, sorted=False)
     else:
         b, hkv, r, d = qrep.shape
         n = view.length
@@ -447,6 +455,13 @@ def selector_topk(
             num_stages=2,
         )
 
+        if live_mask is not None:
+            # Evicted entries do not exist at inference, so they must not sit in
+            # the softmax denominator either -- masking after the fact would
+            # leave every live alpha scaled down by whatever the dead entries
+            # still carried. [B,Hkv,n] broadcasts over the R representatives.
+            logits.masked_fill_(~live_mask.unsqueeze(2), float("-inf"))
+
         se = _strides(lse, 3)
         if score_kind == "softmax":
             triton_ops.row_logsumexp_kernel[(b * hkv * r,)](
@@ -491,7 +506,10 @@ def selector_topk(
             SOFTMAX=score_kind == "softmax",
             num_warps=4,
         )
-        values, indices = torch.topk(importance, k=k, dim=-1, sorted=False)
+        rank_on = importance if live_mask is None else importance.masked_fill(
+            ~live_mask, float("-inf")
+        )
+        values, indices = torch.topk(rank_on, k=k, dim=-1, sorted=False)
 
     if sort_indices:
         indices, order = torch.sort(indices, dim=-1)
@@ -781,17 +799,13 @@ def selector_topk(
     sort_indices: bool = True,
     scaling: float | None = None,
     backend: Backend = "auto",
+    live_mask: torch.Tensor | None = None,
     return_importance: bool = False,
     scratch: SelectorScratch | None = None,
     kernel_variant: str = "blocked",
     logits_dtype: torch.dtype = torch.float16,
 ) -> SelectorResult:
-    from .cuda_fast import maybe_fast_selector
-
-    return maybe_fast_selector(
-        _base_selector_topk,
-        query,
-        view,
+    common = dict(
         query_indices=query_indices,
         topk=topk,
         current_key=current_key,
@@ -800,11 +814,22 @@ def selector_topk(
         sort_indices=sort_indices,
         scaling=scaling,
         backend=backend,
+        live_mask=live_mask,
         return_importance=return_importance,
         scratch=scratch,
         kernel_variant=kernel_variant,
         logits_dtype=logits_dtype,
     )
+    if live_mask is not None:
+        # The hand-written CUDA selector has no notion of a live set, and it
+        # accepts the argument silently rather than refusing it -- so routing an
+        # eviction run through it would score dead entries as if they were still
+        # there. Take the Triton path, which masks the logits before the softmax.
+        return _base_selector_topk(query, view, **common)
+
+    from .cuda_fast import maybe_fast_selector
+
+    return maybe_fast_selector(_base_selector_topk, query, view, **common)
 
 
 def gather_packed_kv(

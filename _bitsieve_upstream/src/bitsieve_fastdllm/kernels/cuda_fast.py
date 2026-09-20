@@ -2681,10 +2681,49 @@ def _fast_selector_impl(
     )
 
 
+# Every selector argument the fast path understands. _parse_selector_call picks
+# these out by name and ignores whatever is left, so an option added to
+# selector_topk would be honoured on the Triton path and silently dropped here --
+# correct-looking numbers computed against the wrong contract. Anything outside
+# this set makes the fast path decline instead of guess.
+_KNOWN_SELECTOR_ARGS = frozenset(
+    {
+        "query", "q", "queries",
+        "cache", "cache_view", "layer_view", "view", "old_cache",
+        "current_key", "current_k", "k_current", "k_cur",
+        "query_indices", "selector_queries", "representative_indices",
+        "representative_query_indices",
+        "mode", "selector_mode",
+        "uniform_queries", "uniform_n", "num_selector_queries",
+        "topk", "top_k", "k", "selected_k", "budget",
+        "domain", "selector_domain",
+        "score", "score_mode", "selector_score",
+        "scaling", "scale", "sm_scale",
+        "sort_indices", "sorted_indices",
+        "logits_dtype", "selector_logits_dtype",
+        "return_importance",
+        "backend",
+        "kernel_variant", "selector_kernel_variant", "variant",
+        "scratch",
+    }
+)
+
+
+def _unsupported_selector_args(bound: Mapping[str, Any]) -> list[str]:
+    return sorted(
+        name
+        for name, value in bound.items()
+        if str(name).lower() not in _KNOWN_SELECTOR_ARGS and value is not None
+    )
+
+
 def _parse_selector_call(
     original: Callable[..., Any], args: tuple[Any, ...], kwargs: dict[str, Any]
 ) -> dict[str, Any] | None:
     bound = _bind_arguments(original, args, kwargs)
+    unsupported = _unsupported_selector_args(bound)
+    if unsupported:
+        return None
     query = _pick_named(bound, ("query", "q", "queries"))
     view = _pick_named(bound, ("cache", "cache_view", "layer_view", "view", "old_cache"))
     current_key = _pick_named(bound, ("current_key", "current_k", "k_current", "k_cur"))

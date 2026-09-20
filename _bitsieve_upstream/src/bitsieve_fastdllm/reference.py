@@ -324,7 +324,14 @@ def selector_importance_reference(
     domain: str = "prefix",
     score_kind: str = "softmax",
     scale: float | None = None,
+    live_mask: torch.Tensor | None = None,
 ) -> torch.Tensor:
+    """``live_mask`` [B, Hkv, N]: False marks entries evicted from the cache.
+
+    They are removed before the softmax, not after: an entry that no longer
+    exists must not contribute to the normalizer, or every surviving alpha is
+    scaled down by mass that went nowhere.
+    """
     if not query_indices:
         raise ValueError("query_indices cannot be empty")
     b, hq, _, d = query.shape
@@ -335,6 +342,10 @@ def selector_importance_reference(
     q = query[:, :, query_indices, :].reshape(b, hkv, g, len(query_indices), d)
     logits_old = torch.einsum("bhgmd,bhnd->bhgmn", q.float(), old_key.float())
     logits_old = logits_old * (scale if scale is not None else d**-0.5)
+    if live_mask is not None:
+        logits_old = logits_old.masked_fill(
+            ~live_mask[:, :, None, None, :], float("-inf")
+        )
 
     if score_kind == "raw":
         return logits_old.mean(dim=(2, 3))
