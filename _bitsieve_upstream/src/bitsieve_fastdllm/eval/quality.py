@@ -55,6 +55,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="override the selector budget with a percent of the live prefix; "
              "clears topk.",
     )
+    p.add_argument("--k-bits", type=int, choices=(2, 4, 16),
+                   help="override the persistent key width")
+    p.add_argument("--v-bits", type=int, choices=(2, 4, 16),
+                   help="override the persistent value width")
+    p.add_argument("--eviction-policy", choices=("none", "recent", "ema_recent"),
+                   help="what the cache keeps, as opposed to what a block reads")
+    p.add_argument("--eviction-capacity-floor", type=int)
+    p.add_argument("--eviction-capacity-percent", type=float)
+    p.add_argument("--eviction-window", type=int, help="W, the protected tail")
+    p.add_argument("--eviction-decay", type=float, help="lambda in the EMA")
+    p.add_argument("--eviction-interval", type=int, help="blocks between evictions")
     p.add_argument(
         "--coverage", action="store_true",
         help="score the selection against an fp16 all-masked-query reference "
@@ -91,11 +102,23 @@ def main(argv: list[str] | None = None) -> None:
     if args.topk is not None and args.topk_percent is not None:
         raise SystemExit("--topk and --topk-percent are mutually exclusive")
     budget_override = args.topk is not None or args.topk_percent is not None
+    evict_override = {
+        "policy": args.eviction_policy,
+        "capacity_floor": args.eviction_capacity_floor,
+        "capacity_percent": args.eviction_capacity_percent,
+        "recent_window": args.eviction_window,
+        "decay": args.eviction_decay,
+        "interval_blocks": args.eviction_interval,
+    }
+    evict_override = {k: v for k, v in evict_override.items() if v is not None}
+    bits_override = args.k_bits is not None or args.v_bits is not None
     wants_coverage = args.coverage and cfg.semantic != "dense"
     if (
         resolved_max_new != cfg.generation.max_new_tokens
         or args.max_cache_tokens is not None
         or budget_override
+        or evict_override
+        or bits_override
         or wants_coverage != cfg.coverage_diagnostics
     ):
         raw = cfg.to_dict()
@@ -111,6 +134,15 @@ def main(argv: list[str] | None = None) -> None:
         elif args.topk_percent is not None:
             raw["selector"]["topk_percent"] = args.topk_percent
             raw["name"] = f"{raw['name']}_p{args.topk_percent:g}".replace(".", "p")
+        if args.k_bits is not None:
+            raw["quant"]["k_bits"] = args.k_bits
+        if args.v_bits is not None:
+            raw["quant"]["v_bits"] = args.v_bits
+        if bits_override:
+            raw["name"] = f"{raw['name']}_k{raw['quant']['k_bits']}v{raw['quant']['v_bits']}"
+        if evict_override:
+            raw.setdefault("eviction", {}).update(evict_override)
+            raw["name"] = f"{raw['name']}_ev-{raw['eviction'].get('policy', 'none')}"
         raw["coverage_diagnostics"] = wants_coverage
         cfg = ExperimentConfig.from_dict(raw)
     model, tokenizer = load_fast_dllm(
