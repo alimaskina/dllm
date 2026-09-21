@@ -104,6 +104,11 @@ def encode_prompt(
             ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=True).input_ids
     else:
         ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=True).input_ids
+    # transformers 4.x hands back a tensor here; 5.x hands back a BatchEncoding.
+    # Unwrap rather than pin, so one prompt path serves both -- Fast-dLLM-v2
+    # requires 4.53 and DreamReasoner requires 5.x.
+    if not isinstance(ids, torch.Tensor):
+        ids = ids["input_ids"]
     if ids.shape[1] > max_input_tokens:
 
 

@@ -28,7 +28,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-SPARSE_CONFIG = "configs/proposed_a_k4v4_p5.yaml"
+# A FIXED selector budget, not a percent one. 5% of a MATH-500 prefix is 19-52
+# tokens while the problem statement alone runs 63-388, so a percent budget
+# hides the question from the model and collapses the score for reasons that
+# have nothing to do with eviction (the same trap scripts/run_suite.py warns
+# about). At this budget selection barely bites on these lengths, which is what
+# makes eviction the variable under test rather than a confound.
+SPARSE_CONFIG = "configs/proposed_a_k4v4_k512.yaml"
+DEFAULT_TOPK = 512
 DENSE_CONFIG = "configs/official_dense_bf16.yaml"
 POLICIES = ("none", "recent", "ema_recent")
 WIDTHS = (("bf16", 16, 16), ("k4v4", 4, 4))
@@ -85,6 +92,7 @@ def run(args) -> int:
                     "--eviction-window", str(args.window),
                     "--eviction-decay", str(args.decay),
                     "--eviction-interval", str(args.interval),
+                    "--topk", str(args.topk),
                     "--coverage"]
         print(f"\n== {c['arm']}")
         r = subprocess.run(cmd, cwd=ROOT, env={**os.environ, "PYTHONPATH": str(ROOT / "src")})
@@ -148,6 +156,9 @@ def main() -> int:
     r.add_argument("--window", type=int, default=128)
     r.add_argument("--decay", type=float, default=0.9)
     r.add_argument("--interval", type=int, default=4)
+    r.add_argument("--topk", type=int, default=DEFAULT_TOPK,
+                   help="fixed selector budget; a percent budget is the wrong "
+                        "axis on short math prompts")
     r.add_argument("--out", required=True)
     r.add_argument("--overwrite", action="store_true")
     r.add_argument("--arms", help="comma-separated subset, to split across GPUs")

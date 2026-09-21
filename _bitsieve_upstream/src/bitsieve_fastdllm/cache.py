@@ -349,11 +349,23 @@ class PackedKVCache:
         self.begin_append(length)
         try:
             for layer_idx in range(self.num_layers):
+                # Three cache APIs across the transformers versions this has
+                # to serve: tuple indexing, the key_cache/value_cache lists,
+                # and (5.x) layers[i].keys / .values.
+                key = value = None
                 try:
                     key, value = dynamic_cache[layer_idx]
                 except Exception:
-                    key = dynamic_cache.key_cache[layer_idx]
-                    value = dynamic_cache.value_cache[layer_idx]
+                    if hasattr(dynamic_cache, "key_cache"):
+                        key = dynamic_cache.key_cache[layer_idx]
+                        value = dynamic_cache.value_cache[layer_idx]
+                    else:
+                        layer = dynamic_cache.layers[layer_idx]
+                        key, value = layer.keys, layer.values
+                if key is None or value is None:
+                    raise TypeError(
+                        f"cannot read layer {layer_idx} out of {type(dynamic_cache).__name__}"
+                    )
                 self.stage_layer(
                     layer_idx,
                     key[..., :length, :].contiguous(),
