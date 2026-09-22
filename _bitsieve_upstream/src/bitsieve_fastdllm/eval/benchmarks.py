@@ -166,8 +166,23 @@ def competition_math_prompt(problem: str) -> str:
     )
 
 
-def load_math500(limit: int | None = None, split: str = "test") -> list[BenchmarkExample]:
+def load_math500(
+    limit: int | None = None,
+    split: str = "test",
+    *,
+    min_level: int | None = None,
+) -> list[BenchmarkExample]:
+    """MATH-500, optionally restricted to problems at or above ``min_level``.
+
+    The full set averages short, easy problems together with hard ones, and the
+    mean hides both: on DreamReasoner levels 1-3 score 0.60-0.92 with a 450-580
+    token context, while level 5 scores 0.53 with a median of 1760. A method
+    that only bites on long contexts is therefore measured mostly on problems
+    where it cannot bite at all. `math500_l5` is that subset, 134 problems.
+    """
     ds = _load_hf("HuggingFaceH4/MATH-500", None, split)
+    if min_level is not None:
+        ds = [r for r in ds if int(r.get("level") or 0) >= min_level]
     out = []
     for idx, row in _take(ds, limit):
         problem = row.get("problem") or row.get("question")
@@ -529,11 +544,21 @@ def build_niah(
 # Math needs room for a full chain of thought: a truncated CoT never emits its
 # \boxed{...}, and the grader then falls back to "last number in the text",
 # which scores by accident rather than by reasoning.
-MATH_BENCHMARKS = frozenset({"gsm8k", "math500", "math-500"})
+MATH_BENCHMARKS = frozenset({
+    "gsm8k", "math500", "math-500",
+    "math500_l5", "math500-l5", "math500_l45", "math500-l45",
+})
 DEFAULT_MAX_NEW_TOKENS = 512
 MAX_NEW_TOKENS = {
     "gsm8k": 2048,
     "math500": 2048,
+    # The level-restricted subsets are the *hardest* problems, so they need at
+    # least the full budget -- falling through to the 512-token default would
+    # truncate exactly the long reasoning they exist to measure.
+    "math500_l5": 2048,
+    "math500-l5": 2048,
+    "math500_l45": 2048,
+    "math500-l45": 2048,
     "math-500": 2048,
     "niah": 64,
     "longbench_v2": 128,
@@ -583,6 +608,10 @@ def load_benchmark(
         return load_gsm8k(limit, split)
     if key in {"math500", "math-500"}:
         return load_math500(limit, split)
+    if key in {"math500_l5", "math500-l5"}:
+        return load_math500(limit, split, min_level=5)
+    if key in {"math500_l45", "math500-l45"}:
+        return load_math500(limit, split, min_level=4)
     if key in LONG_BENCH_CONFIGS:
         return load_longbench(key, limit, split)
     if key in {"longbench_v2", "longbench-v2", "lbv2"}:
