@@ -383,6 +383,18 @@ class BitSieveGenerator:
             # bite until the prefix outgrows it, so these must be read before
             # any sparse-vs-dense quality claim.
             "blocks_sparse": int(sparse_blocks),
+            **(
+                {
+                    "value_rescore_calls": int(counters["value_rescore_calls"]),
+                    "value_rescore_kept": (
+                        counters["value_rescore_kept_ppm"]
+                        / counters["value_rescore_calls"]
+                        / 1e6
+                    ),
+                }
+                if counters.get("value_rescore_calls")
+                else {}
+            ),
             "blocks_dense_bypass": int(bypass_blocks),
             "sparse_block_fraction": (sparse_blocks / selectable if selectable else None),
             "sparse_layer_step_fraction": (

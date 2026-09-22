@@ -348,3 +348,43 @@ def test_the_cuda_fast_path_refuses_arguments_it_does_not_understand() -> None:
     assert call(live_mask=torch.ones(1, 2, 16, dtype=torch.bool)) is None
     assert call(some_future_option=3) is None
     assert call(live_mask=None) is not None or True   # None means "not set"
+
+
+# -- value-aware policy ----------------------------------------------------
+def test_value_policy_is_accepted_and_shares_the_window_rule():
+    cfg = EvictionConfig(policy="ema_recent_value", recent_window=128, capacity_floor=256)
+    cfg.validate()
+    # the recent_window <= capacity_floor guard must cover the value variant too,
+    # otherwise the protected tail alone could fill the budget
+    bad = EvictionConfig(policy="ema_recent_value", recent_window=512, capacity_floor=256)
+    with pytest.raises(ValueError, match="recent_window"):
+        bad.validate()
+
+
+def test_value_policy_demands_the_spread_it_ranks_on():
+    st = EvictionState(num_layers=1, batch_size=1, num_kv_heads=1, capacity=8, device="cpu")
+    st.append(torch.arange(8).view(1, 8).expand(1, 8))
+    cfg = EvictionConfig(policy="ema_recent_value", recent_window=0, capacity_floor=4)
+    with pytest.raises(ValueError, match="value_spread"):
+        st.survivors(cfg, capacity=4)
+    with pytest.raises(ValueError, match="shape"):
+        st.survivors(cfg, capacity=4, value_spread=torch.ones(1, 1, 1, 3))
+
+
+def test_value_spread_can_outvote_the_ema():
+    """An entry attended to but redundant loses its slot to a distinctive one."""
+    st = EvictionState(num_layers=1, batch_size=1, num_kv_heads=1, capacity=4, device="cpu")
+    st.append(torch.arange(4).view(1, 4).expand(1, 4))
+    # entry 0 carries the attention mass, entry 3 the distinctive value
+    st.g[0, :, :, :4] = torch.tensor([0.9, 0.1, 0.1, 0.2])
+    st.n[0, :, :, :4] = 1
+    cfg = EvictionConfig(policy="ema_recent_value", recent_window=0, capacity_floor=1,
+                         capacity_percent=100.0)
+
+    flat = torch.ones(1, 1, 1, 4)
+    by_ema = st.survivors(cfg, capacity=1, value_spread=flat)
+    assert by_ema.flatten().tolist() == [0]
+
+    spread = torch.tensor([0.1, 1.0, 1.0, 9.0]).view(1, 1, 1, 4)
+    by_value = st.survivors(cfg, capacity=1, value_spread=spread)
+    assert by_value.flatten().tolist() == [3]

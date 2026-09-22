@@ -71,6 +71,10 @@ class SelectorConfig:
     score: SelectorScore = "softmax"
     dense_prefix_layers: int = 2
     sort_indices: bool = True
+    # Rank candidates by importance * ||v - v_head_mean|| instead of importance
+    # alone: an entry earns a slot only if it is both attended to and says
+    # something the head's average value does not already say.
+    value_aware: bool = False
 
     def validate(self, *, block_size: int | None = None, num_layers: int | None = None) -> None:
         if self.mode not in ("all", "middle", "uniform"):

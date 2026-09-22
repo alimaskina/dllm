@@ -40,11 +40,11 @@ buffers are preallocated.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal
+from typing import Callable, Literal
 
 import torch
 
-Policy = Literal["none", "recent", "ema_recent"]
+Policy = Literal["none", "recent", "ema_recent", "ema_recent_value"]
 
 
 @dataclass(slots=True)
@@ -61,7 +61,7 @@ class EvictionConfig:
         return self.policy != "none"
 
     def validate(self) -> None:
-        if self.policy not in ("none", "recent", "ema_recent"):
+        if self.policy not in ("none", "recent", "ema_recent", "ema_recent_value"):
             raise ValueError(f"unknown eviction policy: {self.policy}")
         if not 0.0 <= self.decay < 1.0:
             raise ValueError(f"decay must be in [0, 1), got {self.decay}")
@@ -73,7 +73,7 @@ class EvictionConfig:
             raise ValueError("capacity_percent must be in (0, 100]")
         if self.interval_blocks <= 0:
             raise ValueError("interval_blocks must be positive")
-        if self.policy == "ema_recent" and self.recent_window > self.capacity_floor:
+        if self.policy.startswith("ema_recent") and self.recent_window > self.capacity_floor:
             raise ValueError(
                 f"recent_window={self.recent_window} exceeds capacity_floor="
                 f"{self.capacity_floor}; the window alone would fill the budget "
@@ -187,14 +187,26 @@ class EvictionState:
         return torch.where(n > 0, g / denom.clamp_min(1e-8), torch.zeros_like(g))
 
     # -- eviction ----------------------------------------------------------
-    def survivors(self, cfg: EvictionConfig, capacity: int) -> torch.Tensor:
-        """Indices into the live axis to keep. [L, B, Hkv, capacity], sorted by pos."""
+    def survivors(
+        self,
+        cfg: EvictionConfig,
+        capacity: int,
+        value_spread: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        """Indices into the live axis to keep. [L, B, Hkv, capacity], sorted by pos.
+
+        ``value_spread``: [L, B, Hkv, live] -- ||v_i - v_head_mean|| for every
+        live entry, required by ``ema_recent_value`` and ignored otherwise. The
+        EMA contest then ranks on ghat * spread rather than ghat alone: an entry
+        is worth keeping only if it is both attended to *and* says something the
+        head's average value does not already say.
+        """
         sl = slice(0, self.live)
         pos = self.pos[..., sl]
 
         if cfg.policy == "recent":
             keep = pos.topk(capacity, dim=-1).indices
-        elif cfg.policy == "ema_recent":
+        elif cfg.policy in ("ema_recent", "ema_recent_value"):
             w = min(cfg.recent_window, capacity)
             recent = pos.topk(w, dim=-1).indices if w else None
             rest = capacity - w
@@ -202,6 +214,18 @@ class EvictionState:
                 ghat = torch.stack(
                     [self.corrected(l, cfg.decay) for l in range(self.num_layers)], dim=0
                 )
+                if cfg.policy == "ema_recent_value":
+                    if value_spread is None:
+                        raise ValueError(
+                            "policy ema_recent_value needs value_spread; the caller "
+                            "must supply per-entry ||v - vbar||"
+                        )
+                    if value_spread.shape != ghat.shape:
+                        raise ValueError(
+                            f"value_spread has shape {tuple(value_spread.shape)} but "
+                            f"the live EMA is {tuple(ghat.shape)}"
+                        )
+                    ghat = ghat * value_spread.to(ghat.dtype)
                 if recent is not None:
                     # Exclude the window from the EMA contest; an entry must not
                     # be able to win a slot it already holds.
@@ -226,7 +250,12 @@ class EvictionState:
         self.live = c
 
     def maybe_evict(
-        self, cfg: EvictionConfig, *, block_index: int, tokens_seen: int
+        self,
+        cfg: EvictionConfig,
+        *,
+        block_index: int,
+        tokens_seen: int,
+        value_spread_fn: "Callable[[], torch.Tensor] | None" = None,
     ) -> torch.Tensor | None:
         """Evict on schedule. Returns the survivor indices, or None if nothing ran."""
         if not cfg.enabled or self.live == 0:
@@ -236,7 +265,12 @@ class EvictionState:
         capacity = cfg.capacity(tokens_seen)
         if self.live <= capacity:
             return None
-        keep = self.survivors(cfg, capacity)
+        spread = None
+        if cfg.policy == "ema_recent_value":
+            if value_spread_fn is None:
+                raise ValueError("policy ema_recent_value needs a value_spread_fn")
+            spread = value_spread_fn()
+        keep = self.survivors(cfg, capacity, spread)
         self.compact(keep)
         return keep
 

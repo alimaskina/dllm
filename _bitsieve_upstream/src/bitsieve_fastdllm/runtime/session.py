@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from dataclasses import dataclass
+from dataclasses import replace, dataclass
 
 import torch
 
@@ -90,6 +90,7 @@ class BitSieveSession:
             and config.async_selector
             and config.semantic == "A"
             and self._eviction is None
+            and not config.selector.value_aware
         ):
             # Step 0 under eviction attends over a single shared live buffer, so
             # overlapping layers on a second stream would race on it. Correctness
@@ -500,6 +501,39 @@ class BitSieveSession:
         live = self.live_cache_len
         return min(self.config.selector.effective_topk(live), live)
 
+    def _rescore_by_value(self, layer_idx, selected, k, live_mask):
+        """Re-rank the candidates by importance * ||v - v_head_mean||.
+
+        The plain selector keeps whatever the attention mass alone points at.
+        This weighs each candidate by how far its value sits from the head's
+        mean value, so an entry that is attended to but carries the same thing
+        the head already averages in loses its slot to one that does not.
+
+        Also counts how much this actually changes the kept set, because a
+        rescoring that reorders nothing cannot change the output either.
+        """
+        imp = selected.importance
+        if imp is None:
+            raise ValueError("value_aware selection needs the selector's importance")
+        n = imp.shape[-1]
+        _, value = self.cache.dequantize_layer(layer_idx)
+        v = value[:, :, :n, :].to(torch.float32)
+        spread = (v - v.mean(dim=2, keepdim=True)).norm(dim=-1)
+        score = imp.to(torch.float32) * spread
+        if live_mask is not None:
+            score = score.masked_fill(~live_mask[..., :n], float("-inf"))
+        idx = torch.topk(score, k, dim=-1).indices
+        if self.config.selector.sort_indices:
+            idx = idx.sort(dim=-1).values
+        old = selected.indices
+        if old is not None and old.shape == idx.shape:
+            same = (
+                (idx.unsqueeze(-1) == old.unsqueeze(-2)).any(dim=-1).to(torch.float32).mean()
+            )
+            self.trace.add_counter("value_rescore_calls", 1)
+            self.trace.add_counter("value_rescore_kept_ppm", int(round(float(same) * 1e6)))
+        return replace(selected, indices=idx.to(old.dtype) if old is not None else idx)
+
     def _select_and_gather(
         self,
         layer_idx: int,
@@ -531,7 +565,11 @@ class BitSieveSession:
                 sort_indices=self.config.selector.sort_indices,
                 scaling=self.head_dim**-0.5,
                 backend=self.config.backend,
-                return_importance=self.config.collect_diagnostics or self._eviction is not None,
+                return_importance=(
+                    self.config.collect_diagnostics
+                    or self._eviction is not None
+                    or self.config.selector.value_aware
+                ),
                 scratch=self.selector_scratch,
                 kernel_variant=self.config.selector_kernel_variant,
                 logits_dtype=(
@@ -540,6 +578,9 @@ class BitSieveSession:
                     else torch.float16
                 ),
             )
+        if self.config.selector.value_aware:
+            selected = self._rescore_by_value(layer_idx, selected, k, live_mask)
+
         with self.timer.region(
             "gather_dequant",
             tensor=query,
@@ -828,6 +869,31 @@ class BitSieveSession:
         )
         self._extend_fp16_key_shadow(layer_idx, current_key)
 
+    def _value_spread(self) -> torch.Tensor:
+        """||v_i - vbar_head|| for every live entry. [L, B, Hkv, live].
+
+        Computed from the cache as it is actually stored -- dequantized, so at
+        4 bits this is the spread the model will really see, not the bf16 one.
+        vbar is the mean over the live set only: an evicted entry must not keep
+        influencing the centre it is no longer part of.
+        """
+        from ..reference import gather_per_kv_head
+
+        assert self._eviction is not None
+        st = self._eviction
+        out = torch.empty(
+            (st.num_layers, self.cache.batch_size, self.num_kv_heads, st.live),
+            dtype=torch.float32,
+            device=self.cache.device,
+        )
+        for layer_idx in range(st.num_layers):
+            _, value = self.cache.dequantize_layer(layer_idx)
+            live = gather_per_kv_head(
+                value.to(torch.float32), self._live_positions(layer_idx)
+            )
+            out[layer_idx] = (live - live.mean(dim=2, keepdim=True)).norm(dim=-1)
+        return out
+
     def end_block(self) -> None:
         self.finish_step0()
         self.commit_current = False
@@ -836,7 +902,12 @@ class BitSieveSession:
             cfg = self.config.eviction
             before = self._eviction.live
             if self._eviction.maybe_evict(
-                cfg, block_index=self.block_index, tokens_seen=self._tokens_seen
+                cfg,
+                block_index=self.block_index,
+                tokens_seen=self._tokens_seen,
+                value_spread_fn=(
+                    self._value_spread if cfg.policy == "ema_recent_value" else None
+                ),
             ) is not None:
                 self.trace.add_counter("evictions", 1)
                 self.trace.add_counter("entries_evicted", before - self._eviction.live)

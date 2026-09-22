@@ -59,7 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
                    help="override the persistent key width")
     p.add_argument("--v-bits", type=int, choices=(2, 4, 16),
                    help="override the persistent value width")
-    p.add_argument("--eviction-policy", choices=("none", "recent", "ema_recent"),
+    p.add_argument("--eviction-policy", choices=("none", "recent", "ema_recent", "ema_recent_value"),
                    help="what the cache keeps, as opposed to what a block reads")
     p.add_argument("--eviction-capacity-floor", type=int)
     p.add_argument("--eviction-capacity-percent", type=float)

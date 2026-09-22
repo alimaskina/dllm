@@ -135,3 +135,34 @@ dropping 45% of the cache beat keeping it. Plausibly attention dilution on a
   tested by the swept variants.
 - The bf16 result above the full-cache ceiling needs a larger n before it can
   be claimed.
+
+## Value-aware eviction: tried, does not help
+
+`ema_recent` ranks an entry by how much attention mass it has drawn. The obvious
+refinement is to ask whether it also carries anything: rank on `ĝ · ‖v − v̄‖`, so
+an entry earns its slot only if it is attended to *and* says something the
+head's average value does not already say. This is the idea behind expected-
+attention style eviction, and `policy: ema_recent_value` implements it. The
+spread is computed from the cache as it is actually stored -- dequantized, so at
+4 bits it is the spread the model really sees -- and `v̄` is the mean over the
+live set only, so an evicted entry stops influencing the centre it left.
+
+It passed its own sanity gate (the spread is far from uniform, and on a
+selector-side variant the rescoring changes 7.4% of the kept top-k, so it is not
+a no-op) and then produced nothing. Paired over the same problems:
+
+| comparison | n | value better / worse | means | p |
+|---|---:|---:|---:|---:|
+| bf16, C = max(5%·S, 256) | 60 | 7 / 3 | 0.667 vs 0.600 | 0.34 |
+| k4v4, C = max(5%·S, 256) | 60 | 3 / 3 | 0.600 vs 0.600 | 1.00 |
+| k4v4, extended run | 111 | 7 / 6 | 0.568 vs 0.559 | 1.00 |
+
+Not one comparison separates it from plain `ema+recent`, and doubling the sample
+moved the split from 3/3 to 7/6. The mechanism does reorder the kept set; the
+reordering just does not matter for the output. Data in
+`docs/data/eviction/dream/{value,ext_ema,ext_value}_p5_f256`.
+
+Note these ran at the specification's C = max(5%·S, 256), i.e. the capacity that
+`ema+recent` itself scores worst at. A rerun at max(50%·S, 512) is not obviously
+worth it: at a capacity where eviction has stopped costing anything, there is
+even less room for a better ranking to show up.
