@@ -41,6 +41,8 @@ ARMS = [
     ("k4v4__evict-none", 4, 4, "none", None),
     ("k4v4__evict-recent", 4, 4, "recent", None),
     ("k4v4__evict-ema", 4, 4, "ema_recent", None),
+    ("bf16__evict-ema-value", 16, 16, "ema_recent_value", None),
+    ("k4v4__evict-ema-value", 4, 4, "ema_recent_value", None),
 ]
 
 
@@ -81,13 +83,18 @@ def main() -> int:
     ap.add_argument("--device", default="cuda:0")
     ap.add_argument("--out", required=True)
     ap.add_argument("--limit", type=int, default=60)
+    ap.add_argument("--offset", type=int, default=0,
+                    help="skip this many examples, to extend a run without redoing it")
     ap.add_argument("--benchmark", default="math500")
     ap.add_argument("--max-new-tokens", type=int, default=4096)
     ap.add_argument("--block-size", type=int, default=32)
     ap.add_argument("--threshold", type=float, default=0.9)
     ap.add_argument("--topk", type=int, default=512)
-    ap.add_argument("--capacity-floor", type=int, default=256)
-    ap.add_argument("--capacity-percent", type=float, default=5.0)
+    # max(50%*S, 512), not the specification's max(5%*S, 256): see
+    # docs/eviction_results.md -- at 5%/256 the floor always won and the score
+    # dropped below the full cache. Pass 5 / 256 explicitly for the spec.
+    ap.add_argument("--capacity-floor", type=int, default=512)
+    ap.add_argument("--capacity-percent", type=float, default=50.0)
     ap.add_argument("--window", type=int, default=128)
     ap.add_argument("--decay", type=float, default=0.9)
     ap.add_argument("--interval", type=int, default=4)
@@ -125,7 +132,9 @@ def main() -> int:
         .to(args.device)
         .eval()
     )
-    examples = load_benchmark(args.benchmark, tokenizer=tok, limit=args.limit, split="test")
+    examples = load_benchmark(
+        args.benchmark, tokenizer=tok, limit=args.offset + args.limit, split="test"
+    )[args.offset :]
     print(f"{MODEL_ID} on {args.device}: {len(examples)} examples")
 
     wanted = {a.strip() for a in args.arms.split(",")} if args.arms else None

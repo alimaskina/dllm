@@ -151,8 +151,12 @@ def main() -> int:
     r.add_argument("--benchmark", default="math500")
     r.add_argument("--limit", type=int, default=60)
     r.add_argument("--max-new-tokens", type=int, default=4096)
-    r.add_argument("--capacity-floor", type=int, default=256)
-    r.add_argument("--capacity-percent", type=float, default=5.0)
+    # max(50%*S, 512), not the specification's max(5%*S, 256): at 5%/256 the
+    # percent never beat the floor on these context lengths and C was 256
+    # everywhere, which is the harshest cell of the sweep and loses score.
+    # Pass --capacity-percent 5 --capacity-floor 256 to get the spec back.
+    r.add_argument("--capacity-floor", type=int, default=512)
+    r.add_argument("--capacity-percent", type=float, default=50.0)
     r.add_argument("--window", type=int, default=128)
     r.add_argument("--decay", type=float, default=0.9)
     r.add_argument("--interval", type=int, default=4)

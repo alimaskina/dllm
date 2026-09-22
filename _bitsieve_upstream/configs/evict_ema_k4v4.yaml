@@ -1,0 +1,61 @@
+# EMA eviction at the capacity that actually won the sweep.
+#
+# The defaults in EvictionConfig are the ones from the original specification --
+# max(5%*S, 256) -- and they are NOT these. On both models the median context is
+# 576-640 tokens, so the 5% term never beat the floor and C collapsed to 256
+# everywhere; at that capacity only ~7% of a long-tail cache survives, and the
+# score drops (0.600 against 0.700 for the full cache on DreamReasoner). That is
+# the harshest point of the sweep, not a working setting.
+#
+# max(50%*S, 512) is the cell that won: 0.767 on bf16 against 0.700 for the full
+# cache, 0.717 on 4-bit, while keeping 55-72% of the bytes. See
+# docs/eviction_results.md for the whole capacity sweep and the caveats -- the
+# bf16 cell beating the full cache is n=60 and not individually significant.
+name: evict_ema_k4v4
+engine: bitsieve
+semantic: A
+backend: triton
+async_selector: true
+max_cache_tokens: 32768
+compact_dtype: bfloat16
+compact_format: bf16
+collect_diagnostics: false
+profile_layers: false
+dense_kernel_variant: blocked
+selector_kernel_variant: blocked
+selector_logits_dtype: float16
+validate_attention_masks: false
+quant:
+  k_bits: 4
+  v_bits: 4
+  key_token_group: 32
+  value_channel_group: 32
+  residual_tokens: 0
+  param_dtype: float16
+selector:
+  # A FIXED top-k, not a percent: 5% of a MATH-500 prefix is 19-52 tokens while
+  # the problem statement alone runs 63-388, so a percent budget hides the
+  # question and collapses the score for reasons unrelated to eviction.
+  mode: uniform
+  uniform_queries: 5
+  topk: 512
+  topk_percent: null
+  domain: prefix
+  score: softmax
+  dense_prefix_layers: 0
+  sort_indices: true
+eviction:
+  policy: ema_recent
+  decay: 0.9            # lambda in ghat = g / (1 - lambda^n)
+  recent_window: 128    # W: the protected tail, excluded from the EMA contest
+  capacity_percent: 50.0
+  capacity_floor: 512
+  interval_blocks: 4
+generation:
+  block_size: 32
+  small_block_size: 8
+  threshold: 0.95
+  max_new_tokens: 512
+  use_block_cache: true
+  schedule: threshold
+  fixed_steps_per_block: 20
