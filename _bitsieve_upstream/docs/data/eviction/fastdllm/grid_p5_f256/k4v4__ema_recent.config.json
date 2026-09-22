@@ -1,0 +1,59 @@
+{
+  "name": "proposed_a_k4v4_k512_k512_k4v4_ev-ema_recent",
+  "semantic": "A",
+  "quant": {
+    "k_bits": 4,
+    "v_bits": 4,
+    "key_token_group": 32,
+    "value_channel_group": 32,
+    "residual_tokens": 0,
+    "param_dtype": "float16"
+  },
+  "selector": {
+    "mode": "uniform",
+    "uniform_queries": 5,
+    "topk": 512,
+    "topk_percent": null,
+    "domain": "prefix",
+    "score": "softmax",
+    "dense_prefix_layers": 0,
+    "sort_indices": true
+  },
+  "generation": {
+    "block_size": 32,
+    "small_block_size": 8,
+    "threshold": 0.95,
+    "max_new_tokens": 4096,
+    "mask_token_id": 151665,
+    "stop_token_id": 151645,
+    "top_p": 0.95,
+    "temperature": 0.0,
+    "use_block_cache": true,
+    "schedule": "threshold",
+    "fixed_steps_per_block": 20
+  },
+  "eviction": {
+    "policy": "ema_recent",
+    "decay": 0.9,
+    "recent_window": 128,
+    "capacity_percent": 5.0,
+    "capacity_floor": 256,
+    "interval_blocks": 4
+  },
+  "engine": "bitsieve",
+  "backend": "triton",
+  "async_selector": true,
+  "max_cache_tokens": 32768,
+  "compact_dtype": "bfloat16",
+  "compact_format": "bf16",
+  "seed": 1234,
+  "collect_diagnostics": false,
+  "coverage_diagnostics": true,
+  "coverage_query_chunk": 32,
+  "coverage_arms": [],
+  "profile_layers": false,
+  "dense_kernel_variant": "blocked",
+  "selector_kernel_variant": "blocked",
+  "selector_logits_dtype": "float16",
+  "validate_attention_masks": false
+}

@@ -1,0 +1,25 @@
+{
+  "python": "3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]",
+  "executable": "/home/alimaskina/miniconda3/envs/ysda/bin/python",
+  "torch": "2.10.0+cu128",
+  "transformers": "5.3.0",
+  "model": "Dream-org/DreamReasoner-8B",
+  "device": "cuda:5",
+  "settings": {
+    "device": "cuda:5",
+    "out": "/place/vartmp/claude-728954/-home-alimaskina-dllm/b0087f32-8d37-4a12-be0d-55a0fa5e4765/scratchpad/dream_bf16_cap50",
+    "limit": 60,
+    "benchmark": "math500",
+    "max_new_tokens": 4096,
+    "block_size": 32,
+    "threshold": 0.9,
+    "topk": 512,
+    "capacity_floor": 256,
+    "capacity_percent": 50.0,
+    "window": 128,
+    "decay": 0.9,
+    "interval": 4,
+    "coverage": true,
+    "arms": "bf16__evict-recent,bf16__evict-ema"
+  }
+}
